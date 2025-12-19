@@ -372,6 +372,57 @@
             .charts-grid { grid-template-columns: 1fr; }
             .room-grid-selector { grid-template-columns: repeat(2, 1fr); }
         }
+        /* =========================================
+           iOS / MOBILE LANDSCAPE - ZOOM FIX (CLICCABILE)
+           ========================================= */
+        @media only screen and (max-width: 950px) and (orientation: landscape) {
+            
+            body {
+                /* 1. Impostiamo una larghezza "Desktop" fissa */
+                width: 1100px; 
+                min-width: 1100px;
+                
+                /* 2. USIAMO ZOOM INVECE DI TRANSFORM 
+                   Questo rimpicciolisce tutto ma AGGIORNA le aree cliccabili.
+                   0.65 significa 65% della grandezza originale (adatto per iPhone 13) */
+                zoom: 0.65; 
+                
+                /* Reset dello scroll per evitare blocchi */
+                overflow-x: auto;
+                overflow-y: auto;
+                position: static; /* Importante: rimuove il blocco precedente */
+            }
+
+            /* 3. Fix per l'Header fisso 
+               Con lo zoom, la larghezza 100% si riferisce alla viewport ridotta.
+               Dobbiamo forzarlo alla larghezza desktop */
+            .top-header {
+                width: 1100px !important;
+                position: fixed !important;
+                top: 0;
+                left: 0;
+            }
+
+            /* 4. Fix per la Sidebar 
+               Assicuriamo che l'altezza copra tutto lo schermo zoomato */
+            #global-sidebar {
+                height: 100vh;
+                min-height: 100%;
+            }
+
+            /* 5. Fix per i Modali (es. Nuovo Progetto) 
+               Devono coprire l'intera area virtuale */
+            .modal-overlay {
+                width: 1100px !important;
+                height: 100vh !important;
+                position: fixed;
+            }
+            
+            /* Ripristino scrollbar interne per renderle usabili */
+            .col-scroll {
+                overflow-y: auto !important; 
+            }
+        }
     </style>
 </head>
 
