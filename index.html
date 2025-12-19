@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QOTIA - Gestion & Devis BTP">
+    <title>QOTIA | Gestion & Devis BTP (Pro 2025)</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- VARIABILI & RESET --- */
+        :root {
+            --brand-yellow: #FCD34D;
+            --brand-yellow-dark: #F59E0B;
+            --brand-navy: #1E3A8A;
+            --brand-dark: #1F2937;
+            --brand-grey-bg: #F3F4F6;
+            --brand-white: #FFFFFF;
+            --brand-border: #E5E7EB;
+            --brand-danger: #EF4444;
+            --brand-success: #10B981;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --header-height: 64px;
+            --sidebar-width: 280px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; outline: none; }
+        body { background-color: var(--brand-grey-bg); color: var(--brand-dark); line-height: 1.5; font-size: 13px; height: 100vh; overflow: hidden; }
+        
+        /* UTILITIES */
+        .responsive-text { display: none; }
+        @media(min-width: 600px) { .responsive-text { display: inline; } }
+        .text-bold { font-weight: 700; }
+        .text-navy { color: var(--brand-navy); }
+        .w-full { width: 100%; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        
+        /* LOGIN */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--brand-navy); z-index: 50000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .login-card { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); text-align: center; }
+        .login-logo { width: 60px; height: 60px; background: var(--brand-yellow); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800; color: white; margin: 0 auto 20px; }
+        .login-title { font-size: 1.5rem; font-weight: 800; color: var(--brand-navy); margin-bottom: 20px; }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--brand-border); border-radius: 8px; font-size: 1rem; }
+        .login-btn { width: 100%; padding: 12px; background: var(--brand-navy); color: white; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: background 0.2s; }
+        .login-btn:hover { background: #1e40af; }
+
+        /* --- LAYOUT PRINCIPALE CON HEADER FISSO --- */
+        .app-container { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; 
+            padding-top: var(--header-height);
+        }
+        
+        .top-header { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: var(--header-height);
+            background-color: var(--brand-white); 
+            border-bottom: 1px solid var(--brand-border); 
+            padding: 0 24px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            flex-shrink: 0; 
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        /* --- SEARCH BAR --- */
+        .header-search-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            margin: 0 20px;
+            max-width: 500px;
+        }
+        .header-search-box {
+            position: relative;
+            width: 100%;
+        }
+        .header-search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: 50px;
+            border: 1px solid var(--brand-border);
+            background: #F3F4F6;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+        .header-search-input:focus {
+            background: white;
+            border-color: var(--brand-navy);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+        .header-search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            pointer-events: none;
+        }
+        @media (max-width: 900px) {
+            .header-search-container { display: none; }
+        }
+
+        /* HEADER ELEMENTS & UNIFIED NAVIGATION */
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .global-menu-btn { background: transparent; border: none; font-size: 1.2rem; color: var(--brand-navy); cursor: pointer; padding: 5px; border-radius: 4px; transition: background 0.2s; }
+        .global-menu-btn:hover { background: #F3F4F6; }
+        .header-brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-circle { width: 32px; height: 32px; background: var(--brand-yellow); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .header-title { font-weight: 800; color: var(--brand-navy); font-size: 18px; letter-spacing: -0.5px; }
+        
+        .header-right-actions { display: flex; gap: 10px; align-items: center; }
+        
+        .nav-link-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: #4B5563;
+            background: transparent;
+            border: 1px solid transparent;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .nav-link-btn:hover { background: #F3F4F6; color: var(--brand-navy); }
+        .nav-link-btn.active { background: #EFF6FF; color: var(--brand-navy); }
+        .nav-link-btn i { font-size: 1rem; }
+        .nav-link-btn.btn-accent { color: var(--brand-navy); }
+
+        .mode-switch-internal { background: #fff; padding: 3px; border-radius: 50px; display: inline-flex; border: 1px solid var(--brand-border); margin-left: 10px; }
+        .mode-btn { padding: 4px 10px; border-radius: 40px; border: none; background: transparent; font-size: 10px; font-weight: 600; cursor: pointer; color: #6B7280; }
+        .mode-btn.active { background: var(--brand-grey-bg); color: var(--brand-navy); }
+
+        /* SIDEBAR */
+        #global-sidebar { position: fixed; top: 0; left: -300px; width: 260px; height: 100%; background: white; z-index: 2000; border-right: 1px solid var(--brand-border); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; box-shadow: 10px 0 25px rgba(0,0,0,0.05); }
+        #global-sidebar.open { left: 0; }
+        .gs-header { height: 64px; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--brand-border); justify-content: space-between; }
+        .gs-links { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .gs-link { padding: 12px 15px; border-radius: 8px; color: #4B5563; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s; }
+        .gs-link:hover { background: #F3F4F6; color: var(--brand-navy); }
+        .gs-link.active { background: #EFF6FF; color: var(--brand-navy); }
+        .gs-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1999; display: none; }
+        .gs-overlay.active { display: block; }
+
+        /* VIEWS & CONTENT */
+        .view-section { display: none; height: calc(100vh - 64px); position: relative; }
+        .view-section.active-section { display: grid; }
+        #home-view { display: none; padding: 25px; overflow-y: auto; background: var(--brand-grey-bg); }
+        #home-view.active-section { display: block; }
+        .dash-header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .dash-title { font-size: 1.8rem; font-weight: 800; color: var(--brand-navy); margin-bottom: 5px; }
+        .dash-subtitle { color: #6B7280; font-size: 0.9rem; }
+        .kpi-filter-box { display: flex; align-items: center; gap: 10px; background: white; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--brand-border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .kpi-select { border: none; font-weight: 600; color: var(--brand-navy); font-size: 0.9rem; cursor: pointer; padding: 5px; outline: none; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        
+        .kpi-card { background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); border: 1px solid var(--brand-border); display: flex; flex-direction: column; position: relative; }
+        .kpi-card.clickable { cursor: pointer; transition: transform 0.2s, border-color 0.2s; }
+        .kpi-card.clickable:hover { transform: translateY(-2px); border-color: var(--brand-navy); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .kpi-card.clickable:active { transform: translateY(0); }
+
+        .kpi-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 15px; }
+        .kpi-label { font-size: 0.8rem; font-weight: 600; color: #6B7280; text-transform: uppercase; }
+        .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--brand-dark); margin-top: 5px; }
+        .kpi-sub { font-size: 0.8rem; color: #9CA3AF; margin-top: auto; padding-top: 10px; }
+        .charts-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 30px; }
+        .chart-box { background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-card); border: 1px solid var(--brand-border); display: flex; flex-direction: column; height: 320px; }
+        .chart-container { flex: 1; position: relative; width: 100%; min-height: 0; }
+        .action-grid { display: block; margin-bottom: 20px; }
+        .section-box { background: white; border-radius: var(--radius-md); border: 1px solid var(--brand-border); overflow: hidden; box-shadow: var(--shadow-card); }
+        .box-header { padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-weight: 700; color: var(--brand-navy); background: #F9FAFB; }
+        #list-view { grid-template-columns: 1fr; padding: 20px; background: var(--brand-grey-bg); overflow-y: auto; }
+        
+        /* EDITOR LAYOUT */
+        #quote-view { grid-template-columns: var(--sidebar-width) 1fr 340px; gap: 20px; padding: 20px; overflow: hidden; }
+        #client-view { grid-template-columns: 350px 1fr; gap: 20px; padding: 20px; background: var(--brand-grey-bg); overflow: hidden; }
+        #company-view { display: none; grid-template-columns: 1fr; max-width: 800px; margin: 0 auto; padding: 40px 20px; overflow-y: auto; }
+        #company-view.active-section { display: block; }
+        
+        .col-scroll { overflow-y: auto; height: 100%; padding-right: 5px; padding-bottom: 20px; }
+        .col-scroll::-webkit-scrollbar { width: 6px; }
+        .col-scroll::-webkit-scrollbar-thumb { background-color: #D1D5DB; border-radius: 10px; }
+        
+        /* TABLES */
+        .dash-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .dash-table th { text-align: left; padding: 12px 15px; background: #fff; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid var(--brand-border); }
+        .dash-table td { padding: 12px 15px; border-bottom: 1px solid var(--brand-border); vertical-align: middle; color: #374151; }
+        .dash-table tr:hover { background: #F9FAFB; }
+        .status-select-table { border: 1px solid transparent; border-radius: 15px; padding: 4px 8px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; cursor: pointer; outline: none; }
+        .status-select-table.st-brouillon { background: #F3F4F6; color: #374151; border-color: #E5E7EB; }
+        .status-select-table.st-attente { background: #FFF7ED; color: #C2410C; border-color: #FFEDD5; }
+        .status-select-table.st-accepte { background: #ECFDF5; color: #047857; border-color: #A7F3D0; }
+        .status-select-table.st-refuse { background: #FEF2F2; color: #B91C1C; border-color: #FECACA; }
+        .action-btn-group { display: flex; gap: 5px; justify-content: center; }
+        .action-mini-btn { width: 30px; height: 30px; border-radius: 6px; border: 1px solid transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; background: white; border-color: #E5E7EB; color: #6B7280; }
+        .action-mini-btn:hover { border-color: var(--brand-navy); color: var(--brand-navy); background: #EFF6FF; }
+        .btn-del:hover { border-color: var(--brand-danger); color: var(--brand-danger); background: #FEF2F2; }
+        .btn { padding: 8px 16px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; white-space: nowrap; }
+        .btn-primary { background-color: var(--brand-yellow); color: var(--brand-dark); }
+        .btn-primary:hover { background-color: var(--brand-yellow-dark); }
+        .btn-secondary { background-color: var(--brand-white); border: 1px solid var(--brand-border); color: var(--brand-dark); }
+        .btn-secondary:hover { background-color: #F9FAFB; }
+
+        /* COMPONENTS */
+        .card { background: var(--brand-white); border-radius: var(--radius-md); box-shadow: var(--shadow-card); border: 1px solid var(--brand-border); overflow: hidden; margin-bottom: 20px; }
+        .sidebar-title { padding: 15px; font-weight: 700; color: var(--brand-navy); border-bottom: 1px solid var(--brand-border); font-size: 0.95rem; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .category-list { list-style: none; }
+        .category-item { padding: 12px 15px; cursor: pointer; color: #4B5563; font-weight: 500; border-bottom: 1px solid #F3F4F6; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+        .category-item:hover { background-color: #F9FAFB; }
+        #subfamily-panel { display: none; }
+        .subfamily-header { background: #EFF6FF; color: var(--brand-navy); padding: 10px 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; border-bottom: 1px solid var(--brand-border); }
+        .article-item { padding: 8px 15px 8px 25px; font-size: 0.8rem; cursor: pointer; border-bottom: 1px dashed var(--brand-border); display: flex; justify-content: space-between; color: #374151; }
+        .article-item:hover { background-color: #ECFDF5; color: #047857; }
+        
+        /* ROOM PILLS AGGIORNATE */
+        .room-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .room-pill { background: white; border: 1px solid var(--brand-border); padding: 6px 14px; border-radius: 20px; cursor: pointer; display: flex; flex-direction: column; align-items: center; min-width: 90px; position: relative; transition: all 0.2s; }
+        .room-pill.active { background: var(--brand-yellow); border-color: #F59E0B; color: var(--brand-dark); box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2); }
+        .delete-room-btn { position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: var(--brand-danger); color: white; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; border: 2px solid white; cursor: pointer; }
+        .room-pill:hover .delete-room-btn, .room-pill.active .delete-room-btn { opacity: 1; }
+        
+        /* Special Style for Travaux Préparatoires */
+        .room-pill.static-prep { background-color: #E5E7EB; border-color: #D1D5DB; color: #4B5563; font-weight: 600; cursor: pointer; }
+        .room-pill.static-prep.active { background-color: #9CA3AF; color: white; border-color: #6B7280; }
+        .room-pill.static-prep .delete-room-btn { display: none !important; }
+
+        .metrics-panel { background: #FFFBEB; border: 1px solid #FCD34D; border-radius: var(--radius-sm); padding: 12px; display: flex; gap: 10px; align-items: flex-end; margin-bottom: 10px; flex-wrap: wrap; }
+        .metrics-panel.hidden { display: none; }
+        .m-group { display: flex; flex-direction: column; gap: 4px; }
+        .m-group label { font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: #92400E; }
+        .m-group input { width: 65px; padding: 5px; border: 1px solid #FDE68A; border-radius: 4px; text-align: right; background: white; font-size: 0.8rem; }
+        .m-group input[readonly] { background: rgba(255, 255, 255, 0.5); border-color: transparent; font-weight: bold; color: #666; }
+        .quote-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+        .quote-title { font-size: 1.1rem; font-weight: 700; color: var(--brand-navy); }
+        .view-toggles button { background: white; border: 1px solid var(--brand-border); padding: 4px 10px; font-size: 0.75rem; cursor: pointer; border-radius: 4px; }
+        .view-toggles button.active { background: var(--brand-navy); color: white; border-color: var(--brand-navy); }
+        
+        /* TABLE STYLES UPDATED FOR HIERARCHY */
+        .q-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.85rem; }
+        .q-table th { text-align: left; padding: 10px; background: #F9FAFB; color: #6B7280; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--brand-border); }
+        .q-table td { padding: 8px 10px; border-bottom: 1px solid var(--brand-border); vertical-align: middle; }
+        
+        /* New Hierarchy Styles */
+        .room-section-header td { background: #1E3A8A; color: white; font-weight: 800; font-size: 0.9rem; padding: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .category-row td { background: #EFF6FF; color: #1E3A8A; font-weight: 700; font-size: 0.85rem; padding-top: 10px; border-top: 1px solid #DBEAFE; }
+        .subcategory-row td { color: #6B7280; font-weight: 600; font-size: 0.8rem; padding-left: 25px; font-style: italic; background: #F9FAFB; }
+        
+        /* Tags for Ouvrage view */
+        .breakdown-badge { display: inline-block; background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; margin-right: 4px; margin-top: 2px; color: #4B5563; }
+
+        .qty-inp { width: 50px; text-align: center; padding: 4px; border: 1px solid #D1D5DB; border-radius: 4px; }
+        .tva-select { padding: 4px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 0.8rem; background: white; cursor: pointer; }
+        .note-input { width: 100%; border: 1px solid transparent; background: transparent; font-size: 0.8rem; color: #4B5563; font-style: italic; padding: 4px; border-radius: 4px; }
+        .note-input:focus { background: white; border: 1px solid #D1D5DB; font-style: normal; outline: none; }
+        
+        /* VISIBILITY LOGIC FOR COLUMNS */
+        body.mode-brouillon .col-price, 
+        body.mode-brouillon .col-total, 
+        body.mode-brouillon .col-tva { display: none; }
+        
+        /* MODIFIED: Show Cost in Devis Mode (as requested) but hide Time/Note */
+        body.mode-devis .col-time, 
+        body.mode-devis .col-note { display: none; } 
+
+        .client-info-box { margin-bottom: 20px; }
+        .client-label { font-size: 0.7rem; color: #9CA3AF; text-transform: uppercase; margin-top: 8px; display: block; }
+        .client-input { width: 100%; border: none; background: transparent; font-weight: 500; padding: 2px 0; border-bottom: 1px dashed transparent; color: var(--brand-dark); }
+        .client-input:hover { border-bottom-color: #D1D5DB; background: #F9FAFB; }
+        .client-input[readonly] { color: #666; background: #f3f3f3; border-bottom-style: dotted; cursor: not-allowed; }
+        .total-box { background: #F8FAFC; border: 1px solid var(--brand-border); padding: 15px; border-radius: var(--radius-sm); margin-top: 20px; }
+        .fin-input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.85rem; }
+        .fin-input-row label { color: #4B5563; }
+        .fin-input { width: 80px; text-align: right; padding: 3px; border: 1px solid #D1D5DB; border-radius: 4px; font-size: 0.85rem; }
+        .t-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; color: #4B5563; }
+        .t-row.main-total { border-top: 2px solid #D1D5DB; padding-top: 10px; margin-top: 10px; font-size: 1.2rem; font-weight: 800; color: var(--brand-navy); }
+        .tva-breakdown { font-size: 0.75rem; color: #666; margin: 10px 0; border-top: 1px dashed #ddd; border-bottom: 1px dashed #ddd; padding: 5px 0; }
+        .tva-row { display: flex; justify-content: space-between; margin-bottom: 2px; }
+        .client-list-item { padding: 15px; border-bottom: 1px solid var(--brand-border); cursor: pointer; transition: background 0.2s; }
+        .client-list-item:hover { background: #F9FAFB; }
+        .client-list-item.selected { background: #EFF6FF; border-left: 4px solid var(--brand-navy); }
+        .cli-name { font-weight: 700; color: var(--brand-navy); font-size: 0.95rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { margin-bottom: 5px; }
+        .form-group.full-width { grid-column: span 2; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--brand-dark); margin-bottom: 4px; text-transform: uppercase; }
+        .form-input { width: 100%; padding: 8px; border: 1px solid var(--brand-border); border-radius: 6px; font-size: 0.9rem; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; }
+        .history-table th { text-align: left; padding: 8px; background: #F3F4F6; }
+        .history-table td { padding: 8px; border-bottom: 1px solid #E5E7EB; }
+        
+        /* --- MODAL STYLES --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 25000; display: none; align-items: center; justify-content: center; }
+        .modal-large { background: white; padding: 0; border-radius: 12px; width: 90%; max-width: 800px; height: 90%; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+        .modal-header { padding: 20px; border-bottom: 1px solid var(--brand-border); display: flex; justify-content: space-between; align-items: center; background: #F9FAFB; }
+        .modal-title-text { font-size: 1.25rem; font-weight: 800; color: var(--brand-navy); }
+        .modal-body { padding: 30px; overflow-y: auto; flex: 1; }
+        .modal-footer { padding: 20px; border-top: 1px solid var(--brand-border); display: flex; justify-content: flex-end; gap: 10px; background: white; }
+        .section-divider { margin: 25px 0 15px 0; border-bottom: 2px solid #F3F4F6; padding-bottom: 5px; color: var(--brand-navy); font-weight: 700; font-size: 1rem; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+        .checkbox-group label { margin: 0; font-weight: 500; font-size: 0.9rem; cursor: pointer; }
+        
+        /* --- ROOM SELECTION GRID --- */
+        .room-grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .room-select-btn { padding: 10px; border: 1px solid var(--brand-border); border-radius: 8px; background: white; cursor: pointer; font-size: 0.9rem; text-align: center; transition: all 0.2s; }
+        .room-select-btn:hover { background: #EFF6FF; border-color: var(--brand-navy); color: var(--brand-navy); }
+        .room-select-btn.active { background: var(--brand-navy); color: white; border-color: var(--brand-navy); }
+
+        /* --- DEMOLITION STYLES --- */
+        .demo-search-box { margin-bottom: 15px; position: relative; }
+        .demo-search-input { width: 100%; padding: 12px 15px 12px 40px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 0.95rem; }
+        .demo-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9CA3AF; }
+        .demo-list { list-style: none; max-height: 400px; overflow-y: auto; border: 1px solid #E5E7EB; border-radius: 8px; }
+        .demo-item { padding: 15px; border-bottom: 1px solid #F3F4F6; cursor: pointer; transition: background 0.15s; display: flex; justify-content: space-between; align-items: center; }
+        .demo-item:last-child { border-bottom: none; }
+        .demo-item:hover { background-color: #F9FAFB; }
+        .demo-item-content { flex: 1; }
+        .demo-ref { font-size: 0.75rem; color: #6B7280; font-weight: 600; margin-bottom: 2px; }
+        .demo-title { font-weight: 600; color: var(--brand-dark); font-size: 0.95rem; margin-bottom: 2px; }
+        .demo-desc { font-size: 0.8rem; color: #6B7280; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .demo-price-tag { background: #ECFDF5; color: #047857; padding: 4px 8px; border-radius: 4px; font-weight: 700; font-size: 0.85rem; white-space: nowrap; margin-left: 15px; }
+        
+        #pdf-modal .modal-content { width: 400px; height: auto; } /* Specific for small pdf modal */
+
+        .pdf-option { display: block; width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #E5E7EB; border-radius: 8px; background: #F9FAFB; cursor: pointer; text-align: left; transition: all 0.2s; }
+        .pdf-option:hover { background: #EFF6FF; border-color: var(--brand-navy); }
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 20000; display: none; align-items: center; justify-content: center; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--brand-yellow); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .filter-bar { display: flex; gap: 15px; padding: 15px; background: white; border-bottom: 1px solid var(--brand-border); align-items: flex-end; flex-wrap: wrap; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        .filter-group label { font-size: 0.75rem; font-weight: 600; color: #6B7280; text-transform: uppercase; }
+        .filter-input { padding: 8px; border: 1px solid #D1D5DB; border-radius: 6px; font-size: 0.85rem; min-width: 150px; }
+        
+        /* --- PRINT / PDF FIXES --- */
+        @media print {
+            .q-table tr { page-break-inside: avoid; }
+            .category-row, .subcategory-row { page-break-after: avoid; }
+            .section-divider { page-break-before: always; }
+        }
+        .html2pdf__page-break { page-break-before: always; }
+
+        @media (max-width: 900px) {
+            .header-search-container { display: none; }
+            .header-right-actions { display: none; }
+            #quote-view aside:first-child { position: fixed; top: 64px; left: -280px; width: 280px; height: calc(100% - 64px); background: white; z-index: 100; transition: left 0.3s ease; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
+            #quote-view aside:first-child.mobile-active { left: 0; }
+            #quote-view { grid-template-columns: 1fr; gap: 15px; padding: 10px; grid-auto-rows: min-content 1fr min-content; }
+            #quote-view aside:last-child { order: 3; max-height: none; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+            .filter-input { width: 100%; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .room-grid-selector { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+
+<body class="mode-brouillon">
+
+    <div id="login-screen">
+        <div class="login-card">
+            <div class="login-logo">Q</div>
+            <h1 class="login-title">QOTIA Connect</h1>
+            <form onsubmit="App.handleLogin(event)">
+                <input type="text" id="login-user" class="login-input" placeholder="Identifiant (admin)" required>
+                <input type="password" id="login-pass" class="login-input" placeholder="Mot de passe (admin)" required>
+                <button type="submit" class="login-btn">Se Connecter</button>
+            </form>
+            <div style="margin-top:15px; font-size:0.8rem; color:#888;">Gestion BTP & Facturation</div>
+        </div>
+    </div>
+
+    <div class="gs-overlay" id="gs-overlay" onclick="App.toggleGlobalMenu()"></div>
+    <aside id="global-sidebar">
+        <div class="gs-header">
+            <div class="header-brand">
+                <div class="logo-circle">Q</div>
+                <div class="header-title">QOTIA</div>
+            </div>
+            <button class="global-menu-btn" onclick="App.toggleGlobalMenu()" aria-label="Close menu"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="gs-links">
+            <div class="gs-link" onclick="App.navigate('home')"><i class="fas fa-home"></i> Accueil</div>
+            <div class="gs-link" onclick="App.openProjectModal()"><i class="fas fa-plus-circle"></i> Nouveau Projet</div>
+            <div class="gs-link" onclick="App.navigate('quote')"><i class="fas fa-edit"></i> Éditeur</div>
+            <div class="gs-link" onclick="App.navigate('list')"><i class="fas fa-history"></i> Historique</div>
+            <div class="gs-link" onclick="App.navigate('client')"><i class="fas fa-users"></i> Clients</div>
+            <hr style="border-top:1px solid #eee; margin:5px 0;">
+            <div class="gs-link" onclick="App.saveProject()"><i class="fas fa-save"></i> Sauvegarder Projet</div>
+            <div class="gs-link" onclick="document.getElementById('load-file').click()"><i class="fas fa-folder-open"></i> Charger Projet</div>
+            <hr style="border-top:1px solid #eee; margin:5px 0;">
+            <div class="gs-link" onclick="App.navigate('company')"><i class="fas fa-building"></i> Mon Entreprise</div>
+            <div class="gs-link" onclick="App.openPdfModal()"><i class="fas fa-print"></i> Stampa</div>
+            <div class="gs-link" onclick="App.handleLogout()" style="color:var(--brand-danger); margin-top:auto;"><i class="fas fa-sign-out-alt"></i> Déconnexion</div>
+        </nav>
+    </aside>
+
+    <input type="file" id="load-file" hidden accept=".json" onchange="App.loadProjectFile(event)">
+    <input type="file" id="load-client-db" hidden accept=".json" onchange="App.loadClientDBFile(event)">
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight:600; color:var(--brand-navy)">Chargement...</div>
+    </div>
+
+    <div class="app-container">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="global-menu-btn" onclick="App.toggleGlobalMenu()" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+                <div class="header-brand" onclick="App.showView('home')">
+                    <div class="logo-circle">Q</div>
+                    <div class="header-title">QOTIA</div>
+                </div>
+            </div>
+
+            <div class="header-search-container">
+                <div class="header-search-box">
+                    <i class="fas fa-search header-search-icon"></i>
+                    <input type="text" class="header-search-input" placeholder="Rechercher client, devis..." onkeyup="App.globalSearch(this.value)">
+                </div>
+            </div>
+
+            <div class="header-right-actions">
+                <button class="nav-link-btn" id="nav-list" onclick="App.showView('list')">
+                    <i class="fas fa-history"></i> Historique
+                </button>
+                <button class="nav-link-btn" id="nav-clients" onclick="App.showView('client')">
+                    <i class="fas fa-users"></i> Client
+                </button>
+                <button class="nav-link-btn btn-accent" onclick="App.openProjectModal()">
+                    <i class="fas fa-plus-circle"></i> +Projet
+                </button>
+                <button class="nav-link-btn" onclick="App.openPdfModal()">
+                    <i class="fas fa-print"></i> Imprimer
+                </button>
+            </div>
+        </header>
+
+        <main id="home-view" class="view-section active-section">
+            <div class="dash-header">
+                <div>
+                    <h2 class="dash-title">Tableau de Bord</h2>
+                    <div class="dash-subtitle">Bienvenue sur votre espace de gestion.</div>
+                </div>
+                <div class="kpi-filter-box">
+                    <label style="font-size:0.8rem;color:#666">Période d'analyse :</label>
+                    <select id="kpi-period" class="kpi-select" onchange="App.renderHome()">
+                        <option value="all">Tout l'historique</option>
+                        <option value="year" selected>Année en cours</option>
+                        <option value="month">Mois en cours</option>
+                        <option value="prev_year">Année précédente</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card clickable" onclick="App.navigateToHistory('')">
+                    <div class="kpi-icon" style="background:#EFF6FF; color:#1E40AF;"><i class="fas fa-file-invoice"></i></div>
+                    <div class="kpi-label">Total Devis</div>
+                    <div class="kpi-value" id="kpi-total-count">0</div>
+                    <div class="kpi-sub">Sur la période</div>
+                </div>
+                <div class="kpi-card clickable" onclick="App.navigateToHistory('attente')">
+                    <div class="kpi-icon" style="background:#FFF7ED; color:#C2410C;"><i class="fas fa-clock"></i></div>
+                    <div class="kpi-label">Brouillons / Attente</div>
+                    <div class="kpi-value" id="kpi-pending-count">0</div>
+                    <div class="kpi-sub" id="kpi-pending-amount">0.00 €</div>
+                </div>
+                <div class="kpi-card clickable" onclick="App.navigateToHistory('accepte')">
+                    <div class="kpi-icon" style="background:#ECFDF5; color:#047857;"><i class="fas fa-check-circle"></i></div>
+                    <div class="kpi-label">Devis Acceptés</div>
+                    <div class="kpi-value" id="kpi-accepted-count">0</div>
+                    <div class="kpi-sub" id="kpi-accepted-amount">0.00 €</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#F0F9FF; color:#0369A1;"><i class="fas fa-chart-line"></i></div>
+                    <div class="kpi-label">CA Signé (Accepté)</div>
+                    <div class="kpi-value" id="kpi-volume">0 €</div>
+                    <div class="kpi-sub">Total facturable</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <div class="sidebar-title" style="border:none; padding:0 0 10px 0; font-size:0.9rem;">Répartition par Statut</div>
+                    <div class="chart-container"><canvas id="statusChart"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="sidebar-title" style="border:none; padding:0 0 10px 0; font-size:0.9rem;">Évolution du Chiffre d'Affaires</div>
+                    <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+                </div>
+            </div>
+        </main>
+
+        <main id="list-view" class="view-section">
+            <div class="card" style="height: 100%; display: flex; flex-direction: column; overflow: hidden;">
+                <div class="sidebar-title" style="font-size: 1.1rem; border-bottom: 1px solid #eee;">Historique Complet des Devis</div>
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label>Rechercher</label>
+                        <input type="text" id="dash-search" class="filter-input" placeholder="Client, Ref..." onkeyup="App.renderDashboardList()">
+                    </div>
+                    <div class="filter-group">
+                        <label>Statut</label>
+                        <select id="dash-status" class="filter-input" onchange="App.renderDashboardList()">
+                            <option value="">Tous</option>
+                            <option value="brouillon">Brouillon</option>
+                            <option value="attente">En attente</option>
+                            <option value="accepte">Accepté</option>
+                            <option value="refuse">Refusé</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <button class="btn btn-secondary" onclick="App.renderDashboardList()"><i class="fas fa-sync"></i></button>
+                </div>
+                <div class="col-scroll" style="padding: 0;">
+                    <table class="dash-table">
+                        <thead><tr><th>Date</th><th>Réf.</th><th>Client</th><th>Description / Projet</th><th style="text-align: right;">Montant TTC</th><th style="text-align: center;">Statut</th><th style="text-align: center;">Action</th></tr></thead>
+                        <tbody id="dashboard-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <main id="quote-view" class="view-section">
+            <aside class="col-scroll" id="left-sidebar">
+                <div class="card" style="min-height: 100%;">
+                    <div class="sidebar-title">
+                        <span id="lib-title-text">Bibliothèque</span>
+                        <i class="fas fa-times mobile-menu-btn" onclick="App.toggleSidebar()" style="font-size:1rem;"></i>
+                    </div>
+                    <ul class="category-list" id="main-families-list"></ul>
+                    <div id="subfamily-panel">
+                        <div class="subfamily-header" id="back-to-families"><i class="fas fa-arrow-left"></i> Retour</div>
+                        <div id="subcategories-container"></div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="workspace col-scroll">
+                <div class="room-nav" id="room-list-container"></div>
+                <div class="metrics-panel" id="metrics-panel">
+                    <div class="m-group"><label>Long. (m)</label><input type="number" id="inp-L" step="0.01" oninput="App.calcMetrics()"></div>
+                    <div class="m-group"><label>Larg. (m)</label><input type="number" id="inp-l" step="0.01" oninput="App.calcMetrics()"></div>
+                    <div class="m-group"><label>H. (m)</label><input type="number" id="inp-h" step="0.01" value="2.70" oninput="App.calcMetrics()"></div>
+                    <div style="width:1px;background:#FCD34D;height:30px;margin:0 5px;"></div>
+                    <div class="m-group"><label>Surface (m²)</label><input type="text" id="out-surf" readonly></div>
+                    <div class="m-group"><label>Périmètre (m)</label><input type="text" id="out-peri" readonly></div>
+                    <div class="m-group"><label>Surf. Mur (m²)</label><input type="text" id="out-wall" readonly></div>
+                </div>
+                <div class="card" style="padding: 15px;">
+                    <div class="quote-header">
+                        <div class="quote-title" id="table-title">Détail Devis</div>
+                        
+                        <div class="mode-switch-internal" id="quote-mode-switch">
+                            <button class="mode-btn active" id="btn-brouillon" onclick="App.setMode('brouillon')">Étude</button>
+                            <button class="mode-btn" id="btn-devis" onclick="App.setMode('devis')">Devis</button>
+                        </div>
+
+                        <div class="view-toggles" style="margin-left:auto; margin-right:10px;">
+                            <button class="active" id="view-piece" onclick="App.setView('piece')">Par Pièce</button>
+                            <button id="view-ouvrage" onclick="App.setView('ouvrage')">Récap. Ouvrages</button>
+                        </div>
+                        <button class="btn btn-secondary" style="font-size:0.8rem; margin-right:5px;" onclick="App.calculateProfitability()">
+                            <i class="fas fa-euro-sign" style="color:#059669; margin-right:5px;"></i> Analisi Margine
+                        </button>
+                        <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="App.openDemolitionModal()">
+                            <i class="fas fa-hammer" style="color:#B91C1C; margin-right:5px;"></i> Import Démolition
+                        </button>
+                    </div>
+                    <table class="q-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%;">Désignation</th><th style="width: 5%;">U</th><th style="width: 5%;">Qté</th><th class="col-tva" style="width: 10%;">TVA</th><th class="col-price" style="width: 10%;">P.U.</th>
+                                <th class="col-cost" style="width: 10%;">Matériel</th>
+                                <th class="col-total" style="width: 10%;">Total HT</th><th class="col-time" style="width: 8%;">Temps</th><th class="col-note" style="width: 15%;">Notes</th><th style="width: 5%;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="quote-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <aside class="col-scroll">
+                <div class="card" style="padding: 15px;">
+                    <div class="sidebar-title" style="padding:0 0 10px 0; border:none; background:transparent;">Client & Projet <button style="background:none;border:none;color:var(--brand-navy);cursor:pointer;" onclick="App.showView('client')"><i class="fas fa-user-edit"></i></button></div>
+                    <div class="client-info-box">
+                        <label class="client-label">Nom / Raison Sociale</label><input type="text" id="cli-name" class="client-input" placeholder="Nom Client" onchange="App.saveState()">
+                        <label class="client-label">Nom du Projet</label><input type="text" id="cli-project-name" class="client-input" placeholder="Ex: Rénovation Cuisine" onchange="App.saveState()">
+                        <label class="client-label">Adresse</label><input type="text" id="cli-addr" class="client-input" placeholder="Adresse" onchange="App.saveState()">
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <div style="flex:1"><label class="client-label">Date</label><input type="date" id="cli-date" class="client-input" onchange="App.saveState()"></div>
+                            <div style="flex:1"><label class="client-label">N° Devis (Auto)</label><input type="text" id="cli-ref" class="client-input" readonly></div>
+                        </div>
+                    </div>
+                    <div style="text-align:center; padding-bottom:10px; border-bottom:1px solid #eee;">
+                        <button class="btn btn-primary" style="font-size:0.75rem; width:100%;" onclick="App.addCurrentQuoteToHistory()"><i class="fas fa-save"></i> Sauvegarder dans Historique</button>
+                    </div>
+                </div>
+                <div class="card summary-sec" style="padding: 15px;">
+                    <div class="sidebar-title" style="padding:0 0 10px 0; font-size:0.85rem; background:transparent;">Répartition par Poste</div>
+                    <table style="width:100%; font-size:0.8rem;"><tbody id="category-summary-tbody"></tbody></table>
+                </div>
+                <div class="card total-box">
+                    <div class="sidebar-title" style="padding:0 0 10px 0; font-size:0.85rem; border:none; background:transparent;">Total Devis</div>
+                    <div style="margin-bottom: 10px; display:flex; align-items:center; gap:8px;">
+                         <input type="checkbox" id="autoliquidation-chk" onchange="App.updateSummaries()" style="cursor:pointer">
+                         <label for="autoliquidation-chk" style="font-size:0.8rem; color:var(--brand-navy); font-weight:600; cursor:pointer;">Autoliquidation (Sous-traitance)</label>
+                    </div>
+                    <div class="fin-input-row" style="border-bottom:1px solid #eee; padding-bottom:5px;">
+                        <label>Remise Globale (%)</label>
+                        <input type="number" id="global-discount" class="fin-input" value="0" min="0" max="100" onchange="App.updateGlobalDiscount(this.value)">
+                    </div>
+                    <div id="financial-summary-body"></div>
+                    <div class="fin-input-row" style="margin-top:10px; border-top:1px solid #eee; padding-top:5px;">
+                        <label>Acompte Versé (€)</label>
+                        <input type="number" id="deposit-amount" class="fin-input" value="0" min="0" onchange="App.updateDeposit(this.value)">
+                    </div>
+                    <div class="t-row" style="margin-top:5px; font-weight:700; color:#059669;"><span>Reste à Payer</span><span id="final-to-pay">0.00 €</span></div>
+                </div>
+            </aside>
+        </main>
+
+        <main id="client-view" class="view-section">
+            <aside class="col-scroll">
+                <div class="card" style="height: 100%; display: flex; flex-direction: column;">
+                    <div class="sidebar-title">Liste Clients <button class="btn-secondary" style="padding:4px 8px; font-size:0.7rem;" onclick="App.newClient()"><i class="fas fa-plus"></i></button></div>
+                    <div style="padding:10px; border-bottom:1px solid #eee;"><input type="text" class="form-input" placeholder="Rechercher..." onkeyup="App.filterClients(this.value)"></div>
+                    <div id="client-list" style="flex:1; overflow-y:auto;"></div>
+                </div>
+            </aside>
+            <section class="col-scroll">
+                <div class="card" style="padding: 25px;">
+                    <div style="margin-bottom:20px;">
+                        <h2 style="font-size:1.5rem; color:var(--brand-navy); font-weight:bold; margin-bottom:15px;">Fiche Client</h2>
+                        
+                        <div class="type-switch" style="display:flex; background:#f3f4f6; border-radius:8px; padding:4px;">
+                            <button class="type-btn active" id="btn-physique" onclick="App.setClientType('physique')" style="flex:1; padding:8px; border:none; border-radius:6px; cursor:pointer; font-weight:600; transition:all 0.2s;">
+                                <i class="fas fa-user"></i> Personne Physique
+                            </button>
+                            <button class="type-btn" id="btn-morale" onclick="App.setClientType('morale')" style="flex:1; padding:8px; border:none; border-radius:6px; cursor:pointer; font-weight:600; transition:all 0.2s; color:#6B7280;">
+                                <i class="fas fa-building"></i> Personne Morale
+                            </button>
+                        </div>
+                    </div>
+
+                    <form id="client-form" class="form-grid">
+                        <input type="hidden" id="c-id">
+
+                        <div class="form-group full-width grp-morale" style="display:none;">
+                            <label class="form-label">Raison Sociale (Entreprise)</label>
+                            <input type="text" id="c-company" class="form-input" placeholder="Ex: Maçonnerie Durand">
+                        </div>
+                        <div class="form-group grp-morale" style="display:none;">
+                            <label class="form-label">Forme Juridique</label>
+                            <select id="c-legal-form" class="form-input">
+                                <option value="SARL">SARL</option>
+                                <option value="SAS">SAS</option>
+                                <option value="SASU">SASU</option>
+                                <option value="EURL">EURL</option>
+                                <option value="SCI">SCI</option>
+                                <option value="EI">EI / Auto-ent.</option>
+                                <option value="SA">SA</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+                        <div class="form-group grp-morale" style="display:none;">
+                            <label class="form-label">Représentant Légal</label>
+                            <input type="text" id="c-rep-name" class="form-input" placeholder="Nom du gérant/référent">
+                        </div>
+                        <div class="form-group grp-morale" style="display:none;">
+                            <label class="form-label">SIRET</label>
+                            <input type="text" id="c-siret" class="form-input">
+                        </div>
+                        <div class="form-group grp-morale" style="display:none;">
+                            <label class="form-label">TVA Intracommunautaire</label>
+                            <input type="text" id="c-tva" class="form-input">
+                        </div>
+                        <div class="form-group grp-morale" style="display:none;">
+                            <label class="form-label">Email Facturation (si différent)</label>
+                            <input type="email" id="c-billing-email" class="form-input">
+                        </div>
+
+                        <div class="form-group grp-physique">
+                            <label class="form-label">Civilité</label>
+                            <select id="c-civility" class="form-input">
+                                <option value="M.">Monsieur (M.)</option>
+                                <option value="Mme">Madame (Mme)</option>
+                            </select>
+                        </div>
+                        <div class="form-group grp-physique"></div> 
+
+                        <div class="form-group grp-physique">
+                            <label class="form-label">Nom</label>
+                            <input type="text" id="c-lastname" class="form-input">
+                        </div>
+                        <div class="form-group grp-physique">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" id="c-firstname" class="form-input">
+                        </div>
+
+                        <div class="form-group full-width" style="margin-top:10px; border-top:1px dashed #e5e7eb; padding-top:10px;">
+                            <label class="form-label">Coordonnées & Contact</label>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">Adresse Complète</label>
+                            <input type="text" id="c-addr" class="form-input" placeholder="Numéro, Rue, Code Postal, Ville">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Principal</label>
+                            <input type="email" id="c-email" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Téléphone Mobile</label>
+                            <input type="tel" id="c-mobile" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Téléphone Fixe</label>
+                            <input type="tel" id="c-phone" class="form-input">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label class="form-label">Notes / Commentaires (Interne)</label>
+                            <textarea id="c-note" class="form-input" rows="3" style="font-family:inherit; resize:vertical;"></textarea>
+                        </div>
+                    </form>
+
+                    <div style="display:flex; gap:15px; margin-top:20px;">
+                        <button class="btn btn-primary" type="button" onclick="App.saveClientToDB()">Enregistrer Fiche</button>
+                        <button class="btn btn-secondary" type="button" style="background:#ECFDF5; border-color:#10B981; color:#065F46;" onclick="App.useClientInQuote()">Utiliser ce client</button>
+                        <div style="flex:1"></div>
+                        <button class="btn btn-secondary" type="button" style="color:var(--brand-danger);" onclick="App.deleteClientFromDB()">Supprimer</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <main id="company-view" class="view-section">
+            <div class="col-scroll">
+                <div class="card" style="padding: 30px;">
+                    <h2 style="color:var(--brand-navy); font-weight:800; margin-bottom:10px;">Mon Entreprise</h2>
+                    <p style="color:#666; margin-bottom:30px;">Ces informations apparaitront sur vos devis et factures.</p>
+                    <div style="margin-bottom:20px; background:#EFF6FF; padding:15px; border-radius:8px; border:1px solid #DBEAFE;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" id="user-is-ei" style="cursor:pointer; width:18px; height:18px;">
+                            <label for="user-is-ei" style="font-weight:700; color:var(--brand-navy); font-size:0.95rem; cursor:pointer;">Entrepreneur Individuel (EI)</label>
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group full-width"><label class="form-label">Nom de l'entreprise</label><input type="text" id="user-company" class="form-input"></div>
+                        <div class="form-group full-width"><label class="form-label">Adresse</label><input type="text" id="user-address" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Ville / CP</label><input type="text" id="user-city" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Téléphone</label><input type="text" id="user-phone" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Email</label><input type="text" id="user-email" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Site Web</label><input type="text" id="user-web" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">SIRET</label><input type="text" id="user-siret" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">TVA Intra.</label><input type="text" id="user-tva" class="form-input"></div>
+                    </div>
+                    <div class="card" style="margin-top:30px; border-color:#FCD34D;">
+                        <div class="box-header" style="background:#FFFBEB; color:#92400E;"><i class="fas fa-shield-alt"></i> Assurance Décennale / RC Pro</div>
+                        <div style="padding:20px;" class="form-grid">
+                            <div class="form-group"><label class="form-label">Nom Assureur</label><input type="text" id="ins-name" class="form-input"></div>
+                            <div class="form-group"><label class="form-label">N° Contrat / Police</label><input type="text" id="ins-policy" class="form-input"></div>
+                            <div class="form-group full-width"><label class="form-label">Adresse Assureur</label><input type="text" id="ins-addr" class="form-input"></div>
+                            <div class="form-group full-width"><label class="form-label">Couverture</label><input type="text" id="ins-geo" class="form-input" value="France Métropolitaine"></div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top:20px;">
+                        <div class="box-header"><i class="fas fa-university"></i> Coordonnées Bancaires (RIB)</div>
+                        <div style="padding:20px;" class="form-grid">
+                            <div class="form-group full-width"><label class="form-label">Banque</label><input type="text" id="bank-name" class="form-input"></div>
+                            <div class="form-group full-width"><label class="form-label">IBAN</label><input type="text" id="bank-iban" class="form-input"></div>
+                            <div class="form-group"><label class="form-label">BIC</label><input type="text" id="bank-bic" class="form-input"></div>
+                        </div>
+                    </div>
+                    <hr style="margin: 30px 0; border:0; border-top:1px dashed #ddd;">
+                    <h3 style="color:var(--brand-navy); font-weight:700; margin-bottom:15px;">Administration</h3>
+                    <div class="form-grid">
+                        <div class="form-group"><label class="form-label">Utilisateur Admin</label><input type="text" id="admin-user" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Mot de passe</label><input type="text" id="admin-pass" class="form-input"></div>
+                    </div>
+                    <div style="margin-top:30px; text-align:right;">
+                        <button class="btn btn-primary" onclick="App.saveUserCompanyData()">Enregistrer les modifications</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal-overlay" id="project-modal">
+        <div class="modal-large">
+            <div class="modal-header">
+                <span class="modal-title-text"><i class="fas fa-hammer"></i> Nouveau Projet</span>
+                <button class="global-menu-btn" onclick="document.getElementById('project-modal').style.display='none'"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="project-wizard-body">
+                <div class="section-divider">1. Client Principal</div>
+                <div style="margin-bottom:15px;">
+                    <label class="form-label">Sélectionner ou Créer</label>
+                    <select id="proj-client-select" class="form-input" onchange="ProjectService.handleClientSelection(this.value)">
+                        <option value="new">+ Créer un nouveau client</option>
+                    </select>
+                </div>
+                
+                <div id="proj-new-client-form" class="form-grid" style="background:#f9fafb; padding:15px; border-radius:8px; border:1px solid #eee;">
+                    <div class="form-group full-width"><label class="form-label">Type</label>
+                        <select id="proj-c-type" class="form-input" onchange="ProjectService.toggleCompanyFields(this.value)">
+                            <option value="private">Particulier</option>
+                            <option value="company">Société</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width" id="proj-c-company-grp" style="display:none;"><label class="form-label">Raison Sociale</label><input type="text" id="proj-c-company" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Nom</label><input type="text" id="proj-c-lastname" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Prénom</label><input type="text" id="proj-c-firstname" class="form-input"></div>
+                    <div class="form-group full-width"><label class="form-label">Email</label><input type="email" id="proj-c-email" class="form-input"></div>
+                    <div class="form-group full-width"><label class="form-label">Adresse Facturation</label><input type="text" id="proj-c-addr" class="form-input"></div>
+                </div>
+
+                <div class="section-divider">2. Détails du Cantiere (Lieu des travaux)</div>
+                <div class="form-grid">
+                    <div class="form-group full-width"><label class="form-label">Nom du Projet (Ref. Interne)</label><input type="text" id="proj-name" class="form-input" placeholder="Ex: Rénovation Apt. Dupuis"></div>
+                    
+                    <div class="form-group full-width"><label class="form-label">Adresse du Chantier (Si différente)</label><input type="text" id="proj-address" class="form-input" placeholder="Rue, Ville, CP"></div>
+                    
+                    <div class="form-group"><label class="form-label">Immeuble / Résidence</label><input type="text" id="proj-building" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Digicode / Accès</label><input type="text" id="proj-code" class="form-input"></div>
+
+                    <div class="form-group"><label class="form-label">Etage</label><input type="text" id="proj-floor" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Total Etages Immeuble</label><input type="text" id="proj-total-floors" class="form-input"></div>
+
+                    <div class="form-group"><label class="form-label">Ascenseur</label>
+                        <select id="proj-elevator" class="form-input"><option value="yes">Oui</option><option value="no">Non</option></select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Sur rue principale ?</label>
+                        <select id="proj-street-facing" class="form-input"><option value="no">Non</option><option value="yes">Oui</option></select>
+                    </div>
+
+                    <div class="form-group"><label class="form-label">Chauffage</label>
+                        <select id="proj-heating" class="form-input"><option value="individual">Individuel</option><option value="collective">Collectif</option></select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Gardien / Custode</label><input type="text" id="proj-guardian" class="form-input"></div>
+
+                    <div class="form-group full-width"><label class="form-label">Syndic (Nom & Contact)</label><input type="text" id="proj-syndic" class="form-input"></div>
+                    <div class="form-group full-width"><label class="form-label">Président Conseil Syndical</label><input type="text" id="proj-syndic-pres" class="form-input"></div>
+
+                    <div class="form-group"><label class="form-label">Plombier Immeuble (Nom)</label><input type="text" id="proj-plumber-name" class="form-input"></div>
+                    <div class="form-group"><label class="form-label">Plombier Immeuble (Tel)</label><input type="text" id="proj-plumber-tel" class="form-input"></div>
+
+                    <div class="form-group full-width"><label class="form-label">Emplacement Robinet Arrêt Général</label><input type="text" id="proj-shutoff-loc" class="form-input"></div>
+                    <div class="form-group full-width"><label class="form-label">Emplacement Compteurs (Gaz/Elec)</label><input type="text" id="proj-meters-loc" class="form-input"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('project-modal').style.display='none'">Annuler</button>
+                <button class="btn btn-primary" onclick="ProjectService.createFullProjectStack()">Créer Projet & Devis</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="room-selection-modal">
+        <div class="modal-large" style="max-width: 600px; height: auto; max-height: 90%;">
+            <div class="modal-header">
+                <span class="modal-title-text">Ajouter une Pièce</span>
+                <button class="global-menu-btn" onclick="document.getElementById('room-selection-modal').style.display='none'"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="room-grid-selector" id="room-grid"></div>
+                <div style="margin-top: 20px;">
+                    <label class="form-label">Précisions (ex: "Principale", "Côté Sud")</label>
+                    <input type="text" id="room-precision-input" class="form-input" placeholder="Optionnel">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('room-selection-modal').style.display='none'">Annuler</button>
+                <button class="btn btn-primary" onclick="App.confirmAddRoom()">Ajouter</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="demo-modal">
+        <div class="modal-large" style="height:80%;">
+            <div class="modal-header">
+                <span class="modal-title-text"><i class="fas fa-hammer"></i> Bibliothèque Démolition</span>
+                <button class="global-menu-btn" onclick="document.getElementById('demo-modal').style.display='none'"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" style="padding:20px;">
+                <div class="demo-search-box">
+                    <i class="fas fa-search demo-search-icon"></i>
+                    <input type="text" id="demo-search-input" class="demo-search-input" placeholder="Rechercher (ex: Mur, Carrelage, Fenêtre...)" onkeyup="App.filterDemolitionList()">
+                </div>
+                <ul class="demo-list" id="demo-list-container"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="pdf-modal">
+        <div class="modal-content">
+            <div class="modal-title" style="margin-bottom:15px; font-weight:bold; color:var(--brand-navy);"><i class="fas fa-print"></i> Centre d'exportation</div>
+            <div style="text-align:left; font-size:0.75rem; color:#999; margin-bottom:5px; text-transform:uppercase;">Documents Courants</div>
+            <button class="pdf-option" onclick="PDFService.generate('devis')"><i class="fas fa-file-invoice-dollar" style="width:20px; color:#F59E0B;"></i> Devis Simple</button>
+            <button class="pdf-option" onclick="PDFService.generate('facture')"><i class="fas fa-file-invoice" style="width:20px; color:#10B981;"></i> Facture Simple</button>
+            <div style="text-align:left; font-size:0.75rem; color:#999; margin-bottom:5px; margin-top:15px; text-transform:uppercase;">Rapports d'Activité</div>
+            <button class="pdf-option" onclick="PDFService.generate('client_list')"><i class="fas fa-users" style="width:20px; color:#1E3A8A;"></i> Liste Clients</button>
+            <button class="pdf-option" onclick="PDFService.generate('month_summary')"><i class="fas fa-calendar-alt" style="width:20px; color:#6366f1;"></i> Récapitulatif Mois</button>
+            <button class="pdf-option" onclick="PDFService.generate('accepted_quotes')"><i class="fas fa-check-circle" style="width:20px; color:#059669;"></i> Devis Acceptés</button>
+            <button class="btn btn-secondary" style="margin-top:15px; width:100%;" onclick="document.getElementById('pdf-modal').style.display='none'">Fermer</button>
+        </div>
+    </div>
+
+  <script>
+        /**
+         * CONFIGURATION & CONSTANTS
+         */
+        const Config = {
+            CATEGORY_MAP: {
+                'Installation': { icon: 'fa-hard-hat', subs: ['Protection', 'Echafaudage', 'Bennes'] },
+                'Démolition': { icon: 'fa-hammer', subs: ['Cloisons', 'Sols', 'Evacuation'] },
+                'Plâtrerie': { icon: 'fa-layer-group', subs: ['Cloisons', 'Doublages', 'Faux-Plafonds'] },
+                'Peinture': { icon: 'fa-paint-roller', subs: ['Préparation', 'Murs', 'Plafonds'] },
+                'Electricité': { icon: 'fa-bolt', subs: ['Tableau', 'Prises', 'Eclairage'] }
+            },
+            DEFAULT_ROOM_HEIGHT: 2.70,
+            HOURLY_RATE: 50
+        };
+
+        const PREDEFINED_ROOMS = [
+            "Entrée", "Séjour", "Salon", "Salle à manger", "Véranda", 
+            "Bibliothèque", "Salle TV", "Cuisine ouverte", "Cuisine séparée", 
+            "Chambre principale", "Chambre secondaire", "Chambre d'enfant", "Chambre d'amis",
+            "Suite parentale", "Dressing", "Salle de bain", "Salle d'eau", 
+            "WC séparé", "Buanderie", "Couloir", "Dégagement", "Autre"
+        ];
+
+        // --- DEMOLITION DATABASE ---
+        const DEMOLITION_DB = [
+            { ref: "DEM-25-001", title: "Démolition Balcon BA", desc: "Démolition soignée de balcon en béton armé (ép. 18cm) par sciage et marteau-piqueur. Inclus échafaudage de sécurité.", unit: "U", time: 17.18, mat: 450.09 },
+            { ref: "DEM-25-002", title: "Démolition Mur Pierre (50cm)", desc: "Déconstruction manuelle de mur porteur en moellons (ép. 50cm). Tri sélectif et évacuation.", unit: "M2", time: 2.95, mat: 0.00 },
+            { ref: "DEM-25-003", title: "Démolition Cloison Brique", desc: "Démolition de cloison distributive en briques plâtrières ou creuses. Inclus arrachage des huisseries.", unit: "M2", time: 0.15, mat: 0.00 },
+            { ref: "DEM-25-004", title: "Démolition Cloison Sèche", desc: "Dépose de cloison type Placostil. Séparation des métaux et du gypse.", unit: "M2", time: 0.12, mat: 0.00 },
+            { ref: "DEM-25-005", title: "Ouverture Mur Béton Armé", desc: "Démolition mécanique de voile béton. Inclus découpe propre.", unit: "M2", time: 1.25, mat: 19.50 },
+            { ref: "DEM-25-006", title: "Dépose Carrelage Sol", desc: "Piquage de carrelage y compris chape de rattrapage.", unit: "M2", time: 0.65, mat: 0.00 },
+            { ref: "DEM-25-007", title: "Dépose Parquet Flottant", desc: "Dépose soignée de revêtement stratifié ou parquet flottant.", unit: "M2", time: 0.10, mat: 0.00 },
+            { ref: "DEM-25-008", title: "Dépose Faux-Plafond", desc: "Démolition de faux-plafond en plaques de plâtre + ossature.", unit: "M2", time: 0.11, mat: 0.00 },
+            { ref: "MEN-25-001", title: "Dépose Fenêtre (1 Vantail)", desc: "Dépose totale de menuiserie extérieure 1 vantail.", unit: "U", time: 0.38, mat: 0.00 },
+            { ref: "MEN-25-002", title: "Dépose Porte-Fenêtre (2 Vtx)", desc: "Dépose totale de porte-fenêtre 2 vantaux. Évacuation.", unit: "U", time: 0.47, mat: 0.00 },
+            { ref: "COU-25-001", title: "Dépose Couverture Tuiles", desc: "Dépose de couverture en tuiles mécaniques à emboîtement.", unit: "M2", time: 0.12, mat: 0.00 },
+            { ref: "PLO-25-001", title: "Dépose Baignoire", desc: "Dépose de baignoire y compris déconnexion plomberie.", unit: "U", time: 1.10, mat: 0.00 },
+            { ref: "PLO-25-002", title: "Dépose WC au sol", desc: "Démontage de bloc WC, vidange, bouchonnage.", unit: "U", time: 0.80, mat: 0.00 },
+            { ref: "PLO-25-003", title: "Dépose Chaudière Sol", desc: "Déconnexion hydraulique, gaz et électrique.", unit: "U", time: 1.48, mat: 0.00 },
+            { ref: "ELE-25-001", title: "Dépose Tableau Élec", desc: "Repérage, étiquetage et dépose tableau.", unit: "U", time: 0.27, mat: 0.00 },
+            { ref: "WST-25-001", title: "Évacuation Gravats (Sacs)", desc: "Manutention et descente des gravats.", unit: "M3", time: 1.55, mat: 0.00 },
+            { ref: "ART-25-003", title: "Carottage Béton Ø200mm", desc: "Forage au diamant traversant.", unit: "U", time: 1.76, mat: 23.36 },
+            { ref: "ART-25-011", title: "Benne à Déchets 8m³", desc: "Mise à disposition et rotation benne DIB.", unit: "U", time: 0.00, mat: 451.90 },
+            { ref: "1.3.26", title: "Dépose couverture Amiante", desc: "RISQUE AMIANTE : Dépose intacte (SS4).", unit: "M2", time: 0.10, mat: 4.31 },
+            { ref: "1.4.1", title: "Démolition doublage", desc: "Démolition doublage collé ou ossature.", unit: "M2", time: 0.33, mat: 14.21 }
+        ];
+
+        /**
+         * UTILITIES
+         */
+        const Utils = {
+            el: (id) => document.getElementById(id),
+            val: (id) => document.getElementById(id)?.value || '',
+            setVal: (id, val) => { const el = document.getElementById(id); if (el) el.value = val; },
+            formatEuro: (num) => num.toFixed(2) + ' €',
+            generateId: () => Date.now().toString(36) + Math.random().toString(36).substr(2)
+        };
+
+        /**
+         * STATE MANAGEMENT (STORE)
+         */
+        const Store = {
+            data: {
+                rooms: ["Travaux préparatoires"],
+                activeRoom: "Travaux préparatoires",
+                roomData: {},
+                quoteItems: [],
+                clientsDB: [], 
+                projectsDB: [], 
+                currentClient: null,
+                currentProject: null,
+                globalDiscount: 0,
+                depositAmount: 0,
+                userCompany: {
+                    name: 'Mon Entreprise', address: '1 rue de la Paix', city: '75000 Paris',
+                    phone: '0100000000', email: 'contact@entreprise.com', web: 'www.entreprise.com',
+                    siret: '', tva: '', adminUser: 'admin', adminPass: 'admin',
+                    isEI: false, insurance: { name: '', policy: '', addr: '', geo: '' },
+                    bank: { name: '', iban: '', bic: '' }
+                }
+            },
+            save() {
+                try {
+                    this.data.clientInfo = {
+                        name: Utils.val('cli-name'),
+                        projectName: Utils.val('cli-project-name'),
+                        addr: Utils.val('cli-addr'),
+                        date: Utils.val('cli-date'),
+                        ref: Utils.val('cli-ref')
+                    };
+                    const autoLiq = document.getElementById('autoliquidation-chk');
+                    this.data.autoliquidation = autoLiq ? autoLiq.checked : false;
+                    localStorage.setItem('qotia_state', JSON.stringify(this.data));
+                } catch (e) {
+                    console.error("Erreur Sauvegarde:", e);
+                    alert("Attention : Impossible de sauvegarder les données (Mémoire pleine ?).");
+                }
+            },
+            load() {
+                const saved = localStorage.getItem('qotia_state');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        this.data = { ...this.data, ...parsed, userCompany: { ...this.data.userCompany, ...(parsed.userCompany || {}) } };
+                        // SAFEGUARDS
+                        if (!Array.isArray(this.data.rooms)) this.data.rooms = ["Travaux préparatoires"];
+                        if (!Array.isArray(this.data.quoteItems)) this.data.quoteItems = [];
+                        if (!this.data.projectsDB) this.data.projectsDB = [];
+                        
+                        // Ensure "Travaux préparatoires" exists at index 0
+                        if(!this.data.rooms.includes("Travaux préparatoires")) {
+                            this.data.rooms.unshift("Travaux préparatoires");
+                        }
+                    } catch (e) { 
+                        console.error("Corrupt state detected, partial reset.", e);
+                        alert("Données locales corrompues. Réinitialisation partielle effectuée pour la sécurité.");
+                    }
+                }
+            }
+        };
+
+        /**
+         * BUSINESS LOGIC
+         */
+        const BusinessLogic = {
+            calculateFinancials(items, globalDiscount, depositAmount, isAutoliquidation) {
+                let totalHT = 0, totalTime = 0, breakdown = {};
+                items.forEach(i => {
+                    let rowHT = i.qty * i.price;
+                    totalHT += rowHT;
+                    totalTime += i.qty * i.time;
+                    let effectiveTVA = isAutoliquidation ? 0 : i.tva;
+                    let k = effectiveTVA.toFixed(3);
+                    if (!breakdown[k]) breakdown[k] = 0;
+                    breakdown[k] += rowHT;
+                });
+                let discountMultiplier = 1 - (globalDiscount / 100);
+                let discountedHT = totalHT * discountMultiplier;
+                let totalTVA = 0, breakdownFinal = {};
+                for (let rate in breakdown) {
+                    let base = breakdown[rate] * discountMultiplier;
+                    let tvaAmt = base * parseFloat(rate);
+                    totalTVA += tvaAmt;
+                    breakdownFinal[rate] = { base: base, tva: tvaAmt };
+                }
+                let totalTTC = discountedHT + totalTVA;
+                let toPay = totalTTC - depositAmount;
+                return { totalHT, totalTime, discountedHT, totalTVA, totalTTC, toPay, breakdownFinal, isAutoliquidation };
+            },
+            getFlatQuotes(clients) {
+                let allQuotes = [];
+                clients.forEach(c => {
+                    const cName = c.type === 'company' ? c.company : `${c.lastname} ${c.firstname}`;
+                    if (c.quotes) {
+                        c.quotes.forEach((q, qIndex) => {
+                            allQuotes.push({ clientId: c.id, qIndex: qIndex, clientName: cName, ...q });
+                        });
+                    }
+                });
+                return allQuotes.sort((a, b) => new Date(b.date) - new Date(a.date));
+            },
+            generateNextRef(clients) {
+                const currentYear = new Date().getFullYear();
+                let maxSeq = 0;
+                clients.forEach(c => {
+                    if (c.quotes) c.quotes.forEach(q => {
+                        const parts = q.ref.split('-');
+                        if (parts.length === 3 && parseInt(parts[1]) === currentYear) {
+                            const seq = parseInt(parts[2]);
+                            if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+                        }
+                    });
+                });
+                return `D-${currentYear}-${String(maxSeq + 1).padStart(3, '0')}`;
+            }
+        };
+
+        /**
+         * PROJECT SERVICE
+         */
+        const ProjectService = {
+            initModal() {
+                const select = Utils.el('proj-client-select');
+                select.innerHTML = '<option value="new">+ Créer un nouveau client</option>';
+                Store.data.clientsDB.forEach(c => {
+                    const name = c.type === 'company' ? c.company : `${c.lastname} ${c.firstname}`;
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.text = name;
+                    select.appendChild(opt);
+                });
+                Utils.el('proj-new-client-form').style.display = 'grid';
+                ['proj-c-lastname', 'proj-c-firstname', 'proj-c-email', 'proj-c-addr', 'proj-name', 'proj-address', 'proj-building', 'proj-code', 'proj-floor', 'proj-total-floors', 'proj-guardian', 'proj-syndic', 'proj-syndic-pres', 'proj-plumber-name', 'proj-plumber-tel', 'proj-shutoff-loc', 'proj-meters-loc'].forEach(id => Utils.setVal(id, ''));
+                Utils.setVal('proj-c-type', 'private');
+                this.toggleCompanyFields('private');
+            },
+            handleClientSelection(val) {
+                if(val === 'new') Utils.el('proj-new-client-form').style.display = 'grid';
+                else Utils.el('proj-new-client-form').style.display = 'none';
+            },
+            toggleCompanyFields(type) {
+                Utils.el('proj-c-company-grp').style.display = type === 'company' ? 'block' : 'none';
+            },
+            createFullProjectStack() {
+                const clientSelectVal = Utils.val('proj-client-select');
+                let clientId = null, clientObj = null;
+
+                if(clientSelectVal === 'new') {
+                    const type = Utils.val('proj-c-type');
+                    const lastname = Utils.val('proj-c-lastname');
+                    const company = Utils.val('proj-c-company');
+                    
+                    if(type === 'private' && !lastname) return alert("Nom du client obligatoire");
+                    if(type === 'company' && !company) return alert("Raison sociale obligatoire");
+
+                    clientObj = {
+                        id: Date.now(), type, lastname: lastname, firstname: Utils.val('proj-c-firstname'),
+                        company: company, email: Utils.val('proj-c-email'), addr: Utils.val('proj-c-addr'),
+                        phone: '', siret: '', tvaIntra: '', quotes: []
+                    };
+                } else {
+                    clientId = parseInt(clientSelectVal);
+                    clientObj = Store.data.clientsDB.find(c => c.id === clientId);
+                }
+
+                const projName = Utils.val('proj-name') || "Nouveau Chantier";
+                const projectObj = {
+                    id: Utils.generateId(), clientId: clientObj.id, name: projName,
+                    address: Utils.val('proj-address') || clientObj.addr,
+                    details: {
+                        building: Utils.val('proj-building'), code: Utils.val('proj-code'),
+                        floor: Utils.val('proj-floor'), totalFloors: Utils.val('proj-total-floors'),
+                        elevator: Utils.val('proj-elevator') === 'yes', streetFacing: Utils.val('proj-street-facing') === 'yes',
+                        heating: Utils.val('proj-heating'), guardian: Utils.val('proj-guardian'),
+                        syndic: Utils.val('proj-syndic'), syndicPres: Utils.val('proj-syndic-pres'),
+                        plumber: { name: Utils.val('proj-plumber-name'), tel: Utils.val('proj-plumber-tel') },
+                        shutoffLoc: Utils.val('proj-shutoff-loc'), metersLoc: Utils.val('proj-meters-loc')
+                    }
+                };
+
+                const quoteRef = BusinessLogic.generateNextRef(Store.data.clientsDB);
+                const quoteObj = {
+                    ref: quoteRef, date: new Date().toISOString().split('T')[0], amount: 0, status: 'brouillon',
+                    desc: projName, projectId: projectObj.id,
+                    data: { rooms: ["Travaux préparatoires"], roomData: {}, quoteItems: [], globalDiscount: 0, depositAmount: 0, autoliquidation: false }
+                };
+
+                try {
+                    if(clientSelectVal === 'new') Store.data.clientsDB.push(clientObj);
+                    Store.data.projectsDB.push(projectObj);
+                    clientObj.quotes.push(quoteObj);
+                    Store.save();
+
+                    Utils.el('project-modal').style.display = 'none';
+                    Store.data.rooms = ["Travaux préparatoires"]; Store.data.roomData = {}; Store.data.quoteItems = [];
+                    Store.data.currentClient = clientObj; Store.data.currentProject = projectObj;
+                    
+                    Utils.setVal('cli-name', clientObj.type === 'company' ? clientObj.company : `${clientObj.lastname} ${clientObj.firstname}`);
+                    Utils.setVal('cli-project-name', projName);
+                    Utils.setVal('cli-addr', clientObj.addr);
+                    Utils.setVal('cli-ref', quoteRef);
+
+                    // FIX: Aggiorna le liste prima di navigare
+                    App.renderClientList(); 
+                    App.renderHome(); 
+                    App.renderDashboardList();
+                    App.navigate('quote');
+                    alert("Projet et Devis créés avec succès !");
+                } catch (e) { console.error(e); alert("Erreur lors de la création du projet."); }
+            }
+        };
+
+        /**
+         * PDF SERVICE
+         */
+        const PDFService = {
+            generate(type) {
+                Utils.el('pdf-modal').style.display = 'none';
+                Utils.el('loading-overlay').style.display = 'flex';
+
+                const state = Store.data;
+                const company = state.userCompany;
+                const compName = company.isEI ? `${company.name} (EI)` : company.name;
+                const isAutoliq = document.getElementById('autoliquidation-chk').checked; 
+                const financials = BusinessLogic.calculateFinancials(state.quoteItems, state.globalDiscount, state.depositAmount, isAutoliq);
+                const hasReducedTVA = state.quoteItems.some(i => i.tva === 0.1 || i.tva === 0.055);
+                const issueDate = new Date();
+                const dueDate = new Date();
+                dueDate.setDate(issueDate.getDate() + 30);
+                const formattedDueDate = dueDate.toLocaleDateString('fr-FR');
+
+                const tableStyle = `width:100%; border-collapse:collapse; font-size:10px; table-layout:fixed;`;
+                const thStyle = `background:#f3f4f6; padding:8px; text-align:left; border-bottom:2px solid #ddd; color:#1E3A8A; font-weight:bold;`;
+                const tdStyle = `padding:8px; border-bottom:1px solid #eee; color:#333; word-wrap:break-word;`;
+
+                const headerHtml = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:30px; border-bottom:2px solid #eee; padding-bottom:20px;">
+                        <div style="width:60%">
+                            <h1 style="color:#1E3A8A; margin:0; font-size:20px; text-transform:uppercase;">${compName}</h1>
+                            <div style="font-size:10px; color:#555; margin-top:5px; line-height:1.4;">
+                                ${company.address}<br>${company.city}<br>
+                                Tel: ${company.phone} | Email: ${company.email}<br>
+                                SIRET: ${company.siret} | TVA: ${company.tva}
+                            </div>
+                        </div>
+                        <div style="text-align:right; width:40%">
+                            <div style="font-size:24px; font-weight:bold; color:#E5E7EB;">QOTIA</div>
+                            <div style="font-size:10px; color:#999;">${new Date().toLocaleDateString()}</div>
+                        </div>
+                    </div>`;
+
+                let contentHtml = '', filename = 'Doc.pdf';
+
+                if (type === 'devis' || type === 'facture') {
+                    filename = `${type === 'facture' ? 'Facture' : 'Devis'}_${Utils.val('cli-ref')}.pdf`;
+                    contentHtml += `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                        <div style="width:50%; font-size:11px; padding-right:10px;">
+                            ${Utils.val('cli-project-name') ? `<strong>Projet:</strong><br>${Utils.val('cli-project-name')}` : ''}
+                        </div>
+                        <div style="width:45%; background:#f9fafb; padding:15px; border-radius:6px; border:1px solid #e5e7eb;">
+                            <strong style="color:#1E3A8A; text-transform:uppercase;">Destinataire:</strong><br>
+                            <span style="font-size:14px; font-weight:bold;">${Utils.val('cli-name')}</span><br>
+                            ${Utils.val('cli-addr')}
+                        </div>
+                    </div>
+                    <div style="text-align:right; margin-bottom:20px; font-weight:bold; font-size:14px; color:#1E3A8A;">
+                        ${type === 'facture' ? 'FACTURE' : 'DEVIS'} N° ${Utils.val('cli-ref')}
+                        <div style="font-size:10px; font-weight:normal; color:#555;">Date: ${Utils.val('cli-date')}</div>
+                    </div>`;
+
+                    contentHtml += this._buildQuoteContent(type, state, financials, tableStyle, thStyle, tdStyle);
+
+                    contentHtml += `
+                    <div style="margin-top:auto; padding-top:20px; border-top:1px solid #ddd; font-size:9px; color:#444;">
+                        <div style="display:flex; gap:15px;">
+                            <div style="flex:1;"><b>Banque :</b><br>${company.bank?.name}<br>IBAN: ${company.bank?.iban}<br>BIC: ${company.bank?.bic}</div>
+                            <div style="flex:1;"><b>Assurance :</b><br>${company.insurance?.name}<br>Contrat: ${company.insurance?.policy}<br>Zone: ${company.insurance?.geo}</div>
+                            <div style="flex:1;"><b>Règlement :</b><br>Echéance: ${formattedDueDate}<br>Pénalités retard: Taux BCE + 10 pts.<br>Indemnité: 40 €.</div>
+                        </div>`;
+                    
+                    if (hasReducedTVA) contentHtml += `<div style="font-size:9px; color:#555; margin-top:10px;">* TVA réduite : Le client atteste que les travaux se rapportent à des locaux d'habitation achevés depuis plus de 2 ans.</div>`;
+                    if (type === 'devis') contentHtml += `<div style="margin-top:15px; border:1px solid #aaa; height:60px; padding:5px;"><div style="float:left; width:50%;"><b>Bon pour accord (Date et Signature):</b></div></div>`;
+                    contentHtml += `</div>`;
+
+                } else if (type === 'client_list') {
+                    filename = 'Clients.pdf';
+                    contentHtml += this._buildClientList(state.clientsDB, tableStyle, thStyle, tdStyle);
+                } else if (type === 'month_summary') {
+                    filename = 'Rapport.pdf';
+                    contentHtml += this._buildMonthSummary(state.clientsDB, tableStyle, thStyle, tdStyle);
+                } else if (type === 'accepted_quotes') {
+                    filename = 'Devis_Acceptes.pdf';
+                    contentHtml += this._buildAcceptedQuotes(state.clientsDB, tableStyle, thStyle, tdStyle);
+                }
+
+                if ((type === 'devis' || type === 'facture') && state.currentProject) {
+                    contentHtml += this._buildProjectTechSpecs(state.currentProject, tableStyle, tdStyle);
+                }
+
+                const element = document.createElement('div');
+                element.innerHTML = `<div style="font-family: Arial, sans-serif; color:#333; padding:0;">${headerHtml}${contentHtml}</div>`;
+                element.style.width = '190mm'; element.style.padding = '0'; element.style.boxSizing = 'border-box';
+                document.body.appendChild(element);
+
+                html2pdf().from(element).set({
+                    margin: 10, filename: filename, image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).save().then(() => {
+                    document.body.removeChild(element);
+                    Utils.el('loading-overlay').style.display = 'none';
+                });
+            },
+
+            _buildQuoteContent(type, state, fin, tableStyle, thStyle, tdStyle) {
+                let html = `<table style="${tableStyle} margin-bottom:20px;"><thead><tr style="background:#1E3A8A; color:white;">
+                    <th style="${thStyle} background:#1E3A8A; color:white; width:45%">Désignation</th>
+                    <th style="${thStyle} background:#1E3A8A; color:white; width:5%; text-align:center;">U</th>
+                    <th style="${thStyle} background:#1E3A8A; color:white; width:8%; text-align:center;">Qté</th>
+                    ${fin.isAutoliquidation ? '' : `<th style="${thStyle} background:#1E3A8A; color:white; width:8%; text-align:center;">TVA</th>`}
+                    <th style="${thStyle} background:#1E3A8A; color:white; width:10%; text-align:right;">P.U.</th>
+                    <th style="${thStyle} background:#1E3A8A; color:white; width:10%; text-align:right;">Matériel</th>
+                    <th style="${thStyle} background:#1E3A8A; color:white; width:14%; text-align:right;">Total HT</th>
+                </tr></thead><tbody>`;
+
+                let groups = {};
+                state.quoteItems.forEach(i => { if(!groups[i.piece]) groups[i.piece]=[]; groups[i.piece].push(i); });
+                
+                for(let r in groups) {
+                    html += `<tr style="background:#eef2ff;"><td colspan="${fin.isAutoliquidation ? 6 : 7}" style="padding:6px; font-weight:bold; color:#1E3A8A;">${r}</td></tr>`;
+                    groups[r].forEach(i => {
+                        let totalMatDisp = i.matIsTotal ? i.matCost : (i.matCost * i.qty);
+                        
+                        html += `<tr>
+                            <td style="${tdStyle} border-bottom:1px dashed #eee;">${i.desc} <br><span style="color:#777; font-style:italic; font-size:9px;">${i.note || ''}</span></td>
+                            <td style="${tdStyle} text-align:center;">${i.unit}</td>
+                            <td style="${tdStyle} text-align:center;">${i.qty}</td>
+                            ${fin.isAutoliquidation ? '' : `<td style="${tdStyle} text-align:center;">${(i.tva*100).toFixed(1)}%</td>`}
+                            <td style="${tdStyle} text-align:right;">${i.price.toFixed(2)}</td>
+                            <td style="${tdStyle} text-align:right;">${(totalMatDisp||0).toFixed(2)}</td>
+                            <td style="${tdStyle} text-align:right; font-weight:bold;">${(i.qty*i.price).toFixed(2)}</td>
+                        </tr>`;
+                    });
+                }
+                html += `</tbody></table>`;
+                 html += `
+                    <div style="display:flex; justify-content:flex-end; margin-bottom:20px;">
+                        <div style="width:50%;"></div>
+                        <div style="width:50%;">
+                            <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                                <tr><td style="padding:4px;">Total HT:</td><td style="text-align:right;">${fin.totalHT.toFixed(2)} €</td></tr>
+                                ${state.globalDiscount > 0 ? `<tr><td style="padding:4px; color:red;">Remise (${state.globalDiscount}%):</td><td style="text-align:right; color:red;">-${(fin.totalHT - fin.discountedHT).toFixed(2)} €</td></tr>` : ''}`;
+
+                if (fin.isAutoliquidation) {
+                     html += `
+                            <tr><td style="padding:4px;">TVA (Autoliquidation):</td><td style="text-align:right;">0.00 €</td></tr>
+                            <tr style="background:#1E3A8A; color:white; font-size:13px; font-weight:bold;">
+                                <td style="padding:8px;">NET A PAYER:</td><td style="text-align:right; padding:8px;">${fin.totalTTC.toFixed(2)} €</td>
+                            </tr>
+                        </table>
+                        <div style="margin-top:10px; border:1px solid #1E3A8A; color:#1E3A8A; padding:5px; font-size:9px; text-align:center; font-weight:bold;">
+                            Autoliquidation – TVA due par le preneur (Article 283-2 nonies du CGI)
+                        </div>
+                    </div></div>`;
+                } else {
+                     html += `
+                            <tr><td style="padding:4px;">Total TVA:</td><td style="text-align:right;">${fin.totalTVA.toFixed(2)} €</td></tr>
+                            <tr style="background:#1E3A8A; color:white; font-size:13px; font-weight:bold;">
+                                <td style="padding:8px;">NET A PAYER:</td><td style="text-align:right; padding:8px;">${fin.totalTTC.toFixed(2)} €</td>
+                            </tr>
+                        </table>
+                    </div></div>`;
+                }
+                return html;
+            },
+            _buildProjectTechSpecs(proj, tableStyle, tdStyle) {
+                const d = proj.details;
+                return `<div style="margin-top:30px; page-break-inside:avoid; border:1px solid #eee; padding:10px;">
+                    <h4 style="color:#1E3A8A; margin-top:0;">Fiche Technique Cantiere: ${proj.name}</h4>
+                    <table style="${tableStyle}">
+                        <tr><td style="${tdStyle}"><b>Adresse:</b> ${proj.address}</td><td style="${tdStyle}"><b>Code Accès:</b> ${d.code || '-'}</td></tr>
+                        <tr><td style="${tdStyle}"><b>Etage:</b> ${d.floor}/${d.totalFloors} (Asc: ${d.elevator?'Oui':'Non'})</td><td style="${tdStyle}"><b>Chauffage:</b> ${d.heating}</td></tr>
+                        <tr><td style="${tdStyle}"><b>Robinet Arrêt:</b> ${d.shutoffLoc}</td><td style="${tdStyle}"><b>Plombier Imm.:</b> ${d.plumber.name} (${d.plumber.tel})</td></tr>
+                    </table>
+                </div>`;
+            },
+            _buildClientList(clients, tableStyle, thStyle, tdStyle) {
+                const rows = clients.map(c => `<tr><td style="${tdStyle}">${c.lastname} ${c.firstname}</td><td style="${tdStyle}">${c.email}</td></tr>`).join('');
+                return `<h3>Liste Clients</h3><table style="${tableStyle}"><thead><tr><th style="${thStyle}">Nom</th><th style="${thStyle}">Email</th></tr></thead><tbody>${rows}</tbody></table>`;
+            },
+            _buildMonthSummary(clients, tableStyle, thStyle, tdStyle) { return `<h3>Rapport Mensuel (Placeholder)</h3>`; },
+            _buildAcceptedQuotes(clients, tableStyle, thStyle, tdStyle) { return `<h3>Devis Acceptés (Placeholder)</h3>`; }
+        };
+
+        /**
+         * APP CONTROLLER
+         */
+        const App = {
+            currentMode: 'brouillon',
+            currentView: 'piece',
+            chartInstances: {},
+            selectedRoomType: null, // Temporary store for modal
+
+            init() {
+                this.checkLogin();
+                Store.load();
+                Utils.setVal('cli-date', new Date().toISOString().split('T')[0]);
+                this.renderCategories();
+                this.renderAll();
+                this.renderClientList(); 
+                this.renderHome();        
+                this.renderDashboardList(); 
+            },
+
+            // --- FUNZIONE RICERCA GLOBALE ---
+            globalSearch(term) {
+                if (this.currentView !== 'list') {
+                    this.showView('list');
+                }
+                const dashInput = document.getElementById('dash-search');
+                if(dashInput) {
+                    dashInput.value = term;
+                    this.renderDashboardList(); 
+                }
+            },
+
+            // --- NAVIGAZIONE DASHBOARD ---
+            navigateToHistory(status) {
+                this.showView('list');
+                const sel = document.getElementById('dash-status');
+                if(sel) {
+                    sel.value = status;
+                    const search = document.getElementById('dash-search');
+                    if(search) search.value = '';
+                    // FIX: Forza il render per applicare il filtro
+                    this.renderDashboardList();
+                }
+            },
+
+            // --- PROJECT & MODAL HANDLERS ---
+            openProjectModal() {
+                ProjectService.initModal();
+                Utils.el('project-modal').style.display = 'flex';
+            },
+
+            openDemolitionModal() {
+                Utils.el('demo-modal').style.display = 'flex';
+                this.filterDemolitionList(); 
+            },
+
+            filterDemolitionList() {
+                const term = Utils.val('demo-search-input').toLowerCase();
+                const list = Utils.el('demo-list-container');
+                list.innerHTML = '';
+                
+                DEMOLITION_DB.forEach(item => {
+                    if (item.title.toLowerCase().includes(term) || item.desc.toLowerCase().includes(term)) {
+                        const price = (item.time * Config.HOURLY_RATE) + item.mat;
+                        const li = document.createElement('li');
+                        li.className = 'demo-item';
+                        li.innerHTML = `
+                            <div class="demo-item-content">
+                                <div class="demo-ref">${item.ref}</div>
+                                <div class="demo-title">${item.title}</div>
+                                <div class="demo-desc">${item.desc}</div>
+                            </div>
+                            <div class="demo-price-tag">${price.toFixed(2)} € / ${item.unit}</div>
+                        `;
+                        li.onclick = () => {
+                            App.addItem('Démolition', item.title, item.desc, item.unit, price, item.time, item.mat);
+                            Utils.el('demo-modal').style.display = 'none';
+                        };
+                        list.appendChild(li);
+                    }
+                });
+            },
+
+            // --- CALCOLO PROFITTO ---
+            calculateProfitability(hourlyCost = 35) {
+                const items = Store.data.quoteItems;
+                if (items.length === 0) return alert("Devis vide.");
+
+                let totalRevenue = 0;
+                let totalLaborCost = 0;
+                let totalMatCost = 0;
+                
+                items.forEach(i => {
+                    totalRevenue += i.qty * i.price;
+                    totalLaborCost += i.qty * i.time * hourlyCost;
+                    
+                    // Logic for Material Total vs Unit
+                    let lineMatCost = i.matIsTotal ? (i.matCost || 0) : (i.qty * (i.matCost || 0));
+                    totalMatCost += lineMatCost;
+                });
+
+                const margin = totalRevenue - totalLaborCost - totalMatCost;
+                const marginPercent = totalRevenue > 0 ? (margin / totalRevenue) * 100 : 0;
+
+                alert(`ANALYSE DE RENTABILITÉ (Réelle)\n\n` + 
+                      `Chiffre d'Affaires HT : ${totalRevenue.toFixed(2)} €\n` + 
+                      `Coût Main d'Œuvre (${hourlyCost}€/h) : -${totalLaborCost.toFixed(2)} €\n` + 
+                      `Coût Matériel (Achat) : -${totalMatCost.toFixed(2)} €\n` +
+                      `---------------------------\n` +
+                      `Marge Nette (Bénéfice) : ${margin.toFixed(2)} €\n` + 
+                      `Taux de Marge : ${marginPercent.toFixed(1)}%`);
+            },
+
+            // --- AUTH ---
+            checkLogin() { Utils.el('login-screen').style.display = sessionStorage.getItem('qotia_session') ? 'none' : 'flex'; },
+            handleLogin(e) {
+                e.preventDefault();
+                const u = Utils.val('login-user'), p = Utils.val('login-pass');
+                if (u === Store.data.userCompany.adminUser && p === Store.data.userCompany.adminPass) {
+                    sessionStorage.setItem('qotia_session', 'true');
+                    Utils.el('login-screen').style.display = 'none';
+                } else alert("Identifiants incorrects");
+            },
+            handleLogout() { sessionStorage.removeItem('qotia_session'); location.reload(); },
+
+            // --- NAVIGATION ---
+            toggleGlobalMenu() { Utils.el('global-sidebar').classList.toggle('open'); Utils.el('gs-overlay').classList.toggle('active'); },
+            toggleSidebar() { Utils.el('left-sidebar').classList.toggle('mobile-active'); },
+            navigate(view) { this.showView(view); this.toggleGlobalMenu(); },
+            showView(viewName) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-section'));
+                document.querySelectorAll('.nav-link-btn').forEach(el => el.classList.remove('active'));
+                
+                Utils.el(viewName + '-view').classList.add('active-section');
+                
+                if(Utils.el('nav-'+viewName)) {
+                    Utils.el('nav-'+viewName).classList.add('active');
+                }
+                
+                if (viewName === 'home') this.renderHome();
+                if (viewName === 'list') this.renderDashboardList();
+                if (viewName === 'client') this.renderClientList();
+            },
+            openPdfModal() { Utils.el('pdf-modal').style.display = 'flex'; },
+
+            // --- UI RENDERING & LOGIC ---
+            renderCategories() {
+                const list = Utils.el('main-families-list');
+                list.innerHTML = '';
+                Object.entries(Config.CATEGORY_MAP).forEach(([cat, data]) => {
+                    let li = document.createElement('li');
+                    li.className = 'category-item';
+                    li.innerHTML = `<span><i class="fas ${data.icon}" style="width:20px; color:#aaa"></i> ${cat}</span> <i class="fas fa-chevron-right" style="font-size:0.7em"></i>`;
+                    li.onclick = () => this.showSubCategories(cat);
+                    list.appendChild(li);
+                });
+            },
+            showSubCategories(cat) {
+                Utils.el('main-families-list').style.display = 'none';
+                Utils.el('subfamily-panel').style.display = 'block';
+                Utils.el('lib-title-text').innerText = cat;
+                const cont = Utils.el('subcategories-container');
+                cont.innerHTML = '';
+                Config.CATEGORY_MAP[cat].subs.forEach(sub => {
+                    let div = document.createElement('div');
+                    // Default material cost 0 for manual items
+                    div.innerHTML = `<div class="article-item" onclick="App.addItem('${cat}', '${sub}', 'Ouvrage Type ${sub}')"><span>${sub}</span> <i class="fas fa-plus" style="color:#10B981"></i></div>`;
+                    cont.appendChild(div);
+                });
+            },
+            
+            // --- CORE QUOTE LOGIC (UPSERT) ---
+            addItem(fam, sub, desc, unit = 'm²', price = 30, time = 0.5, matCost = 0) {
+                if (!Store.data.activeRoom) return alert("Veuillez d'abord créer une pièce !");
+                
+                // Check if identical item exists in the active room
+                const existingItem = Store.data.quoteItems.find(i => 
+                    i.piece === Store.data.activeRoom && 
+                    i.fam === fam && 
+                    i.sub === sub && 
+                    i.desc === desc && 
+                    i.price === price
+                );
+
+                if (existingItem) {
+                    existingItem.qty += 1;
+                } else {
+                    Store.data.quoteItems.push({
+                        id: Date.now(), piece: Store.data.activeRoom, fam, sub, desc,
+                        unit: unit, qty: 1, price: price, time: time, matCost: matCost, matIsTotal: false, tva: 0.10, note: ""
+                    });
+                }
+                this.renderAll(); Store.save();
+            },
+            deleteItem(id) {
+                Store.data.quoteItems = Store.data.quoteItems.filter(i => i.id !== id);
+                this.renderAll(); Store.save();
+            },
+            updateItem(id, f, v) {
+                let i = Store.data.quoteItems.find(x => x.id === id);
+                if (i) { i[f] = f === 'note' ? v : parseFloat(v); this.renderAll(); Store.save(); }
+            },
+            toggleMatType(id) {
+                let i = Store.data.quoteItems.find(x => x.id === id);
+                if (i) { 
+                    i.matIsTotal = !i.matIsTotal; 
+                    this.renderAll(); 
+                    Store.save(); 
+                }
+            },
+            
+            // --- ROOMS & METRICS ---
+            addNewRoom() {
+                // Open new modal instead of prompt
+                this.selectedRoomType = null;
+                Utils.setVal('room-precision-input', '');
+                
+                const grid = Utils.el('room-grid');
+                grid.innerHTML = '';
+                PREDEFINED_ROOMS.forEach(r => {
+                    const btn = document.createElement('div');
+                    btn.className = 'room-select-btn';
+                    btn.innerText = r;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.room-select-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        App.selectedRoomType = r;
+                    };
+                    grid.appendChild(btn);
+                });
+                
+                Utils.el('room-selection-modal').style.display = 'flex';
+            },
+            confirmAddRoom() {
+                if(!this.selectedRoomType) return alert("Sélectionnez un type de pièce");
+                const precision = Utils.val('room-precision-input').trim();
+                let finalName = this.selectedRoomType;
+                if(precision) finalName += ` (${precision})`;
+                
+                if (!Store.data.rooms.includes(finalName)) {
+                    Store.data.rooms.push(finalName);
+                    Store.data.roomData[finalName] = { L: 0, l: 0, h: Config.DEFAULT_ROOM_HEIGHT };
+                    this.switchRoom(finalName); 
+                    Store.save();
+                    Utils.el('room-selection-modal').style.display = 'none';
+                } else {
+                    alert("Une pièce avec ce nom existe déjà. Ajoutez une précision.");
+                }
+            },
+            switchRoom(r) {
+                Store.data.activeRoom = r;
+                this.setView('piece');
+                
+                // Hide metrics if Travaux Prep
+                if (r === "Travaux préparatoires") {
+                    Utils.el('metrics-panel').classList.add('hidden');
+                } else {
+                    Utils.el('metrics-panel').classList.remove('hidden');
+                }
+
+                this.renderRooms(); this.loadMetrics(); this.renderTable();
+            },
+            renderRooms() {
+                const cont = Utils.el('room-list-container');
+                cont.innerHTML = '';
+                Store.data.rooms.forEach((r, index) => {
+                    let total = 0;
+                    if (this.currentMode === 'brouillon') {
+                        let d = Store.data.roomData[r] || { L: 0, l: 0 };
+                        // Don't show surface for Travaux Prep
+                        total = (index === 0) ? '-' : (d.L * d.l).toFixed(2) + ' m²';
+                    } else {
+                        let sum = Store.data.quoteItems.filter(i => i.piece === r).reduce((a, b) => a + (b.qty * b.price), 0);
+                        total = sum.toFixed(0) + ' €';
+                    }
+                    
+                    let btn = document.createElement('div');
+                    // Add special class for the first item
+                    let specialClass = (index === 0) ? 'static-prep' : '';
+                    btn.className = `room-pill ${specialClass} ${r === Store.data.activeRoom ? 'active' : ''}`;
+                    
+                    let deleteHtml = (index === 0) ? '' : `<div class="delete-room-btn" onclick="App.deleteRoom(event,'${r}')"><i class="fas fa-times"></i></div>`;
+                    
+                    btn.innerHTML = `<span class="r-name">${r}</span><span class="r-val">${total}</span>${deleteHtml}`;
+                    btn.onclick = (e) => { if(!e.target.closest('.delete-room-btn')) this.switchRoom(r); };
+                    cont.appendChild(btn);
+                });
+                
+                let addBtn = document.createElement('div');
+                addBtn.className = 'room-pill'; addBtn.innerHTML = '<i class="fas fa-plus" style="color:#9CA3AF"></i>';
+                addBtn.onclick = () => this.addNewRoom();
+                cont.appendChild(addBtn);
+            },
+            deleteRoom(e, r) {
+                e.stopPropagation();
+                if(r === "Travaux préparatoires") return; // Safety check
+                
+                if(confirm("Supprimer?")) {
+                    Store.data.rooms = Store.data.rooms.filter(x => x !== r);
+                    delete Store.data.roomData[r];
+                    Store.data.quoteItems = Store.data.quoteItems.filter(i => i.piece !== r);
+                    
+                    // Switch back to prep if active was deleted
+                    if(Store.data.activeRoom === r) {
+                        this.switchRoom("Travaux préparatoires");
+                    } else {
+                        this.renderAll();
+                    }
+                    Store.save();
+                }
+            },
+            loadMetrics() {
+                const d = Store.data.roomData[Store.data.activeRoom];
+                if (d) {
+                    Utils.setVal('inp-L', d.L); Utils.setVal('inp-l', d.l); Utils.setVal('inp-h', d.h);
+                    this.calcMetrics(false);
+                } else {
+                    Utils.setVal('inp-L', ''); Utils.setVal('inp-l', ''); Utils.setVal('inp-h', 2.7);
+                    Utils.setVal('out-surf', ''); Utils.setVal('out-peri', ''); Utils.setVal('out-wall', '');
+                }
+            },
+            calcMetrics(save = true) {
+                if (!Store.data.activeRoom || Store.data.activeRoom === "Travaux préparatoires") return;
+                let L = parseFloat(Utils.val('inp-L')) || 0, l = parseFloat(Utils.val('inp-l')) || 0, h = parseFloat(Utils.val('inp-h')) || 0;
+                Store.data.roomData[Store.data.activeRoom] = { L, l, h };
+                let surf = L*l, peri = (L+l)*2, wall = peri*h;
+                Utils.setVal('out-surf', surf.toFixed(2));
+                Utils.setVal('out-peri', peri.toFixed(2));
+                Utils.setVal('out-wall', wall.toFixed(2));
+                if (save) { Store.save(); this.renderRooms(); }
+            },
+
+            // --- RENDERERS ---
+            renderAll() { this.renderRooms(); this.renderTable(); this.updateSummaries(); },
+            
+            renderTable() {
+                const tbody = Utils.el('quote-tbody');
+                tbody.innerHTML = '';
+                
+                if (this.currentView === 'piece') {
+                    // Loop through ALL rooms to display content sequentially
+                    Store.data.rooms.forEach(roomName => {
+                        let items = Store.data.quoteItems.filter(i => i.piece === roomName);
+                        
+                        // Always render room header
+                        tbody.innerHTML += `<tr class="room-section-header"><td colspan="9">${roomName}</td></tr>`;
+                        
+                        if (items.length === 0) {
+                            tbody.innerHTML += `<tr><td colspan="9" style="text-align:center;padding:10px;color:#aaa;font-style:italic;">Aucun élément dans cette pièce</td></tr>`;
+                        } else {
+                            // Hierarchy: Category -> Subcategory -> Items
+                            let groups = {};
+                            items.forEach(i => {
+                                if (!groups[i.fam]) groups[i.fam] = {};
+                                if (!groups[i.fam][i.sub]) groups[i.fam][i.sub] = [];
+                                groups[i.fam][i.sub].push(i);
+                            });
+
+                            for (let fam in groups) {
+                                tbody.innerHTML += `<tr class="category-row"><td colspan="9">${fam}</td></tr>`;
+                                for (let sub in groups[fam]) {
+                                    tbody.innerHTML += `<tr class="subcategory-row"><td colspan="9">${sub}</td></tr>`;
+                                    groups[fam][sub].forEach(item => {
+                                        let noteInput = `<input type="text" class="note-input" placeholder="Notes..." value="${item.note || ''}" onchange="App.updateItem(${item.id}, 'note', this.value)">`;
+                                        let tvaSel = `<select class="tva-select" onchange="App.updateItem(${item.id}, 'tva', this.value)">
+                                            <option value="0.055" ${item.tva==0.055?'selected':''}>5.5%</option>
+                                            <option value="0.10" ${item.tva==0.1?'selected':''}>10%</option>
+                                            <option value="0.20" ${item.tva==0.2?'selected':''}>20%</option>
+                                        </select>`;
+                                        
+                                        // Mat Cost Toggle Logic
+                                        let isTot = item.matIsTotal;
+                                        let matBtnStyle = isTot ? 'background:#1E3A8A;color:white;border-color:#1E3A8A;' : 'background:#eee;color:#333;border-color:#ccc;';
+                                        let matBtnText = isTot ? 'Tot' : '/u';
+
+                                        tbody.innerHTML += `<tr>
+                                            <td style="padding-left:40px;">${item.desc}</td><td>${item.unit}</td>
+                                            <td><input type="number" class="qty-inp" value="${item.qty}" onchange="App.updateItem(${item.id},'qty',this.value)"></td>
+                                            <td class="col-tva">${tvaSel}</td>
+                                            <td class="col-price">${item.price.toFixed(2)} €</td>
+                                            <td class="col-cost" style="white-space:nowrap">
+                                                <div style="display:flex; align-items:center; gap:2px;">
+                                                    <input type="number" class="qty-inp" style="width:60px; font-size:0.8rem;" value="${item.matCost || 0}" onchange="App.updateItem(${item.id},'matCost',this.value)">
+                                                    <button onclick="App.toggleMatType(${item.id})" style="border:1px solid; border-radius:4px; font-size:0.6rem; cursor:pointer; padding:2px 4px; ${matBtnStyle}">${matBtnText}</button>
+                                                </div>
+                                            </td>
+                                            <td class="col-total"><strong>${(item.price*item.qty).toFixed(2)} €</strong></td>
+                                            <td class="col-time">${(item.time*item.qty).toFixed(2)} h</td>
+                                            <td class="col-note">${noteInput}</td>
+                                            <td style="text-align:center"><button style="border:none;background:none;color:#aaa" onclick="App.deleteItem(${item.id})"><i class="fas fa-times"></i></button></td>
+                                        </tr>`;
+                                    });
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // OUVRAGE VIEW: Global Aggregation
+                    let agg = {};
+                    Store.data.quoteItems.forEach(i => {
+                        let k = i.fam + '|||' + i.sub + '|||' + i.desc + '|||' + i.price;
+                        if (!agg[k]) agg[k] = { ...i, totalQty: 0, rooms: [] };
+                        agg[k].totalQty += i.qty;
+                        agg[k].rooms.push({ name: i.piece, qty: i.qty });
+                    });
+
+                    // Build Hierarchy for Ouvrage view
+                    let tree = {};
+                    Object.values(agg).forEach(g => {
+                        if (!tree[g.fam]) tree[g.fam] = {};
+                        if (!tree[g.fam][g.sub]) tree[g.fam][g.sub] = [];
+                        tree[g.fam][g.sub].push(g);
+                    });
+
+                    for(let fam in tree) {
+                        tbody.innerHTML += `<tr class="category-row"><td colspan="9">${fam}</td></tr>`;
+                        for(let sub in tree[fam]) {
+                            tbody.innerHTML += `<tr class="subcategory-row"><td colspan="9">${sub}</td></tr>`;
+                            tree[fam][sub].forEach(g => {
+                                // Create room badges
+                                let badges = g.rooms.map(r => `<span class="breakdown-badge">${r.name}: ${r.qty}</span>`).join('');
+                                
+                                // Approx logic for aggregated material cost display
+                                let totalMatDisp = g.matIsTotal ? g.matCost : (g.matCost * g.totalQty);
+
+                                tbody.innerHTML += `<tr style="background:#fff">
+                                    <td style="padding-left:40px; font-weight:600">
+                                        ${g.desc}
+                                        <div style="margin-top:4px;">${badges}</div>
+                                    </td>
+                                    <td>${g.unit}</td>
+                                    <td><strong>${g.totalQty}</strong></td>
+                                    <td class="col-tva">${(g.tva*100).toFixed(1)}%</td>
+                                    <td class="col-price">${g.price.toFixed(2)} €</td>
+                                    <td class="col-cost">${totalMatDisp.toFixed(2)} € (Est.)</td>
+                                    <td class="col-total">${(g.totalQty*g.price).toFixed(2)} €</td>
+                                    <td class="col-time">${(g.totalQty*g.time).toFixed(2)} h</td>
+                                    <td class="col-note"></td><td></td>
+                                </tr>`;
+                            });
+                        }
+                    }
+                }
+            },
+
+            updateSummaries() {
+                const isAutoliq = Utils.el('autoliquidation-chk') ? Utils.el('autoliquidation-chk').checked : false;
+                const fin = BusinessLogic.calculateFinancials(Store.data.quoteItems, Store.data.globalDiscount, Store.data.depositAmount, isAutoliq);
+                
+                let cBody = Utils.el('category-summary-tbody');
+                cBody.innerHTML = '';
+                let fTot = {};
+                Store.data.quoteItems.forEach(i => {
+                    if (!fTot[i.fam]) fTot[i.fam] = 0;
+                    fTot[i.fam] += (this.currentMode === 'brouillon' ? (i.qty * i.time) : (i.qty * i.price));
+                });
+                for (let f in fTot) cBody.innerHTML += `<tr><td style="color:#666">${f}</td><td style="text-align:right;font-weight:600">${fTot[f].toFixed(this.currentMode==='brouillon'?1:2)} ${this.currentMode==='brouillon'?'h':'€'}</td></tr>`;
+
+                const fBody = Utils.el('financial-summary-body');
+                if(this.currentMode === 'brouillon') {
+                    fBody.innerHTML = `<div class="t-row main-total"><span>Total Heures</span><span>${fin.totalTime.toFixed(1)} h</span></div>`;
+                    Utils.el('final-to-pay').innerText = "-";
+                } else {
+                    let html = `<div class="t-row"><span>Total HT</span><span>${fin.totalHT.toFixed(2)} €</span></div>`;
+                    if (Store.data.globalDiscount > 0) html += `<div class="t-row" style="color:var(--brand-danger)"><span>Remise</span><span>-${(fin.totalHT - fin.discountedHT).toFixed(2)} €</span></div>`;
+                    
+                    if(fin.isAutoliquidation) {
+                        html += `<div class="tva-breakdown" style="color:#059669; font-weight:bold; text-align:center;">Autoliquidation (TVA 0%)</div>`;
+                    } else {
+                        html += `<div class="tva-breakdown">`;
+                        for (let rate in fin.breakdownFinal) {
+                            let d = fin.breakdownFinal[rate];
+                            if (d.base > 0) html += `<div class="tva-row"><span>Base ${(parseFloat(rate)*100).toFixed(1)}%: ${d.base.toFixed(2)}</span><span>TVA: ${d.tva.toFixed(2)}</span></div>`;
+                        }
+                        html += `</div>`;
+                    }
+                    html += `<div class="t-row main-total"><span>Total TTC</span><span>${fin.totalTTC.toFixed(2)} €</span></div>`;
+                    fBody.innerHTML = html;
+                    Utils.el('final-to-pay').innerText = fin.toPay.toFixed(2) + ' €';
+                }
+            },
+
+            // --- GLOBAL HELPERS ---
+            setMode(m) { this.currentMode = m; document.body.className = `mode-${m}`; document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); Utils.el(`btn-${m}`).classList.add('active'); this.renderAll(); },
+            setView(v) { 
+                this.currentView = v; 
+                // Only show metrics if piece view AND not Travaux Prep
+                const showMetrics = v === 'piece' && Store.data.activeRoom !== "Travaux préparatoires";
+                Utils.el('metrics-panel').classList.toggle('hidden', !showMetrics);
+                this.renderTable(); 
+            },
+            updateGlobalDiscount(v) { Store.data.globalDiscount = parseFloat(v)||0; this.updateSummaries(); Store.save(); },
+            updateDeposit(v) { Store.data.depositAmount = parseFloat(v)||0; this.updateSummaries(); Store.save(); },
+            addCurrentQuoteToHistory() {
+                if(!Store.data.currentClient) return alert("Aucun client sélectionné");
+                const ref = Utils.val('cli-ref');
+                const fin = BusinessLogic.calculateFinancials(Store.data.quoteItems, Store.data.globalDiscount, Store.data.depositAmount, false);
+                
+                const q = {
+                    ref, date: Utils.val('cli-date'), amount: fin.totalTTC, status: 'brouillon',
+                    desc: Utils.val('cli-project-name'),
+                    data: {
+                        rooms: Store.data.rooms, roomData: Store.data.roomData, quoteItems: Store.data.quoteItems,
+                        globalDiscount: Store.data.globalDiscount, depositAmount: Store.data.depositAmount,
+                        autoliquidation: document.getElementById('autoliquidation-chk').checked
+                    }
+                };
+                
+                const existing = Store.data.currentClient.quotes.find(x => x.ref === ref);
+                if(existing) Object.assign(existing, q);
+                else Store.data.currentClient.quotes.push(q);
+                
+                Store.save();
+                alert("Sauvegardé !");
+                App.renderDashboardList(); // FIX: Refresh list on save
+            },
+            saveUserCompanyData() {
+                Store.data.userCompany.name = Utils.val('user-company');
+                Store.save();
+                alert("Données entreprise sauvegardées");
+            },
+            
+            // --- PERSISTENCE ---
+            saveProject() {
+                const blob = new Blob([JSON.stringify(Store.data)], {type: 'application/json'});
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'backup.json'; a.click();
+            },
+            loadProjectFile(e) {
+                const r = new FileReader(); r.onload = (ev) => { localStorage.setItem('qotia_state', ev.target.result); location.reload(); };
+                if(e.target.files[0]) r.readAsText(e.target.files[0]);
+            },
+            loadClientDBFile(e) {
+                const r = new FileReader(); r.onload = (ev) => {
+                    try {
+                        const db = JSON.parse(ev.target.result);
+                        if(Array.isArray(db)) {
+                            Store.data.clientsDB = db;
+                            Store.save();
+                            location.reload();
+                        } else alert("Format invalide");
+                    } catch(e) { alert("Erreur fichier"); }
+                };
+                if(e.target.files[0]) r.readAsText(e.target.files[0]);
+            },
+            // CLIENTS
+            newClient() {
+                Utils.el('client-form').reset();
+                Utils.setVal('c-id', '');
+                this.setClientType('physique'); 
+            },
+            setClientType(type) {
+                const isMorale = type === 'morale';
+                const btnP = Utils.el('btn-physique');
+                const btnM = Utils.el('btn-morale');
+                
+                if(isMorale) {
+                    btnM.classList.add('active'); btnM.style.background='white'; btnM.style.color='var(--brand-navy)'; btnM.style.boxShadow='0 1px 2px rgba(0,0,0,0.1)';
+                    btnP.classList.remove('active'); btnP.style.background='transparent'; btnP.style.color='#6B7280'; btnP.style.boxShadow='none';
+                } else {
+                    btnP.classList.add('active'); btnP.style.background='white'; btnP.style.color='var(--brand-navy)'; btnP.style.boxShadow='0 1px 2px rgba(0,0,0,0.1)';
+                    btnM.classList.remove('active'); btnM.style.background='transparent'; btnM.style.color='#6B7280'; btnM.style.boxShadow='none';
+                }
+                document.querySelectorAll('.grp-morale').forEach(el => el.style.display = isMorale ? 'block' : 'none');
+                document.querySelectorAll('.grp-physique').forEach(el => el.style.display = isMorale ? 'none' : 'block');
+            },
+            saveClientToDB() {
+                const id = Utils.val('c-id');
+                const isMorale = Utils.el('btn-morale').classList.contains('active');
+                const type = isMorale ? 'morale' : 'physique';
+
+                if(isMorale && !Utils.val('c-company')) return alert("La Raison Sociale est obligatoire pour une société.");
+                if(!isMorale && !Utils.val('c-lastname')) return alert("Le nom est obligatoire.");
+
+                let data = {
+                    id: id ? parseInt(id) : Date.now(),
+                    type: type,
+                    addr: Utils.val('c-addr'), email: Utils.val('c-email'), phone: Utils.val('c-phone'),
+                    mobile: Utils.val('c-mobile'), note: Utils.val('c-note'),
+                    
+                    civility: !isMorale ? Utils.val('c-civility') : '',
+                    lastname: !isMorale ? Utils.val('c-lastname') : '',
+                    firstname: !isMorale ? Utils.val('c-firstname') : '',
+                    
+                    company: isMorale ? Utils.val('c-company') : '',
+                    legalForm: isMorale ? Utils.val('c-legal-form') : '',
+                    siret: isMorale ? Utils.val('c-siret') : '',
+                    tvaIntra: isMorale ? Utils.val('c-tva') : '',
+                    repName: isMorale ? Utils.val('c-rep-name') : '',
+                    billingEmail: isMorale ? Utils.val('c-billing-email') : '',
+
+                    quotes: Store.data.currentClient ? (Store.data.currentClient.quotes || []) : []
+                };
+                
+                if (id) {
+                    const idx = Store.data.clientsDB.findIndex(x => x.id == id);
+                    if(idx !== -1) Store.data.clientsDB[idx] = data;
+                } else {
+                    Store.data.clientsDB.push(data);
+                }
+                Store.save();
+                this.renderClientList();
+                this.loadClientForm(data.id);
+                alert("Fiche Client Enregistrée !");
+            },
+            loadClientForm(id) {
+                const c = Store.data.clientsDB.find(x => x.id === id);
+                if (!c) return;
+                Store.data.currentClient = c;
+                Utils.setVal('c-id', c.id);
+                Utils.setVal('c-addr', c.addr); Utils.setVal('c-email', c.email);
+                Utils.setVal('c-phone', c.phone); Utils.setVal('c-mobile', c.mobile || ''); Utils.setVal('c-note', c.note || '');
+
+                this.setClientType(c.type || 'physique');
+                if(c.type === 'morale') {
+                    Utils.setVal('c-company', c.company); Utils.setVal('c-legal-form', c.legalForm || 'SARL');
+                    Utils.setVal('c-siret', c.siret); Utils.setVal('c-tva', c.tvaIntra);
+                    Utils.setVal('c-rep-name', c.repName || ''); Utils.setVal('c-billing-email', c.billingEmail || '');
+                } else {
+                    Utils.setVal('c-civility', c.civility || 'M.'); Utils.setVal('c-lastname', c.lastname); Utils.setVal('c-firstname', c.firstname);
+                }
+            },
+            renderClientList(filter = "") {
+                const list = Utils.el('client-list');
+                list.innerHTML = "";
+                const term = filter.toLowerCase();
+                const filtered = Store.data.clientsDB.filter(c => {
+                    const searchStr = c.type === 'morale' ? (c.company + c.repName + c.email) : (c.lastname + c.firstname + c.email);
+                    return searchStr.toLowerCase().includes(term);
+                });
+                filtered.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = "client-list-item";
+                    let icon = c.type === 'morale' ? '<i class="fas fa-building"></i>' : '<i class="fas fa-user"></i>';
+                    let name = c.type === 'morale' ? c.company : `${c.civility || ''} ${c.lastname} ${c.firstname}`;
+                    let sub = c.type === 'morale' ? `${c.legalForm || ''} - ${c.repName || 'Aucun contact'}` : 'Particulier';
+                    div.innerHTML = `<div class="cli-name" style="display:flex; align-items:center; gap:8px;"><span style="color:#9CA3AF; font-size:0.8em;">${icon}</span> ${name}</div><div style="font-size:0.75rem; color:#666; margin-left:20px;">${sub}</div>`;
+                    div.onclick = () => this.loadClientForm(c.id);
+                    list.appendChild(div);
+                });
+            },
+            useClientInQuote() {
+                const id = Utils.val('c-id');
+                if (!id) return;
+                const c = Store.data.clientsDB.find(x => x.id == id);
+                let name = c.type === 'morale' ? `${c.company} (${c.legalForm})` : `${c.civility || ''} ${c.lastname} ${c.firstname}`;
+                Utils.setVal('cli-name', name); Utils.setVal('cli-addr', c.addr);
+                Store.data.currentClient = c; Store.save();
+                this.showView('quote');
+            },
+            deleteClientFromDB() {
+                const id = Utils.val('c-id');
+                if (id && confirm("Supprimer?")) {
+                    Store.data.clientsDB = Store.data.clientsDB.filter(x => x.id != id);
+                    Store.save(); this.renderClientList(); this.newClient();
+                }
+            },
+            renderHome() {
+                const period = Utils.val('kpi-period');
+                let quotes = BusinessLogic.getFlatQuotes(Store.data.clientsDB);
+                const now = new Date(); const curY = now.getFullYear(); const curM = now.getMonth();
+                quotes = quotes.filter(q => {
+                    const d = new Date(q.date);
+                    if (period === 'year') return d.getFullYear() === curY;
+                    if (period === 'month') return d.getFullYear() === curY && d.getMonth() === curM;
+                    if (period === 'prev_year') return d.getFullYear() === (curY - 1);
+                    return true;
+                });
+                const total = quotes.length;
+                const pending = quotes.filter(q => q.status === 'brouillon' || q.status === 'attente');
+                const accepted = quotes.filter(q => q.status === 'accepte');
+                const volAccepted = accepted.reduce((a, b) => a + b.amount, 0);
+
+                Utils.el('kpi-total-count').innerText = total;
+                Utils.el('kpi-pending-count').innerText = pending.length;
+                Utils.el('kpi-pending-amount').innerText = pending.reduce((a,b)=>a+b.amount,0).toFixed(0) + ' €';
+                Utils.el('kpi-accepted-count').innerText = accepted.length;
+                Utils.el('kpi-accepted-amount').innerText = volAccepted.toFixed(0) + ' €';
+                Utils.el('kpi-volume').innerText = volAccepted.toLocaleString() + ' €';
+
+                this.updateCharts(quotes);
+            },
+            
+            // FIX: New function to update status from select box
+            updateQuoteStatus(cId, qIdx, status) {
+                const c = Store.data.clientsDB.find(x => x.id === cId);
+                if (c && c.quotes[qIdx]) { 
+                    c.quotes[qIdx].status = status; 
+                    Store.save(); 
+                    this.renderDashboardList(); // Refresh list styles
+                    this.renderHome(); // Refresh KPIs
+                }
+            },
+            
+            deleteQuote(cId, qIdx) {
+                if(!confirm("Supprimer?")) return;
+                const c = Store.data.clientsDB.find(x => x.id === cId);
+                if (c) { c.quotes.splice(qIdx, 1); Store.save(); this.renderHome(); this.renderDashboardList(); }
+            },
+            loadQuoteFromHistory(cId, qIdx) {
+                const client = Store.data.clientsDB.find(c => c.id === cId);
+                const q = client.quotes[qIdx];
+                if (!q.data) return alert("Ancien format non supporté");
+                if (confirm("Charger ce devis?")) {
+                    Store.data.rooms = q.data.rooms || [];
+                    Store.data.activeRoom = Store.data.rooms.length > 0 ? Store.data.rooms[0] : null;
+                    Store.data.roomData = q.data.roomData || {};
+                    Store.data.quoteItems = q.data.quoteItems || [];
+                    Store.data.globalDiscount = q.data.globalDiscount || 0;
+                    Store.data.depositAmount = q.data.depositAmount || 0;
+                    const autoLiq = document.getElementById('autoliquidation-chk');
+                    if(autoLiq) autoLiq.checked = q.data.autoliquidation || false;
+                    
+                    let cName = client.type === 'company' ? client.company : `${client.lastname} ${client.firstname}`;
+                    Utils.setVal('cli-name', cName); Utils.setVal('cli-addr', client.addr);
+                    Utils.setVal('cli-date', q.date); Utils.setVal('cli-ref', q.ref);
+                    Utils.setVal('cli-project-name', q.desc);
+                    
+                    Store.data.currentClient = client;
+                    Store.save(); this.renderAll(); this.showView('quote');
+                }
+            },
+            renderDashboardList() {
+                const tbody = Utils.el('dashboard-tbody');
+                tbody.innerHTML = '';
+                const search = Utils.val('dash-search').toLowerCase();
+                const stat = Utils.val('dash-status');
+                
+                let quotes = BusinessLogic.getFlatQuotes(Store.data.clientsDB);
+                quotes.forEach(q => {
+                    if (search && !q.clientName.toLowerCase().includes(search) && !q.ref.toLowerCase().includes(search)) return;
+                    if (stat && q.status !== stat) return;
+                    
+                    // FIX: Create Select Options for status
+                    let statusOptions = ['brouillon', 'attente', 'accepte', 'refuse'].map(s => 
+                        `<option value="${s}" ${q.status === s ? 'selected' : ''}>${s.toUpperCase()}</option>`
+                    ).join('');
+
+                    tbody.innerHTML += `<tr>
+                        <td>${q.date}</td><td class="text-bold">${q.ref}</td><td>${q.clientName}</td><td>${q.desc||'-'}</td>
+                        <td style="text-align:right">${q.amount.toFixed(2)} €</td>
+                        <td style="text-align:center;">
+                            <select class="status-select-table st-${q.status}" onchange="App.updateQuoteStatus(${q.clientId}, ${q.qIndex}, this.value)" onclick="event.stopPropagation()">
+                                ${statusOptions}
+                            </select>
+                        </td>
+                        <td style="text-align:center"><button class="action-mini-btn" onclick="App.loadQuoteFromHistory(${q.clientId}, ${q.qIndex})"><i class="fas fa-edit"></i></button></td>
+                    </tr>`;
+                });
+            },
+            updateCharts(quotes) {
+                const statusCounts = { 'brouillon': 0, 'attente': 0, 'accepte': 0, 'refuse': 0 };
+                quotes.forEach(q => { if(statusCounts[q.status] !== undefined) statusCounts[q.status]++; });
+                
+                if(this.chartInstances.status) this.chartInstances.status.destroy();
+                this.chartInstances.status = new Chart(Utils.el('statusChart'), {
+                    type: 'doughnut',
+                    data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#9CA3AF', '#F59E0B', '#10B981', '#EF4444'] }] },
+                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
+                });
+
+                // REVENUE PER MONTH
+                const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+                const monthlyData = new Array(12).fill(0);
+
+                quotes.forEach(q => {
+                    if (q.status === 'accepte') {
+                        const d = new Date(q.date);
+                        if(!isNaN(d.getTime())) {
+                            monthlyData[d.getMonth()] += q.amount;
+                        }
+                    }
+                });
+
+                if(this.chartInstances.revenue) this.chartInstances.revenue.destroy();
+                this.chartInstances.revenue = new Chart(Utils.el('revenueChart'), {
+                    type: 'bar',
+                    data: { 
+                        labels: months, 
+                        datasets: [{ 
+                            label: 'CA Accepté', 
+                            data: monthlyData, 
+                            backgroundColor: '#1E3A8A', 
+                            borderRadius: 4
+                        }] 
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+            }
+        };
+
+        // --- BOOTSTRAP ---
+        document.addEventListener('DOMContentLoaded', () => App.init());
+        document.getElementById('back-to-families').onclick = () => { Utils.el('subfamily-panel').style.display='none'; Utils.el('main-families-list').style.display='block'; };
+
+        // Expose
+        window.App = App;
+        window.ProjectService = ProjectService;
+        window.PDFService = PDFService;
+    </script>
