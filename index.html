@@ -1089,7 +1089,28 @@
                 });
                 return allQuotes.sort((a, b) => new Date(b.date) - new Date(a.date));
             },
-            generateNextRef(clients) {
+            generateNextRef(clients) 
+            // DANS L'OBJET: const BusinessLogic = { ...
+// AJOUTER CETTE FONCTION À LA SUITE DE generateNextRef :
+
+generateNextInvoiceRef(clients) {
+    const currentYear = new Date().getFullYear();
+    let maxSeq = 0;
+    clients.forEach(c => {
+        if (c.quotes) c.quotes.forEach(q => {
+            // On regarde si une facture existe déjà (q.invoiceData)
+            if (q.invoiceData && q.invoiceData.ref) {
+                const parts = q.invoiceData.ref.split('-');
+                if (parts.length === 3 && parseInt(parts[1]) === currentYear) {
+                    const seq = parseInt(parts[2]);
+                    if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+                }
+            }
+        });
+    });
+    return `F-${currentYear}-${String(maxSeq + 1).padStart(3, '0')}`;
+},
+            {
                 const currentYear = new Date().getFullYear();
                 let maxSeq = 0;
                 clients.forEach(c => {
