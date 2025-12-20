@@ -372,58 +372,63 @@
             .charts-grid { grid-template-columns: 1fr; }
             .room-grid-selector { grid-template-columns: repeat(2, 1fr); }
         }
-        /* =========================================
-           iOS / MOBILE LANDSCAPE - ZOOM FIX (CLICCABILE)
+    </style>
+    /* =========================================
+           iOS / MOBILE LANDSCAPE - SCALE TO FIT FIX
            ========================================= */
         @media only screen and (max-width: 950px) and (orientation: landscape) {
             
+            /* 1. Blocchiamo il comportamento di scrolling nativo del body
+               e impostiamo una larghezza "virtuale" da Desktop (1100px) */
             body {
-                /* 1. Impostiamo una larghezza "Desktop" fissa */
-                width: 1100px; 
+                /* Larghezza fissa sufficiente per contenere sidebar + tabelle senza rompere le righe */
+                width: 1100px;
                 min-width: 1100px;
                 
-                /* 2. USIAMO ZOOM INVECE DI TRANSFORM 
-                   Questo rimpicciolisce tutto ma AGGIORNA le aree cliccabili.
-                   0.65 significa 65% della grandezza originale (adatto per iPhone 13) */
-                zoom: 0.65; 
+                /* 2. Scaliamo tutto il body per farlo entrare nella larghezza del dispositivo (es. 844px su iPhone 13) */
+                /* La formula è: larghezza schermo attuale (100vw) diviso larghezza desiderata (1100px) */
+                transform: scale(calc(100vw / 1100));
+                transform-origin: top left;
                 
-                /* Reset dello scroll per evitare blocchi */
-                overflow-x: auto;
-                overflow-y: auto;
-                position: static; /* Importante: rimuove il blocco precedente */
-            }
-
-            /* 3. Fix per l'Header fisso 
-               Con lo zoom, la larghezza 100% si riferisce alla viewport ridotta.
-               Dobbiamo forzarlo alla larghezza desktop */
-            .top-header {
-                width: 1100px !important;
-                position: fixed !important;
+                /* 3. Compensa l'altezza e blocca lo scroll orizzontale indesiderato */
+                height: calc(100vh * (1100 / 100vw));
+                overflow-x: hidden;
+                overflow-y: auto; /* Abilita lo scroll verticale se necessario */
+                position: absolute;
                 top: 0;
                 left: 0;
+                
+                /* 4. Previene l'inflazione automatica dei font su iOS */
+                -webkit-text-size-adjust: none;
+                text-size-adjust: none;
             }
 
-            /* 4. Fix per la Sidebar 
-               Assicuriamo che l'altezza copra tutto lo schermo zoomato */
-            #global-sidebar {
-                height: 100vh;
+            /* 5. Gestione degli elementi fissi (Header e Sidebar) 
+               Quando si usa transform sul body, position:fixed diventa relativo al body trasformato.
+               Questo è perfetto per il tuo caso: mantiene il layout desktop intatto. */
+            .top-header, #global-sidebar {
+                position: absolute !important;
+            }
+
+            /* 6. Adattamento delle aree di contenuto */
+            .app-container {
+                height: auto;
                 min-height: 100%;
+                overflow: visible;
             }
 
-            /* 5. Fix per i Modali (es. Nuovo Progetto) 
-               Devono coprire l'intera area virtuale */
-            .modal-overlay {
-                width: 1100px !important;
-                height: 100vh !important;
-                position: fixed;
+            /* Rimuoviamo gli scroll interni per favorire lo scroll della pagina intera (più naturale su mobile ridotto) */
+            .view-section, #home-view, #list-view, #client-view, #quote-view, .col-scroll {
+                overflow: visible !important;
+                height: auto !important;
             }
             
-            /* Ripristino scrollbar interne per renderle usabili */
-            .col-scroll {
-                overflow-y: auto !important; 
+            /* Fix specifico per la sidebar che deve coprire tutta l'altezza scalata */
+            #global-sidebar {
+                height: 100%;
+                min-height: 100vh;
             }
         }
-    </style>
 </head>
 
 <body class="mode-brouillon">
@@ -464,29 +469,150 @@
             <div class="gs-link" onclick="App.openPdfModal()"><i class="fas fa-print"></i> Stampa</div>
             <div class="gs-link" onclick="App.handleLogout()" style="color:var(--brand-danger); margin-top:auto;"><i class="fas fa-sign-out-alt"></i> Déconnexion</div>
         </nav>
-   <aside id="global-sidebar">
-        <div class="gs-header">
-            <div class="header-brand">
-                <div class="logo-circle">Q</div>
-                <div class="header-title">QOTIA</div>
-            </div>
-            <button class="global-menu-btn" onclick="App.toggleGlobalMenu()" aria-label="Close menu"><i class="fas fa-times"></i></button>
-        </div>
-        <nav class="gs-links">
-            <div class="gs-link" onclick="App.navigate('home')"><i class="fas fa-home"></i> Accueil</div>
-            <div class="gs-link" onclick="App.openProjectModal()"><i class="fas fa-plus-circle"></i> Nouveau Projet</div>
-            
-            <div class="gs-link" onclick="App.navigate('quote')"><i class="fas fa-edit"></i> Devis</div>
-            
-            <div class="gs-link" onclick="App.navigate('list')"><i class="fas fa-history"></i> Historique</div>
-            <div class="gs-link" onclick="App.navigate('client')"><i class="fas fa-users"></i> Clients</div>
-            
-            <hr style="border-top:1px solid #eee; margin:5px 0;">
-            <div class="gs-link" onclick="App.navigate('company')"><i class="fas fa-building"></i> Mon Entreprise</div>
-            <div class="gs-link" onclick="App.openPdfModal()"><i class="fas fa-print"></i> Stampa</div>
-            <div class="gs-link" onclick="App.handleLogout()" style="color:var(--brand-danger); margin-top:auto;"><i class="fas fa-sign-out-alt"></i> Déconnexion</div>
-        </nav>
     </aside>
+
+    <input type="file" id="load-file" hidden accept=".json" onchange="App.loadProjectFile(event)">
+    <input type="file" id="load-client-db" hidden accept=".json" onchange="App.loadClientDBFile(event)">
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight:600; color:var(--brand-navy)">Chargement...</div>
+    </div>
+
+    <div class="app-container">
+        <header class="top-header">
+            <div class="header-left">
+                <button class="global-menu-btn" onclick="App.toggleGlobalMenu()" aria-label="Open menu"><i class="fas fa-bars"></i></button>
+                <div class="header-brand" onclick="App.showView('home')">
+                    <div class="logo-circle">Q</div>
+                    <div class="header-title">QOTIA</div>
+                </div>
+            </div>
+
+            <div class="header-search-container">
+                <div class="header-search-box">
+                    <i class="fas fa-search header-search-icon"></i>
+                    <input type="text" class="header-search-input" placeholder="Rechercher client, devis..." onkeyup="App.globalSearch(this.value)">
+                </div>
+            </div>
+
+            <div class="header-right-actions">
+                <button class="nav-link-btn" id="nav-list" onclick="App.showView('list')">
+                    <i class="fas fa-history"></i> Historique
+                </button>
+                <button class="nav-link-btn" id="nav-clients" onclick="App.showView('client')">
+                    <i class="fas fa-users"></i> Client
+                </button>
+                <button class="nav-link-btn btn-accent" onclick="App.openProjectModal()">
+                    <i class="fas fa-plus-circle"></i> +Projet
+                </button>
+                <button class="nav-link-btn" onclick="App.openPdfModal()">
+                    <i class="fas fa-print"></i> Imprimer
+                </button>
+            </div>
+        </header>
+
+        <main id="home-view" class="view-section active-section">
+            <div class="dash-header">
+                <div>
+                    <h2 class="dash-title">Tableau de Bord</h2>
+                    <div class="dash-subtitle">Bienvenue sur votre espace de gestion.</div>
+                </div>
+                <div class="kpi-filter-box">
+                    <label style="font-size:0.8rem;color:#666">Période d'analyse :</label>
+                    <select id="kpi-period" class="kpi-select" onchange="App.renderHome()">
+                        <option value="all">Tout l'historique</option>
+                        <option value="year" selected>Année en cours</option>
+                        <option value="month">Mois en cours</option>
+                        <option value="prev_year">Année précédente</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="kpi-grid">
+                <div class="kpi-card clickable" onclick="App.navigateToHistory('')">
+                    <div class="kpi-icon" style="background:#EFF6FF; color:#1E40AF;"><i class="fas fa-file-invoice"></i></div>
+                    <div class="kpi-label">Total Devis</div>
+                    <div class="kpi-value" id="kpi-total-count">0</div>
+                    <div class="kpi-sub">Sur la période</div>
+                </div>
+                <div class="kpi-card clickable" onclick="App.navigateToHistory('attente')">
+                    <div class="kpi-icon" style="background:#FFF7ED; color:#C2410C;"><i class="fas fa-clock"></i></div>
+                    <div class="kpi-label">Brouillons / Attente</div>
+                    <div class="kpi-value" id="kpi-pending-count">0</div>
+                    <div class="kpi-sub" id="kpi-pending-amount">0.00 €</div>
+                </div>
+                <div class="kpi-card clickable" onclick="App.navigateToHistory('accepte')">
+                    <div class="kpi-icon" style="background:#ECFDF5; color:#047857;"><i class="fas fa-check-circle"></i></div>
+                    <div class="kpi-label">Devis Acceptés</div>
+                    <div class="kpi-value" id="kpi-accepted-count">0</div>
+                    <div class="kpi-sub" id="kpi-accepted-amount">0.00 €</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background:#F0F9FF; color:#0369A1;"><i class="fas fa-chart-line"></i></div>
+                    <div class="kpi-label">CA Signé (Accepté)</div>
+                    <div class="kpi-value" id="kpi-volume">0 €</div>
+                    <div class="kpi-sub">Total facturable</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-box">
+                    <div class="sidebar-title" style="border:none; padding:0 0 10px 0; font-size:0.9rem;">Répartition par Statut</div>
+                    <div class="chart-container"><canvas id="statusChart"></canvas></div>
+                </div>
+                <div class="chart-box">
+                    <div class="sidebar-title" style="border:none; padding:0 0 10px 0; font-size:0.9rem;">Évolution du Chiffre d'Affaires</div>
+                    <div class="chart-container"><canvas id="revenueChart"></canvas></div>
+                </div>
+            </div>
+        </main>
+
+        <main id="list-view" class="view-section">
+            <div class="card" style="height: 100%; display: flex; flex-direction: column; overflow: hidden;">
+                <div class="sidebar-title" style="font-size: 1.1rem; border-bottom: 1px solid #eee;">Historique Complet des Devis</div>
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label>Rechercher</label>
+                        <input type="text" id="dash-search" class="filter-input" placeholder="Client, Ref..." onkeyup="App.renderDashboardList()">
+                    </div>
+                    <div class="filter-group">
+                        <label>Statut</label>
+                        <select id="dash-status" class="filter-input" onchange="App.renderDashboardList()">
+                            <option value="">Tous</option>
+                            <option value="brouillon">Brouillon</option>
+                            <option value="attente">En attente</option>
+                            <option value="accepte">Accepté</option>
+                            <option value="refuse">Refusé</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <button class="btn btn-secondary" onclick="App.renderDashboardList()"><i class="fas fa-sync"></i></button>
+                </div>
+                <div class="col-scroll" style="padding: 0;">
+                    <table class="dash-table">
+                        <thead><tr><th>Date</th><th>Réf.</th><th>Client</th><th>Description / Projet</th><th style="text-align: right;">Montant TTC</th><th style="text-align: center;">Statut</th><th style="text-align: center;">Action</th></tr></thead>
+                        <tbody id="dashboard-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <main id="quote-view" class="view-section">
+            <aside class="col-scroll" id="left-sidebar">
+                <div class="card" style="min-height: 100%;">
+                    <div class="sidebar-title">
+                        <span id="lib-title-text">Bibliothèque</span>
+                        <i class="fas fa-times mobile-menu-btn" onclick="App.toggleSidebar()" style="font-size:1rem;"></i>
+                    </div>
+                    <ul class="category-list" id="main-families-list"></ul>
+                    <div id="subfamily-panel">
+                        <div class="subfamily-header" id="back-to-families"><i class="fas fa-arrow-left"></i> Retour</div>
+                        <div id="subcategories-container"></div>
+                    </div>
+                </div>
+            </aside>
+
             <section class="workspace col-scroll">
                 <div class="room-nav" id="room-list-container"></div>
                 <div class="metrics-panel" id="metrics-panel">
