@@ -373,62 +373,6 @@
             .room-grid-selector { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
-    /* =========================================
-           iOS / MOBILE LANDSCAPE - SCALE TO FIT FIX
-           ========================================= */
-        @media only screen and (max-width: 950px) and (orientation: landscape) {
-            
-            /* 1. Blocchiamo il comportamento di scrolling nativo del body
-               e impostiamo una larghezza "virtuale" da Desktop (1100px) */
-            body {
-                /* Larghezza fissa sufficiente per contenere sidebar + tabelle senza rompere le righe */
-                width: 1100px;
-                min-width: 1100px;
-                
-                /* 2. Scaliamo tutto il body per farlo entrare nella larghezza del dispositivo (es. 844px su iPhone 13) */
-                /* La formula è: larghezza schermo attuale (100vw) diviso larghezza desiderata (1100px) */
-                transform: scale(calc(100vw / 1100));
-                transform-origin: top left;
-                
-                /* 3. Compensa l'altezza e blocca lo scroll orizzontale indesiderato */
-                height: calc(100vh * (1100 / 100vw));
-                overflow-x: hidden;
-                overflow-y: auto; /* Abilita lo scroll verticale se necessario */
-                position: absolute;
-                top: 0;
-                left: 0;
-                
-                /* 4. Previene l'inflazione automatica dei font su iOS */
-                -webkit-text-size-adjust: none;
-                text-size-adjust: none;
-            }
-
-            /* 5. Gestione degli elementi fissi (Header e Sidebar) 
-               Quando si usa transform sul body, position:fixed diventa relativo al body trasformato.
-               Questo è perfetto per il tuo caso: mantiene il layout desktop intatto. */
-            .top-header, #global-sidebar {
-                position: absolute !important;
-            }
-
-            /* 6. Adattamento delle aree di contenuto */
-            .app-container {
-                height: auto;
-                min-height: 100%;
-                overflow: visible;
-            }
-
-            /* Rimuoviamo gli scroll interni per favorire lo scroll della pagina intera (più naturale su mobile ridotto) */
-            .view-section, #home-view, #list-view, #client-view, #quote-view, .col-scroll {
-                overflow: visible !important;
-                height: auto !important;
-            }
-            
-            /* Fix specifico per la sidebar che deve coprire tutta l'altezza scalata */
-            #global-sidebar {
-                height: 100%;
-                min-height: 100vh;
-            }
-        }
 </head>
 
 <body class="mode-brouillon">
