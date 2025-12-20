@@ -1001,12 +1001,13 @@
                 currentProject: null,
                 globalDiscount: 0,
                 depositAmount: 0,
+                // ASSICURATI CHE QUESTA PARTE QUI SOTTO SIA PRESENTE:
                 userCompany: {
                     name: 'Mon Entreprise', address: '1 rue de la Paix', city: '75000 Paris',
                     phone: '0100000000', email: 'contact@entreprise.com', web: 'www.entreprise.com',
                     siret: '', tva: '', 
-                    adminUser: 'admin', 
-                    adminPass: 'admin',
+                    adminUser: 'admin',   // <--- FONDAMENTALE
+                    adminPass: 'admin',   // <--- FONDAMENTALE
                     isEI: false, insurance: { name: '', policy: '', addr: '', geo: '' },
                     bank: { name: '', iban: '', bic: '' }
                 }
