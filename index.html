@@ -413,9 +413,6 @@
             <div class="gs-link" onclick="App.openPdfModal()"><i class="fas fa-print"></i> Stampa</div>
             <div class="gs-link" onclick="App.handleLogout()" style="color:var(--brand-danger); margin-top:auto;"><i class="fas fa-sign-out-alt"></i> Déconnexion</div>
         </nav>
-        <button id="btn-convert-invoice" class="btn btn-primary" style="display:none; font-size:0.8rem; background-color:#4F46E5; margin-left:5px;" onclick="App.convertToInvoice()">
-    <i class="fas fa-file-invoice"></i> Convertir en Facture
-</button>
     </aside>
 
     <input type="file" id="load-file" hidden accept=".json" onchange="App.loadProjectFile(event)">
@@ -1092,28 +1089,7 @@
                 });
                 return allQuotes.sort((a, b) => new Date(b.date) - new Date(a.date));
             },
-            generateNextRef(clients) 
-            // DANS L'OBJET: const BusinessLogic = { ...
-// AJOUTER CETTE FONCTION À LA SUITE DE generateNextRef :
-
-generateNextInvoiceRef(clients) {
-    const currentYear = new Date().getFullYear();
-    let maxSeq = 0;
-    clients.forEach(c => {
-        if (c.quotes) c.quotes.forEach(q => {
-            // On regarde si une facture existe déjà (q.invoiceData)
-            if (q.invoiceData && q.invoiceData.ref) {
-                const parts = q.invoiceData.ref.split('-');
-                if (parts.length === 3 && parseInt(parts[1]) === currentYear) {
-                    const seq = parseInt(parts[2]);
-                    if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
-                }
-            }
-        });
-    });
-    return `F-${currentYear}-${String(maxSeq + 1).padStart(3, '0')}`;
-},
-            {
+            generateNextRef(clients) {
                 const currentYear = new Date().getFullYear();
                 let maxSeq = 0;
                 clients.forEach(c => {
@@ -1426,44 +1402,6 @@ generateNextInvoiceRef(clients) {
                 this.renderHome();        
                 this.renderDashboardList(); 
             },
-            // DANS L'OBJET: const App = { ...
-
-convertToInvoice() {
-    // 1. Vérifications de sécurité
-    if (!Store.data.currentClient) return alert("Erreur : Aucun client actif.");
-    const ref = Utils.val('cli-ref');
-    const quote = Store.data.currentClient.quotes.find(q => q.ref === ref);
-
-    if (!quote) return alert("Devis introuvable.");
-    if (quote.invoiceData) return alert("Ce devis est déjà facturé sous la réf : " + quote.invoiceData.ref);
-    if (quote.status !== 'accepte') {
-        const confirmForce = confirm("Ce devis n'est pas marqué comme 'Accepté'. Voulez-vous forcer la facturation ?");
-        if (!confirmForce) return;
-    }
-
-    // 2. Génération des données de facture
-    const invoiceRef = BusinessLogic.generateNextInvoiceRef(Store.data.clientsDB);
-    const invoiceDate = new Date().toISOString().split('T')[0];
-
-    // 3. Mise à jour des données
-    quote.invoiceData = {
-        ref: invoiceRef,
-        date: invoiceDate,
-        originalQuoteRef: quote.ref
-    };
-    
-    // On passe le statut en "Facturé" (nous allons créer ce statut visuellement après)
-    quote.status = 'facture';
-
-    // 4. Sauvegarde
-    Store.save();
-    
-    // 5. Feedback UI
-    alert(`Devis converti avec succès !\n\nNouvelle Facture : ${invoiceRef}`);
-    this.renderDashboardList();
-    this.renderHome();
-    this.showView('list'); // On retourne à la liste pour voir le changement
-},
 
             // --- FUNZIONE RICERCA GLOBALE ---
             globalSearch(term) {
