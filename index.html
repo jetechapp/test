@@ -1001,13 +1001,12 @@
                 currentProject: null,
                 globalDiscount: 0,
                 depositAmount: 0,
-                // ASSICURATI CHE QUESTA PARTE QUI SOTTO SIA PRESENTE:
                 userCompany: {
                     name: 'Mon Entreprise', address: '1 rue de la Paix', city: '75000 Paris',
                     phone: '0100000000', email: 'contact@entreprise.com', web: 'www.entreprise.com',
                     siret: '', tva: '', 
-                    adminUser: 'admin',   // <--- FONDAMENTALE
-                    adminPass: 'admin',   // <--- FONDAMENTALE
+                    adminUser: 'admin', 
+                    adminPass: 'admin', 
                     isEI: false, insurance: { name: '', policy: '', addr: '', geo: '' },
                     bank: { name: '', iban: '', bic: '' }
                 }
@@ -1044,6 +1043,12 @@
                         if(!this.data.rooms.includes("Travaux préparatoires")) {
                             this.data.rooms.unshift("Travaux préparatoires");
                         }
+
+                        // --- FIX LOGIN CORRUPTION ---
+                        // Se adminUser o adminPass mancano, li reimpostiamo ad 'admin'
+                        if (!this.data.userCompany.adminUser) this.data.userCompany.adminUser = 'admin';
+                        if (!this.data.userCompany.adminPass) this.data.userCompany.adminPass = 'admin';
+
                     } catch (e) { 
                         console.error("Corrupt state detected, partial reset.", e);
                         alert("Données locales corrompues. Réinitialisation partielle effectuée pour la sécurité.");
@@ -1388,7 +1393,6 @@
                 });
             },
 
-            // ... (Mantieni le funzioni _buildQuoteContent, _buildProjectTechSpecs, ecc. come erano prima) ...
             _buildQuoteContent(type, state, fin, tableStyle, thStyle, tdStyle) {
                 let html = `<table style="${tableStyle} margin-bottom:20px;"><thead><tr style="background:#1E3A8A; color:white;">
                     <th style="${thStyle} background:#1E3A8A; color:white; width:45%">Désignation</th>
@@ -1452,86 +1456,10 @@
                     </table>
                 </div>`;
             },
-            _buildClientList(clients, tableStyle, thStyle, tdStyle) { return ``; } 
-        };
-            
-
-            _buildQuoteContent(type, state, fin, tableStyle, thStyle, tdStyle) {
-                let html = `<table style="${tableStyle} margin-bottom:20px;"><thead><tr style="background:#1E3A8A; color:white;">
-                    <th style="${thStyle} background:#1E3A8A; color:white; width:45%">Désignation</th>
-                    <th style="${thStyle} background:#1E3A8A; color:white; width:5%; text-align:center;">U</th>
-                    <th style="${thStyle} background:#1E3A8A; color:white; width:8%; text-align:center;">Qté</th>
-                    ${fin.isAutoliquidation ? '' : `<th style="${thStyle} background:#1E3A8A; color:white; width:8%; text-align:center;">TVA</th>`}
-                    <th style="${thStyle} background:#1E3A8A; color:white; width:10%; text-align:right;">P.U.</th>
-                    <th style="${thStyle} background:#1E3A8A; color:white; width:10%; text-align:right;">Matériel</th>
-                    <th style="${thStyle} background:#1E3A8A; color:white; width:14%; text-align:right;">Total HT</th>
-                </tr></thead><tbody>`;
-
-                let groups = {};
-                state.quoteItems.forEach(i => { if(!groups[i.piece]) groups[i.piece]=[]; groups[i.piece].push(i); });
-                
-                for(let r in groups) {
-                    html += `<tr style="background:#eef2ff;"><td colspan="${fin.isAutoliquidation ? 6 : 7}" style="padding:6px; font-weight:bold; color:#1E3A8A;">${r}</td></tr>`;
-                    groups[r].forEach(i => {
-                        let totalMatDisp = i.matIsTotal ? i.matCost : (i.matCost * i.qty);
-                        
-                        html += `<tr>
-                            <td style="${tdStyle} border-bottom:1px dashed #eee;">${i.desc} <br><span style="color:#777; font-style:italic; font-size:9px;">${i.note || ''}</span></td>
-                            <td style="${tdStyle} text-align:center;">${i.unit}</td>
-                            <td style="${tdStyle} text-align:center;">${i.qty}</td>
-                            ${fin.isAutoliquidation ? '' : `<td style="${tdStyle} text-align:center;">${(i.tva*100).toFixed(1)}%</td>`}
-                            <td style="${tdStyle} text-align:right;">${i.price.toFixed(2)}</td>
-                            <td style="${tdStyle} text-align:right;">${(totalMatDisp||0).toFixed(2)}</td>
-                            <td style="${tdStyle} text-align:right; font-weight:bold;">${(i.qty*i.price).toFixed(2)}</td>
-                        </tr>`;
-                    });
-                }
-                html += `</tbody></table>`;
-                 html += `
-                    <div style="display:flex; justify-content:flex-end; margin-bottom:20px;">
-                        <div style="width:50%;"></div>
-                        <div style="width:50%;">
-                            <table style="width:100%; border-collapse:collapse; font-size:11px;">
-                                <tr><td style="padding:4px;">Total HT:</td><td style="text-align:right;">${fin.totalHT.toFixed(2)} €</td></tr>
-                                ${state.globalDiscount > 0 ? `<tr><td style="padding:4px; color:red;">Remise (${state.globalDiscount}%):</td><td style="text-align:right; color:red;">-${(fin.totalHT - fin.discountedHT).toFixed(2)} €</td></tr>` : ''}`;
-
-                if (fin.isAutoliquidation) {
-                     html += `
-                            <tr><td style="padding:4px;">TVA (Autoliquidation):</td><td style="text-align:right;">0.00 €</td></tr>
-                            <tr style="background:#1E3A8A; color:white; font-size:13px; font-weight:bold;">
-                                <td style="padding:8px;">NET A PAYER:</td><td style="text-align:right; padding:8px;">${fin.totalTTC.toFixed(2)} €</td>
-                            </tr>
-                        </table>
-                        <div style="margin-top:10px; border:1px solid #1E3A8A; color:#1E3A8A; padding:5px; font-size:9px; text-align:center; font-weight:bold;">
-                            Autoliquidation – TVA due par le preneur (Article 283-2 nonies du CGI)
-                        </div>
-                    </div></div>`;
-                } else {
-                     html += `
-                            <tr><td style="padding:4px;">Total TVA:</td><td style="text-align:right;">${fin.totalTVA.toFixed(2)} €</td></tr>
-                            <tr style="background:#1E3A8A; color:white; font-size:13px; font-weight:bold;">
-                                <td style="padding:8px;">NET A PAYER:</td><td style="text-align:right; padding:8px;">${fin.totalTTC.toFixed(2)} €</td>
-                            </tr>
-                        </table>
-                    </div></div>`;
-                }
-                return html;
-            },
-            _buildProjectTechSpecs(proj, tableStyle, tdStyle) {
-                const d = proj.details;
-                return `<div style="margin-top:30px; page-break-inside:avoid; border:1px solid #eee; padding:10px;">
-                    <h4 style="color:#1E3A8A; margin-top:0;">Fiche Technique Cantiere: ${proj.name}</h4>
-                    <table style="${tableStyle}">
-                        <tr><td style="${tdStyle}"><b>Adresse:</b> ${proj.address}</td><td style="${tdStyle}"><b>Code Accès:</b> ${d.code || '-'}</td></tr>
-                        <tr><td style="${tdStyle}"><b>Etage:</b> ${d.floor}/${d.totalFloors} (Asc: ${d.elevator?'Oui':'Non'})</td><td style="${tdStyle}"><b>Chauffage:</b> ${d.heating}</td></tr>
-                        <tr><td style="${tdStyle}"><b>Robinet Arrêt:</b> ${d.shutoffLoc}</td><td style="${tdStyle}"><b>Plombier Imm.:</b> ${d.plumber.name} (${d.plumber.tel})</td></tr>
-                    </table>
-                </div>`;
-            },
             _buildClientList(clients, tableStyle, thStyle, tdStyle) {
                 const rows = clients.map(c => `<tr><td style="${tdStyle}">${c.lastname} ${c.firstname}</td><td style="${tdStyle}">${c.email}</td></tr>`).join('');
                 return `<h3>Liste Clients</h3><table style="${tableStyle}"><thead><tr><th style="${thStyle}">Nom</th><th style="${thStyle}">Email</th></tr></thead><tbody>${rows}</tbody></table>`;
-            },
+            }, 
             _buildMonthSummary(clients, tableStyle, thStyle, tdStyle) { return `<h3>Rapport Mensuel (Placeholder)</h3>`; },
             _buildAcceptedQuotes(clients, tableStyle, thStyle, tdStyle) { return `<h3>Devis Acceptés (Placeholder)</h3>`; }
         };
@@ -2079,250 +2007,6 @@
                     } catch(e) { alert("Erreur fichier"); }
                 };
                 if(e.target.files[0]) r.readAsText(e.target.files[0]);
-            },
-            // CLIENTS
-            newClient() {
-                Utils.el('client-form').reset();
-                Utils.setVal('c-id', '');
-                this.setClientType('physique'); 
-            },
-            setClientType(type) {
-                const isMorale = type === 'morale';
-                const btnP = Utils.el('btn-physique');
-                const btnM = Utils.el('btn-morale');
-                
-                if(isMorale) {
-                    btnM.classList.add('active'); btnM.style.background='white'; btnM.style.color='var(--brand-navy)'; btnM.style.boxShadow='0 1px 2px rgba(0,0,0,0.1)';
-                    btnP.classList.remove('active'); btnP.style.background='transparent'; btnP.style.color='#6B7280'; btnP.style.boxShadow='none';
-                } else {
-                    btnP.classList.add('active'); btnP.style.background='white'; btnP.style.color='var(--brand-navy)'; btnP.style.boxShadow='0 1px 2px rgba(0,0,0,0.1)';
-                    btnM.classList.remove('active'); btnM.style.background='transparent'; btnM.style.color='#6B7280'; btnM.style.boxShadow='none';
-                }
-                document.querySelectorAll('.grp-morale').forEach(el => el.style.display = isMorale ? 'block' : 'none');
-                document.querySelectorAll('.grp-physique').forEach(el => el.style.display = isMorale ? 'none' : 'block');
-            },
-            saveClientToDB() {
-                const id = Utils.val('c-id');
-                const isMorale = Utils.el('btn-morale').classList.contains('active');
-                const type = isMorale ? 'morale' : 'physique';
-
-                if(isMorale && !Utils.val('c-company')) return alert("La Raison Sociale est obligatoire pour une société.");
-                if(!isMorale && !Utils.val('c-lastname')) return alert("Le nom est obligatoire.");
-
-                let data = {
-                    id: id ? parseInt(id) : Date.now(),
-                    type: type,
-                    addr: Utils.val('c-addr'), email: Utils.val('c-email'), phone: Utils.val('c-phone'),
-                    mobile: Utils.val('c-mobile'), note: Utils.val('c-note'),
-                    
-                    civility: !isMorale ? Utils.val('c-civility') : '',
-                    lastname: !isMorale ? Utils.val('c-lastname') : '',
-                    firstname: !isMorale ? Utils.val('c-firstname') : '',
-                    
-                    company: isMorale ? Utils.val('c-company') : '',
-                    legalForm: isMorale ? Utils.val('c-legal-form') : '',
-                    siret: isMorale ? Utils.val('c-siret') : '',
-                    tvaIntra: isMorale ? Utils.val('c-tva') : '',
-                    repName: isMorale ? Utils.val('c-rep-name') : '',
-                    billingEmail: isMorale ? Utils.val('c-billing-email') : '',
-
-                    quotes: Store.data.currentClient ? (Store.data.currentClient.quotes || []) : []
-                };
-                
-                if (id) {
-                    const idx = Store.data.clientsDB.findIndex(x => x.id == id);
-                    if(idx !== -1) Store.data.clientsDB[idx] = data;
-                } else {
-                    Store.data.clientsDB.push(data);
-                }
-                Store.save();
-                this.renderClientList();
-                this.loadClientForm(data.id);
-                alert("Fiche Client Enregistrée !");
-            },
-            loadClientForm(id) {
-                const c = Store.data.clientsDB.find(x => x.id === id);
-                if (!c) return;
-                Store.data.currentClient = c;
-                Utils.setVal('c-id', c.id);
-                Utils.setVal('c-addr', c.addr); Utils.setVal('c-email', c.email);
-                Utils.setVal('c-phone', c.phone); Utils.setVal('c-mobile', c.mobile || ''); Utils.setVal('c-note', c.note || '');
-
-                this.setClientType(c.type || 'physique');
-                if(c.type === 'morale') {
-                    Utils.setVal('c-company', c.company); Utils.setVal('c-legal-form', c.legalForm || 'SARL');
-                    Utils.setVal('c-siret', c.siret); Utils.setVal('c-tva', c.tvaIntra);
-                    Utils.setVal('c-rep-name', c.repName || ''); Utils.setVal('c-billing-email', c.billingEmail || '');
-                } else {
-                    Utils.setVal('c-civility', c.civility || 'M.'); Utils.setVal('c-lastname', c.lastname); Utils.setVal('c-firstname', c.firstname);
-                }
-            },
-            renderClientList(filter = "") {
-                const list = Utils.el('client-list');
-                list.innerHTML = "";
-                const term = filter.toLowerCase();
-                const filtered = Store.data.clientsDB.filter(c => {
-                    const searchStr = c.type === 'morale' ? (c.company + c.repName + c.email) : (c.lastname + c.firstname + c.email);
-                    return searchStr.toLowerCase().includes(term);
-                });
-                filtered.forEach(c => {
-                    const div = document.createElement('div');
-                    div.className = "client-list-item";
-                    let icon = c.type === 'morale' ? '<i class="fas fa-building"></i>' : '<i class="fas fa-user"></i>';
-                    let name = c.type === 'morale' ? c.company : `${c.civility || ''} ${c.lastname} ${c.firstname}`;
-                    let sub = c.type === 'morale' ? `${c.legalForm || ''} - ${c.repName || 'Aucun contact'}` : 'Particulier';
-                    div.innerHTML = `<div class="cli-name" style="display:flex; align-items:center; gap:8px;"><span style="color:#9CA3AF; font-size:0.8em;">${icon}</span> ${name}</div><div style="font-size:0.75rem; color:#666; margin-left:20px;">${sub}</div>`;
-                    div.onclick = () => this.loadClientForm(c.id);
-                    list.appendChild(div);
-                });
-            },
-            useClientInQuote() {
-                const id = Utils.val('c-id');
-                if (!id) return;
-                const c = Store.data.clientsDB.find(x => x.id == id);
-                let name = c.type === 'morale' ? `${c.company} (${c.legalForm})` : `${c.civility || ''} ${c.lastname} ${c.firstname}`;
-                Utils.setVal('cli-name', name); Utils.setVal('cli-addr', c.addr);
-                Store.data.currentClient = c; Store.save();
-                this.showView('quote');
-            },
-            deleteClientFromDB() {
-                const id = Utils.val('c-id');
-                if (id && confirm("Supprimer?")) {
-                    Store.data.clientsDB = Store.data.clientsDB.filter(x => x.id != id);
-                    Store.save(); this.renderClientList(); this.newClient();
-                }
-            },
-            renderHome() {
-                const period = Utils.val('kpi-period');
-                let quotes = BusinessLogic.getFlatQuotes(Store.data.clientsDB);
-                const now = new Date(); const curY = now.getFullYear(); const curM = now.getMonth();
-                quotes = quotes.filter(q => {
-                    const d = new Date(q.date);
-                    if (period === 'year') return d.getFullYear() === curY;
-                    if (period === 'month') return d.getFullYear() === curY && d.getMonth() === curM;
-                    if (period === 'prev_year') return d.getFullYear() === (curY - 1);
-                    return true;
-                });
-                const total = quotes.length;
-                const pending = quotes.filter(q => q.status === 'brouillon' || q.status === 'attente');
-                const accepted = quotes.filter(q => q.status === 'accepte');
-                const volAccepted = accepted.reduce((a, b) => a + b.amount, 0);
-
-                Utils.el('kpi-total-count').innerText = total;
-                Utils.el('kpi-pending-count').innerText = pending.length;
-                Utils.el('kpi-pending-amount').innerText = pending.reduce((a,b)=>a+b.amount,0).toFixed(0) + ' €';
-                Utils.el('kpi-accepted-count').innerText = accepted.length;
-                Utils.el('kpi-accepted-amount').innerText = volAccepted.toFixed(0) + ' €';
-                Utils.el('kpi-volume').innerText = volAccepted.toLocaleString() + ' €';
-
-                this.updateCharts(quotes);
-            },
-            
-            // FIX: New function to update status from select box
-            updateQuoteStatus(cId, qIdx, status) {
-                const c = Store.data.clientsDB.find(x => x.id === cId);
-                if (c && c.quotes[qIdx]) { 
-                    c.quotes[qIdx].status = status; 
-                    Store.save(); 
-                    this.renderDashboardList(); // Refresh list styles
-                    this.renderHome(); // Refresh KPIs
-                }
-            },
-            
-            deleteQuote(cId, qIdx) {
-                if(!confirm("Supprimer?")) return;
-                const c = Store.data.clientsDB.find(x => x.id === cId);
-                if (c) { c.quotes.splice(qIdx, 1); Store.save(); this.renderHome(); this.renderDashboardList(); }
-            },
-            loadQuoteFromHistory(cId, qIdx) {
-                const client = Store.data.clientsDB.find(c => c.id === cId);
-                const q = client.quotes[qIdx];
-                if (!q.data) return alert("Ancien format non supporté");
-                if (confirm("Charger ce devis?")) {
-                    Store.data.rooms = q.data.rooms || [];
-                    Store.data.activeRoom = Store.data.rooms.length > 0 ? Store.data.rooms[0] : null;
-                    Store.data.roomData = q.data.roomData || {};
-                    Store.data.quoteItems = q.data.quoteItems || [];
-                    Store.data.globalDiscount = q.data.globalDiscount || 0;
-                    Store.data.depositAmount = q.data.depositAmount || 0;
-                    const autoLiq = document.getElementById('autoliquidation-chk');
-                    if(autoLiq) autoLiq.checked = q.data.autoliquidation || false;
-                    
-                    let cName = client.type === 'company' ? client.company : `${client.lastname} ${client.firstname}`;
-                    Utils.setVal('cli-name', cName); Utils.setVal('cli-addr', client.addr);
-                    Utils.setVal('cli-date', q.date); Utils.setVal('cli-ref', q.ref);
-                    Utils.setVal('cli-project-name', q.desc);
-                    
-                    Store.data.currentClient = client;
-                    Store.save(); this.renderAll(); this.showView('quote');
-                }
-            },
-            renderDashboardList() {
-                const tbody = Utils.el('dashboard-tbody');
-                tbody.innerHTML = '';
-                const search = Utils.val('dash-search').toLowerCase();
-                const stat = Utils.val('dash-status');
-                
-                let quotes = BusinessLogic.getFlatQuotes(Store.data.clientsDB);
-                quotes.forEach(q => {
-                    if (search && !q.clientName.toLowerCase().includes(search) && !q.ref.toLowerCase().includes(search)) return;
-                    if (stat && q.status !== stat) return;
-                    
-                    // FIX: Create Select Options for status
-                    let statusOptions = ['brouillon', 'attente', 'accepte', 'refuse'].map(s => 
-                        `<option value="${s}" ${q.status === s ? 'selected' : ''}>${s.toUpperCase()}</option>`
-                    ).join('');
-
-                    tbody.innerHTML += `<tr>
-                        <td>${q.date}</td><td class="text-bold">${q.ref}</td><td>${q.clientName}</td><td>${q.desc||'-'}</td>
-                        <td style="text-align:right">${q.amount.toFixed(2)} €</td>
-                        <td style="text-align:center;">
-                            <select class="status-select-table st-${q.status}" onchange="App.updateQuoteStatus(${q.clientId}, ${q.qIndex}, this.value)" onclick="event.stopPropagation()">
-                                ${statusOptions}
-                            </select>
-                        </td>
-                        <td style="text-align:center"><button class="action-mini-btn" onclick="App.loadQuoteFromHistory(${q.clientId}, ${q.qIndex})"><i class="fas fa-edit"></i></button></td>
-                    </tr>`;
-                });
-            },
-            updateCharts(quotes) {
-                const statusCounts = { 'brouillon': 0, 'attente': 0, 'accepte': 0, 'refuse': 0 };
-                quotes.forEach(q => { if(statusCounts[q.status] !== undefined) statusCounts[q.status]++; });
-                
-                if(this.chartInstances.status) this.chartInstances.status.destroy();
-                this.chartInstances.status = new Chart(Utils.el('statusChart'), {
-                    type: 'doughnut',
-                    data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#9CA3AF', '#F59E0B', '#10B981', '#EF4444'] }] },
-                    options: { responsive: true, maintainAspectRatio: false, cutout: '70%' }
-                });
-
-                // REVENUE PER MONTH
-                const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-                const monthlyData = new Array(12).fill(0);
-
-                quotes.forEach(q => {
-                    if (q.status === 'accepte') {
-                        const d = new Date(q.date);
-                        if(!isNaN(d.getTime())) {
-                            monthlyData[d.getMonth()] += q.amount;
-                        }
-                    }
-                });
-
-                if(this.chartInstances.revenue) this.chartInstances.revenue.destroy();
-                this.chartInstances.revenue = new Chart(Utils.el('revenueChart'), {
-                    type: 'bar',
-                    data: { 
-                        labels: months, 
-                        datasets: [{ 
-                            label: 'CA Accepté', 
-                            data: monthlyData, 
-                            backgroundColor: '#1E3A8A', 
-                            borderRadius: 4
-                        }] 
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-                });
             }
         };
 
@@ -2335,3 +2019,5 @@
         window.ProjectService = ProjectService;
         window.PDFService = PDFService;
     </script>
+</body>
+</html>
