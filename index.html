@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1E3A8A">
     <meta name="description" content="QOTIA Mobile AI - Gestion BTP">
-    <title>QOTIA Mobile AI</title>
+    <title>QOTIA Mobile AI Pro</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,14 +13,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        /* --- SYSTEM DESIGN "RUGGED" --- */
+        /* --- SYSTEM DESIGN "RUGGED" (Cantiere) --- */
         :root {
-            --c-yellow: #FCD34D;
-            --c-navy: #1E3A8A;
-            --c-dark: #111827;
-            --c-grey: #F3F4F6;
+            --c-yellow: #FCD34D;     /* Primario: Azione */
+            --c-navy: #1E3A8A;       /* Accento: Brand */
+            --c-dark: #111827;       /* Testo */
+            --c-grey: #F3F4F6;       /* Sfondo */
             --c-white: #FFFFFF;
-            --c-ai: #8B5CF6; /* Viola per AI */
+            --c-danger: #EF4444;
+            --c-ai: #7C3AED;         /* Viola: Intelligenza Artificiale */
             
             --h-nav: 65px;
             --h-input: 50px;
@@ -30,23 +31,31 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
         body { 
-            margin: 0; padding: 0; font-family: 'Roboto', sans-serif; 
-            background-color: var(--c-grey); color: var(--c-dark);
-            font-size: 16px; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            margin: 0; padding: 0; 
+            font-family: 'Roboto', sans-serif; 
+            background-color: var(--c-grey); 
+            color: var(--c-dark);
+            font-size: 16px; 
+            height: 100vh; 
+            display: flex; flex-direction: column; 
+            overflow: hidden; 
         }
 
-        /* --- LAYOUT --- */
+        /* --- LAYOUT MANAGERS --- */
         .view-section {
             display: none; flex-direction: column; height: 100%; width: 100%;
             overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey);
         }
         .view-section.active { display: flex; }
+        
+        /* Padding extra per l'editor che ha il footer misure */
         #view-devis { padding-bottom: 140px; }
 
         /* --- HEADER & NAV --- */
         .mobile-header {
             flex: 0 0 60px; background: var(--c-white); border-bottom: 2px solid var(--c-yellow);
             display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav);
@@ -60,7 +69,7 @@
         .nav-btn i { font-size: 1.4rem; margin-bottom: 4px; }
         .nav-btn.active { color: var(--c-navy); background: #EFF6FF; }
 
-        /* --- CARDS & UI --- */
+        /* --- UI ELEMENTS --- */
         .card {
             background: var(--c-white); border-radius: var(--radius); padding: 15px; margin: 10px 15px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--c-navy);
@@ -69,47 +78,59 @@
         .big-btn {
             background: var(--c-white); border: 2px solid #E5E7EB; border-radius: var(--radius);
             padding: 20px 10px; display: flex; flex-direction: column; align-items: center;
-            font-weight: 700; color: var(--c-navy);
+            font-weight: 700; color: var(--c-navy); transition: all 0.1s;
         }
-        /* AI Button Special Style */
+        .big-btn:active { background: #EFF6FF; border-color: var(--c-navy); }
+        .big-btn i { font-size: 2rem; margin-bottom: 10px; color: var(--c-yellow); }
+
+        /* --- AI BUTTONS --- */
         .btn-ai-header {
-            background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white; border: none;
-            padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.8rem;
-            display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, var(--c-ai), #4C1D95); color: white; border: none;
+            padding: 8px 15px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;
+            display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(124, 58, 237, 0.3);
         }
         .btn-ai-float {
-            position: fixed; bottom: calc(var(--h-nav) + 145px); right: 20px;
-            width: 50px; height: 50px; border-radius: 50%;
-            background: linear-gradient(135deg, #8B5CF6, #6366F1); color: white;
+            position: fixed; bottom: calc(var(--h-nav) + 140px); right: 20px;
+            width: 55px; height: 55px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--c-ai), #4C1D95); color: white;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 950; border: 2px solid white;
+            font-size: 1.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 950; border: 2px solid white;
         }
 
         /* --- FORMS --- */
+        .form-section-title {
+            background: #E5E7EB; padding: 8px 15px; font-weight: 700; color: var(--c-navy); 
+            font-size: 0.85rem; margin-top: 15px; margin-bottom: 10px; letter-spacing: 0.5px;
+        }
         .input-group { margin-bottom: 12px; padding: 0 15px; }
-        .input-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--c-navy); margin-bottom: 4px; text-transform: uppercase; }
+        .input-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--c-navy); margin-bottom: 4px; text-transform: uppercase; }
         .app-input {
             width: 100%; height: var(--h-input); border: 1px solid #D1D5DB; border-radius: 6px;
             padding: 0 10px; font-size: 1rem; background: #fff;
         }
+        .app-input:focus { border-color: var(--c-navy); border-width: 2px; }
         .type-switch { display: flex; margin: 0 15px; background: #E5E7EB; border-radius: 8px; padding: 4px; }
         .switch-opt { flex: 1; text-align: center; padding: 8px; font-weight: 600; border-radius: 6px; font-size: 0.9rem; color: #666; }
-        .switch-opt.active { background: white; color: var(--c-navy); }
+        .switch-opt.active { background: white; color: var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
-        /* --- DEVIS SPECIFIC --- */
+        /* --- DEVIS / PREVENTIVO --- */
         .room-scroll-nav {
-            flex: 0 0 50px; background: var(--c-navy); display: flex; overflow-x: auto; align-items: center; padding: 0 10px; gap: 8px;
+            flex: 0 0 55px; background: var(--c-navy); display: flex; overflow-x: auto; align-items: center; padding: 0 10px; gap: 8px;
         }
-        .room-pill { background: rgba(255,255,255,0.2); color: white; padding: 6px 14px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; }
-        .room-pill.active { background: var(--c-yellow); color: var(--c-dark); font-weight: 700; }
+        .room-pill {
+            background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 500;
+        }
+        .room-pill.active { background: var(--c-yellow); color: var(--c-dark); font-weight: 800; }
         
         .measures-footer {
-            position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 60px;
-            background: var(--c-dark); display: flex; align-items: center; padding: 5px; gap: 5px;
-            z-index: 900; border-top: 3px solid var(--c-yellow);
+            position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 65px;
+            background: var(--c-dark); display: flex; align-items: center; padding: 5px 10px; gap: 8px;
+            z-index: 900; border-top: 4px solid var(--c-yellow);
         }
-        .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 4px; height: 35px; font-size: 1rem; }
-        .m-res { color: var(--c-yellow); text-align: center; font-weight: 900; font-size: 1.1rem; line-height: 35px; }
+        .m-box { flex: 1; display: flex; flex-direction: column; }
+        .m-box label { color: #9CA3AF; font-size: 0.6rem; text-align: center; text-transform: uppercase; font-weight: bold; }
+        .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 4px; height: 38px; font-size: 1.1rem; }
+        .m-res { color: var(--c-yellow); text-align: center; font-weight: 900; font-size: 1.2rem; line-height: 38px; }
 
         .fab-add {
             position: fixed; bottom: calc(var(--h-nav) + 75px); right: 20px;
@@ -127,18 +148,22 @@
             flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd;
             display: flex; align-items: center; justify-content: space-between; padding: 0 15px;
         }
-        .btn-save { width: 100%; height: 50px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; }
-        
+        .btn-save { width: 100%; height: 55px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; margin-top: 10px; }
+        .btn-close { font-size: 1.8rem; background: none; border: none; color: #666; padding: 0 10px; }
+
+        /* AI Overlay */
         .ai-overlay {
             position: fixed; bottom: 0; left: 0; width: 100%; background: white; 
             z-index: 3000; border-top-left-radius: 20px; border-top-right-radius: 20px;
-            padding: 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.2);
-            transform: translateY(100%); transition: transform 0.3s ease;
+            padding: 25px; box-shadow: 0 -5px 50px rgba(0,0,0,0.3);
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .ai-overlay.active { transform: translateY(0); }
 
         .ouvr-card {
-            background: white; padding: 12px; margin: 8px 10px; border-radius: 8px; border: 1px solid #E5E7EB; border-left: 4px solid var(--c-yellow); display: flex; justify-content: space-between; align-items: center;
+            background: white; padding: 15px; margin: 8px 10px; border-radius: 8px; 
+            border: 1px solid #E5E7EB; border-left: 5px solid var(--c-yellow); 
+            display: flex; justify-content: space-between; align-items: center;
         }
     </style>
 </head>
@@ -149,14 +174,14 @@
         <h1 style="color:white; margin-bottom:10px;">QOTIA Mobile</h1>
         <div style="color:#CBD5E1; margin-bottom:40px;">COLLABORATEUR</div>
         <div style="background:white; padding:20px; border-radius:12px; width:100%; max-width:350px;">
-            <button class="btn-save" style="border-radius:6px;" onclick="App.login()">CONNEXION</button>
+            <button class="btn-save" onclick="App.login()">ENTRER</button>
         </div>
     </div>
 
     <main id="view-home" class="view-section">
         <header class="mobile-header">
             <div style="font-weight:900; font-size:1.2rem; color:var(--c-navy);">QOTIA</div>
-            <button class="btn-ai-header" onclick="AI.openPrompt('project')"><i class="fas fa-magic"></i> Assistant IA</button>
+            <button class="btn-ai-header" onclick="AI.openPrompt('project')"><i class="fas fa-magic"></i> IA Assistant</button>
         </header>
 
         <div class="action-grid">
@@ -166,32 +191,35 @@
 
         <div style="padding: 0 15px;">
             <div class="card" style="margin:0 0 15px 0; background:#FFFBEB; border-color:var(--c-yellow);">
-                <div style="font-size:0.75rem; text-transform:uppercase; color:#92400E; font-weight:700;">CA Accepté (Mois)</div>
-                <div style="font-size:1.8rem; font-weight:900; color:#B45309;" id="kpi-revenue">0 €</div>
+                <div style="font-size:0.75rem; text-transform:uppercase; color:#92400E; font-weight:700;">CA Signé (Mois)</div>
+                <div style="font-size:2rem; font-weight:900; color:#B45309;" id="kpi-revenue">0 €</div>
             </div>
-            <h3 style="margin: 10px 0; color:var(--c-navy);">Devis Récents</h3>
+            <h3 style="margin: 10px 0; color:var(--c-navy);">Chantiers Récents</h3>
             <div id="home-recent-list"></div>
         </div>
     </main>
 
     <main id="view-clients" class="view-section">
-        <header class="mobile-header"><h3>Clients</h3><button onclick="App.openClientModal()" style="border:none; background:none; font-size:1.5rem; color:var(--c-navy);"><i class="fas fa-plus-circle"></i></button></header>
+        <header class="mobile-header">
+            <h3>Fichier Clients</h3>
+            <button onclick="App.openClientModal()" style="border:none; background:none; font-size:1.5rem; color:var(--c-navy);"><i class="fas fa-plus-circle"></i></button>
+        </header>
         <div style="padding:10px 15px; background:white; border-bottom:1px solid #eee;">
-            <input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)">
+            <input type="text" class="app-input" placeholder="Rechercher nom, entreprise..." onkeyup="App.renderClients(this.value)">
         </div>
         <div id="clients-list-container"></div>
     </main>
 
     <main id="view-devis" class="view-section">
-        <header class="mobile-header" style="height:auto; flex-direction:column; padding:10px 15px; align-items:stretch;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+        <header class="mobile-header" style="height:auto; flex-direction:column; padding:12px 15px; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                 <div style="overflow:hidden;">
                     <div style="font-weight:900; font-size:1.1rem; color:var(--c-navy);" id="devis-client-name">...</div>
-                    <div style="font-size:0.8rem; color:#666;" id="devis-chantier-name">...</div>
+                    <div style="font-size:0.8rem; color:#666; font-weight:500;" id="devis-chantier-name">...</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-weight:900; font-size:1.2rem; color:var(--c-navy);" id="devis-total">0 €</div>
-                    <button onclick="App.openChantierDetails()" style="font-size:0.7rem; background:#EFF6FF; border:1px solid #DBEAFE; padding:2px 6px; border-radius:4px; color:var(--c-navy); font-weight:700;">Info</button>
+                    <div style="font-weight:900; font-size:1.3rem; color:var(--c-navy);" id="devis-total">0 €</div>
+                    <button onclick="App.openChantierDetails()" style="font-size:0.75rem; background:#EFF6FF; border:1px solid #DBEAFE; padding:4px 8px; border-radius:4px; color:var(--c-navy); font-weight:700; margin-top:2px;">Info Chantier</button>
                 </div>
             </div>
         </header>
@@ -206,14 +234,20 @@
             <div class="m-box"><label>L(m)</label><input type="number" class="m-inp" id="m-L" onchange="App.calcMetrics()"></div>
             <div class="m-box"><label>l(m)</label><input type="number" class="m-inp" id="m-l" onchange="App.calcMetrics()"></div>
             <div class="m-box"><label>H(m)</label><input type="number" class="m-inp" id="m-h" value="2.70" onchange="App.calcMetrics()"></div>
-            <div class="m-box" style="flex:0.8;"><label>M²</label><div class="m-res" id="m-surf">0</div></div>
+            <div class="m-box" style="flex:0.8;"><label>SURF (M²)</label><div class="m-res" id="m-surf">0</div></div>
         </div>
     </main>
 
     <main id="view-menu" class="view-section">
         <header class="mobile-header"><h3>Menu Entreprise</h3></header>
         <div style="padding:20px;">
-            <div class="card" onclick="alert('PDF Généré')"><b><i class="fas fa-file-pdf"></i> PDF Devis</b></div>
+            <div class="card" onclick="alert('Module PDF simulé')">
+                <b><i class="fas fa-file-pdf" style="color:var(--c-danger)"></i> Générer PDF Devis</b>
+            </div>
+            <div class="card">
+                <b><i class="fas fa-building" style="color:var(--c-navy)"></i> Mon Entreprise</b>
+                <div class="text-muted" style="font-size:0.8rem; margin-top:5px;">Configurateur SIRET, TVA, Logo</div>
+            </div>
             <button onclick="location.reload()" style="width:100%; padding:15px; margin-top:30px; border:1px solid var(--c-danger); background:white; color:var(--c-danger); font-weight:700; border-radius:8px;">DECONNEXION</button>
         </div>
     </main>
@@ -227,38 +261,71 @@
 
     <div id="ai-overlay" class="ai-overlay">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="color:var(--c-ai);"><i class="fas fa-magic"></i> Assistant IA</h3>
-            <button onclick="AI.close()" style="border:none; background:none; font-size:1.2rem;">&times;</button>
+            <h3 style="color:var(--c-ai); margin:0;"><i class="fas fa-magic"></i> IA Magique</h3>
+            <button onclick="AI.close()" style="border:none; background:none; font-size:1.5rem;">&times;</button>
         </div>
-        <p id="ai-help-text" style="font-size:0.9rem; color:#666; margin-bottom:10px;">Décrivez votre projet...</p>
-        <textarea id="ai-input" class="app-input" style="height:100px; padding:10px; margin-bottom:15px;" placeholder="Es: Rénovation cuisine pour M. Dupont à Paris..."></textarea>
-        <button class="btn-save" style="background:var(--c-ai);" onclick="AI.process()">EXECUTER</button>
+        <p id="ai-help-text" style="font-size:0.9rem; color:#666; margin-bottom:15px; line-height:1.4;">...</p>
+        <textarea id="ai-input" class="app-input" style="height:120px; padding:15px; margin-bottom:15px; font-size:1.1rem;" placeholder="Parlez ou écrivez ici..."></textarea>
+        <button class="btn-save" style="background:var(--c-ai);" onclick="AI.process()">EXECUTER L'IA</button>
     </div>
 
     <div id="modal-chantier" class="full-modal">
         <div class="modal-header"><h3>Nouveau Chantier</h3><button class="btn-close" onclick="App.closeModal('modal-chantier')">&times;</button></div>
-        <div class="modal-body">
-            <div class="form-section-title">1. CLIENT</div>
+        <div class="modal-body" style="padding:15px;">
+            
+            <div class="form-section-title">1. LE CLIENT</div>
             <div class="input-group">
                 <select id="proj-client-select" class="app-input" onchange="App.handleClientSelect(this.value)">
-                    <option value="">-- Choisir --</option><option value="new">+ Créer Nouveau</option>
+                    <option value="">-- Sélectionner --</option><option value="new">+ Créer Nouveau</option>
                 </select>
             </div>
-            <div id="quick-client-form" style="display:none; background:#EFF6FF; padding:10px 0;">
+            <div id="quick-client-form" style="display:none; background:#EFF6FF; padding:15px; border-radius:8px; margin-bottom:15px;">
                 <div class="type-switch mb-2"><div class="switch-opt active" id="qc-phys" onclick="App.toggleQC('phys')">Particulier</div><div class="switch-opt" id="qc-mor" onclick="App.toggleQC('mor')">Entreprise</div></div>
-                <div class="input-group"><input type="text" id="qc-name" class="app-input" placeholder="Nom"></div>
-                <div class="input-group"><input type="text" id="qc-addr" class="app-input" placeholder="Adresse"></div>
+                <div class="input-group"><input type="text" id="qc-name" class="app-input" placeholder="Nom Complet / Société"></div>
+                <div class="input-group"><input type="text" id="qc-addr" class="app-input" placeholder="Adresse Facturation"></div>
             </div>
-            <div class="form-section-title">2. INFOS</div>
-            <div class="input-group"><input type="text" id="proj-name" class="app-input" placeholder="Nom Projet"></div>
-            <div class="input-group"><input type="text" id="proj-addr" class="app-input" placeholder="Adresse Chantier"></div>
-            <div class="form-section-title">3. DETAILS</div>
+
+            <div class="form-section-title">2. INFOS PROJET</div>
+            <div class="input-group"><input type="text" id="proj-name" class="app-input" placeholder="Nom du Projet (ex: Rénov SDB)"></div>
+            <div class="input-group"><input type="text" id="proj-addr" class="app-input" placeholder="Adresse du Chantier"></div>
+            
+            <div class="form-section-title">3. ACCES & TECHNIQUE</div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 15px;">
-                <input type="text" id="proj-code" class="app-input" placeholder="Code">
+                <input type="text" id="proj-code" class="app-input" placeholder="Digicode">
                 <input type="text" id="proj-etage" class="app-input" placeholder="Etage">
             </div>
-            <div class="input-group mt-2"><input type="text" id="proj-syndic" class="app-input" placeholder="Syndic"></div>
-            <div style="padding:15px;"><button class="btn-save" style="border-radius:8px;" onclick="App.createChantier()">CREER</button></div>
+            <div class="input-group mt-2"><input type="text" id="proj-syndic" class="app-input" placeholder="Contact Syndic / Gardien"></div>
+            <div class="input-group"><input type="text" id="proj-plombier" class="app-input" placeholder="Plombier Immeuble"></div>
+            
+            <div style="padding:15px;"><button class="btn-save" onclick="App.createChantier()">CREER CHANTIER</button></div>
+        </div>
+    </div>
+
+    <div id="modal-client" class="full-modal">
+        <div class="modal-header"><h3>Fiche Client</h3><button class="btn-close" onclick="App.closeModal('modal-client')">&times;</button></div>
+        <div class="modal-body" style="padding:15px;">
+            <input type="hidden" id="cli-id">
+            <div class="type-switch mb-2"><div class="switch-opt active" id="cli-type-phys" onclick="App.setClientType('physique')">Physique</div><div class="switch-opt" id="cli-type-mor" onclick="App.setClientType('morale')">Morale</div></div>
+            
+            <div class="form-section-title">CONTACT</div>
+            <div class="input-group"><label class="input-label">Email</label><input type="email" id="cli-email" class="app-input"></div>
+            <div class="input-group"><label class="input-label">Téléphone</label><input type="tel" id="cli-phone" class="app-input"></div>
+            <div class="input-group"><label class="input-label">Adresse Fact.</label><input type="text" id="cli-addr" class="app-input"></div>
+
+            <div id="fields-phys">
+                <div class="form-section-title">IDENTITE</div>
+                <div class="input-group"><label class="input-label">Nom</label><input type="text" id="cli-nom" class="app-input"></div>
+                <div class="input-group"><label class="input-label">Prénom</label><input type="text" id="cli-prenom" class="app-input"></div>
+            </div>
+            <div id="fields-mor" style="display:none;">
+                <div class="form-section-title">SOCIETE</div>
+                <div class="input-group"><label class="input-label">Raison Sociale</label><input type="text" id="cli-soc" class="app-input"></div>
+                <div class="input-group"><label class="input-label">SIRET</label><input type="text" id="cli-siret" class="app-input"></div>
+                <div class="input-group"><label class="input-label">TVA Intra</label><input type="text" id="cli-tva" class="app-input"></div>
+            </div>
+
+            <div style="padding:15px;"><button class="btn-save" onclick="App.saveClient()">ENREGISTRER</button></div>
+            <div style="padding:0 15px;"><button onclick="App.createChantierForClient()" style="width:100%; padding:15px; background:#ECFDF5; color:#065F46; border:1px solid #10B981; border-radius:8px; font-weight:700;">+ CREER CHANTIER</button></div>
         </div>
     </div>
 
@@ -267,22 +334,28 @@
         <div class="modal-body" id="lib-container" style="padding:0;"></div>
     </div>
 
-    <div id="modal-client" class="full-modal">
-        <div class="modal-header"><h3>Client</h3><button class="btn-close" onclick="App.closeModal('modal-client')">&times;</button></div>
-        <div class="modal-body">
-            <input type="hidden" id="cli-id">
-            <div class="type-switch mt-2"><div class="switch-opt active" id="cli-type-phys" onclick="App.setClientType('physique')">Phys</div><div class="switch-opt" id="cli-type-mor" onclick="App.setClientType('morale')">Morale</div></div>
-            <div class="input-group mt-2"><label class="input-label">Nom / Soc.</label><input type="text" id="cli-nom" class="app-input"></div>
-            <div class="input-group"><label class="input-label">Email</label><input type="email" id="cli-email" class="app-input"></div>
-            <div class="input-group"><label class="input-label">Adresse</label><input type="text" id="cli-addr" class="app-input"></div>
-            <div style="padding:15px;"><button class="btn-save" style="border-radius:8px;" onclick="App.saveClient()">SAUVEGARDER</button></div>
-        </div>
-    </div>
-
     <script>
-        // MOCK AI ENGINE (Simulatore)
+        // --- 1. CONFIG & DATA ---
+        const Config = {
+            LIBRARY: {
+                'INSTALLATION': ['Protection sol', 'Echafaudage', 'Benne'],
+                'DEMOLITION': ['Dépose sol', 'Démolition cloison', 'Evacuation Gravats'],
+                'PLATRERIE': ['Cloison BA13', 'Doublage', 'Faux-plafond', 'Enduit'],
+                'PEINTURE': ['Impression', 'Peinture Murs', 'Peinture Plafonds'],
+                'SOLS': ['Ragréage', 'Carrelage', 'Parquet Flottant', 'Plinthes'],
+                'ELECTRICITE': ['Prise', 'Interrupteur', 'Tableau Elec', 'Spots']
+            }
+        };
+
+        const Store = {
+            data: { clients: [], chantiers: [], activeChantierId: null },
+            init() { const s=localStorage.getItem('qotia_vFinal'); if(s) this.data=JSON.parse(s); },
+            save() { localStorage.setItem('qotia_vFinal', JSON.stringify(this.data)); }
+        };
+
+        // --- 2. INTELLIGENZA ARTIFICIALE (SIMULATA) ---
         const AI = {
-            mode: null, // 'project' or 'items'
+            mode: null,
             
             openPrompt(mode) {
                 this.mode = mode;
@@ -291,9 +364,9 @@
                 document.getElementById('ai-input').value = "";
                 
                 if(mode === 'project') {
-                    help.innerText = "Ex: Rénovation SDB pour Marco Rossi à Nice...";
+                    help.innerText = "Dites par exemple: 'Rénovation Cuisine pour Jean Dupont à Paris avec code 1234'";
                 } else {
-                    help.innerText = "Ex: Peinture murs 40m2 et Pose carrelage 15m2...";
+                    help.innerText = "Dites par exemple: 'Peinture murs 45m2 et pose carrelage 12m2'";
                 }
                 overlay.classList.add('active');
             },
@@ -303,106 +376,92 @@
             process() {
                 const text = document.getElementById('ai-input').value;
                 if(!text) return;
-                
                 this.close();
                 
-                if(this.mode === 'project') {
-                    this.simulateProjectCreation(text);
-                } else {
-                    this.simulateItemAdd(text);
-                }
+                // Feedback Visivo
+                const btn = document.querySelector(this.mode === 'project' ? '.btn-ai-header' : '.btn-ai-float');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyse...';
+                
+                setTimeout(() => {
+                    if(this.mode === 'project') this.simulateProjectCreation(text);
+                    else this.simulateItemAdd(text);
+                    btn.innerHTML = originalText;
+                }, 1500); // Ritardo per effetto "Pensiero"
             },
             
             simulateProjectCreation(text) {
-                alert("🤖 IA Analyse: Création Client & Chantier...");
-                // Simple parser logic for demo
+                // Heuristic Parsing
                 const words = text.split(" ");
-                const nameIndex = words.findIndex(w => w.toLowerCase() === "pour" || w.toLowerCase() === "per");
-                const addrIndex = words.findIndex(w => w.toLowerCase() === "à" || w.toLowerCase() === "a");
+                const nameIdx = words.findIndex(w => ['pour','per'].includes(w.toLowerCase()));
+                const addrIdx = words.findIndex(w => ['à','a'].includes(w.toLowerCase()));
                 
-                let clientName = "Nouveau Client";
-                let projectName = text.substring(0, nameIndex > 0 ? nameIndex : 15);
-                let address = "Adresse Inconnue";
+                let clientName = "Nouveau Client (IA)";
+                let projectName = text.substring(0, nameIdx > 0 ? nameIdx * 10 : 20) + "...";
+                let addr = "Non spécifiée";
 
-                if(nameIndex !== -1) {
-                    let end = addrIndex !== -1 ? addrIndex : words.length;
-                    clientName = words.slice(nameIndex + 1, end).join(" ");
-                }
-                if(addrIndex !== -1) {
-                    address = words.slice(addrIndex + 1).join(" ");
-                }
+                if(nameIdx !== -1) clientName = words.slice(nameIdx + 1, addrIdx !== -1 ? addrIdx : words.length).join(" ");
+                if(addrIdx !== -1) addr = words.slice(addrIdx + 1).join(" ");
 
-                // Create Logic
-                const newC = {
-                    id: Date.now(), type:'physique', nom: clientName, company: clientName, addr: address, email:''
-                };
+                // 1. Create Client
+                const newC = { id: Date.now(), type:'physique', nom:clientName, company:clientName, addr:addr, email:'', phone:'' };
                 Store.data.clients.push(newC);
                 
+                // 2. Create Chantier
                 const chantier = {
-                    id: Date.now()+1, clientId: newC.id, name: projectName, addr: address,
-                    details: {}, rooms:['Cuisine'], activeRoom:'Cuisine', metrics:{'Cuisine':{L:0,l:0,h:2.7}}, items:[]
+                    id: Date.now()+1, clientId: newC.id, name: projectName, addr: addr,
+                    details: { code: text.match(/\d{4}/) ? text.match(/\d{4}/)[0] : "" },
+                    rooms:['Cuisine'], activeRoom:'Cuisine', metrics:{'Cuisine':{L:0,l:0,h:2.7}}, items:[]
                 };
                 Store.data.chantiers.unshift(chantier);
                 Store.data.activeChantierId = chantier.id;
                 Store.save();
+                
                 App.nav('devis');
+                alert(`✨ IA: Client "${clientName}" et Chantier créés !`);
             },
             
             simulateItemAdd(text) {
                 const ch = App.getActiveChantier();
-                if(!ch) return alert("Pas de chantier actif");
+                if(!ch) return alert("Erreur: Pas de chantier actif");
                 
-                alert("🤖 IA Ajoute les ouvrages...");
-                
-                // Demo logic: look for numbers
-                const parts = text.split(" et "); // Split multiple commands
-                parts.forEach(part => {
-                    const match = part.match(/(\d+)/);
-                    let qty = 1;
-                    if(match) qty = parseInt(match[0]);
+                // Heuristic Parsing for Items
+                const segments = text.split(/ et |,| avec /);
+                let addedCount = 0;
+
+                segments.forEach(seg => {
+                    const matchNum = seg.match(/(\d+([.,]\d+)?)/);
+                    let qty = matchNum ? parseFloat(matchNum[0].replace(',','.')) : 1;
                     
                     let fam = "DIVERS";
-                    if(part.toLowerCase().includes("peinture")) fam = "PEINTURE";
-                    if(part.toLowerCase().includes("sol") || part.toLowerCase().includes("carrelage")) fam = "SOLS";
-                    if(part.toLowerCase().includes("elec")) fam = "ELECTRICITE";
+                    let desc = seg.replace(qty, "").trim() + " (via IA)";
+                    
+                    if(seg.match(/pein|mur|plafond/i)) fam = "PEINTURE";
+                    else if(seg.match(/sol|carr|parq/i)) fam = "SOLS";
+                    else if(seg.match(/elec|prise|inter/i)) fam = "ELECTRICITE";
+                    else if(seg.match(/demo|cass/i)) fam = "DEMOLITION";
 
                     const item = {
                         id: Date.now() + Math.random(),
                         room: ch.activeRoom,
-                        fam: fam,
-                        desc: part.replace(qty, "").trim() + " (via IA)",
-                        qty: qty,
-                        unit: 'm²',
-                        price: 45,
-                        tva: 0.1
+                        fam: fam, desc: desc, qty: qty, unit: 'm²', price: 45, tva: 0.1
                     };
                     ch.items.push(item);
+                    addedCount++;
                 });
                 Store.save();
                 App.renderDevis();
+                alert(`✨ IA: ${addedCount} ouvrages ajoutés à ${ch.activeRoom} !`);
             }
         };
 
-        // --- APP LOGIC ---
-        const Config = {
-            LIBRARY: {
-                'INSTALLATION': ['Protection', 'Echafaudage', 'Benne'],
-                'DEMOLITION': ['Dépose sol', 'Démolition cloison', 'Evacuation'],
-                'PLATRERIE': ['Cloison BA13', 'Doublage', 'Enduit'],
-                'PEINTURE': ['Impression', 'Peinture Murs', 'Peinture Plafonds'],
-                'SOLS': ['Ragréage', 'Carrelage', 'Parquet'],
-                'ELECTRICITE': ['Prise', 'Interrupteur', 'Tableau']
-            }
-        };
-
-        const Store = {
-            data: { clients: [], chantiers: [], activeChantierId: null },
-            init() { const s = localStorage.getItem('qotia_v4'); if(s) this.data = JSON.parse(s); },
-            save() { localStorage.setItem('qotia_v4', JSON.stringify(this.data)); }
-        };
-
+        // --- 3. APP CONTROLLER ---
         const App = {
-            init() { Store.init(); if(localStorage.getItem('qotia_logged')) document.getElementById('login-view').style.display='none'; this.renderHome(); },
+            init() { 
+                Store.init(); 
+                if(localStorage.getItem('qotia_logged')) document.getElementById('login-view').style.display='none'; 
+                this.renderHome(); 
+            },
             login() { localStorage.setItem('qotia_logged','true'); document.getElementById('login-view').style.display='none'; },
             
             nav(view) {
@@ -418,42 +477,56 @@
             renderClients(filter="") {
                 const list=document.getElementById('clients-list-container'); list.innerHTML="";
                 Store.data.clients.forEach(c=>{
-                    let name = c.type==='morale'?c.company:c.nom;
+                    let name = c.type==='morale'?c.company:c.nom + (c.prenom ? ' '+c.prenom : '');
                     if(name.toLowerCase().includes(filter.toLowerCase())){
                         const d=document.createElement('div'); d.className='card';
-                        d.innerHTML=`<div style="font-weight:700;">${name}</div><div class="text-muted">${c.addr||''}</div>`;
+                        d.style.borderLeftColor = c.type==='morale' ? '#4B5563' : '#1E3A8A';
+                        d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;"><div><div style="font-weight:700;">${name}</div><div class="text-muted">${c.addr||''}</div></div><button onclick="App.editClient(${c.id})" style="background:#F3F4F6;border:none;width:40px;height:40px;border-radius:50%;"><i class="fas fa-pen"></i></button></div>`;
                         list.appendChild(d);
                     }
                 });
             },
-            openClientModal() { document.getElementById('modal-client').classList.add('open'); },
+            openClientModal() { document.getElementById('cli-id').value=''; document.getElementById('modal-client').classList.add('open'); },
             setClientType(t) { 
                 const isMor = t==='morale';
                 document.getElementById('cli-type-phys').className=`switch-opt ${!isMor?'active':''}`;
                 document.getElementById('cli-type-mor').className=`switch-opt ${isMor?'active':''}`;
+                document.getElementById('fields-phys').style.display=isMor?'none':'block';
+                document.getElementById('fields-mor').style.display=isMor?'block':'none';
             },
             saveClient() {
+                const id = document.getElementById('cli-id').value;
                 const c = {
-                    id: Date.now(), type: document.getElementById('cli-type-mor').classList.contains('active')?'morale':'physique',
-                    nom: document.getElementById('cli-nom').value, company: document.getElementById('cli-nom').value,
-                    email: document.getElementById('cli-email').value, addr: document.getElementById('cli-addr').value
+                    id: id ? parseInt(id) : Date.now(),
+                    type: document.getElementById('cli-type-mor').classList.contains('active')?'morale':'physique',
+                    nom: document.getElementById('cli-nom').value, prenom: document.getElementById('cli-prenom').value,
+                    company: document.getElementById('cli-soc').value, siret: document.getElementById('cli-siret').value,
+                    email: document.getElementById('cli-email').value, phone: document.getElementById('cli-phone').value, addr: document.getElementById('cli-addr').value
                 };
-                Store.data.clients.push(c); Store.save(); App.closeModal('modal-client'); App.renderClients();
+                if(id) { const idx=Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; }
+                else { Store.data.clients.push(c); }
+                Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
             },
+            editClient(id){
+                const c=Store.data.clients.find(x=>x.id==id); if(!c) return;
+                document.getElementById('cli-id').value=c.id;
+                document.getElementById('cli-email').value=c.email; document.getElementById('cli-phone').value=c.phone; document.getElementById('cli-addr').value=c.addr;
+                this.setClientType(c.type);
+                if(c.type==='physique'){ document.getElementById('cli-nom').value=c.nom; document.getElementById('cli-prenom').value=c.prenom; }
+                else { document.getElementById('cli-soc').value=c.company; document.getElementById('cli-siret').value=c.siret; }
+                document.getElementById('modal-client').classList.add('open');
+            },
+            createChantierForClient(){ const id=App.saveClient(); App.openProjectWizard(id); },
 
             // CHANTIER
-            openProjectWizard() { 
-                const sel = document.getElementById('proj-client-select'); sel.innerHTML='<option value="">--</option><option value="new">+ Nouveau</option>';
-                Store.data.clients.forEach(c=>{
-                    let opt=document.createElement('option'); opt.value=c.id; opt.text=c.type==='morale'?c.company:c.nom; sel.appendChild(opt);
-                });
+            openProjectWizard(preId=null) { 
+                const sel = document.getElementById('proj-client-select'); sel.innerHTML='<option value="">-- Client --</option><option value="new">+ Créer Nouveau</option>';
+                Store.data.clients.forEach(c=>{ let opt=document.createElement('option'); opt.value=c.id; opt.text=c.type==='morale'?c.company:c.nom; sel.appendChild(opt); });
+                if(preId) sel.value=preId;
                 document.getElementById('modal-chantier').classList.add('open'); 
             },
             handleClientSelect(v) { document.getElementById('quick-client-form').style.display = v==='new'?'block':'none'; },
-            toggleQC(t) {
-                document.getElementById('qc-phys').className=`switch-opt ${t=='phys'?'active':''}`;
-                document.getElementById('qc-mor').className=`switch-opt ${t=='mor'?'active':''}`;
-            },
+            toggleQC(t) { document.getElementById('qc-phys').className=`switch-opt ${t=='phys'?'active':''}`; document.getElementById('qc-mor').className=`switch-opt ${t=='mor'?'active':''}`; },
             createChantier() {
                 let cliId = document.getElementById('proj-client-select').value;
                 if(cliId === 'new') {
@@ -464,7 +537,7 @@
                 const ch = {
                     id: Date.now(), clientId: parseInt(cliId), name: document.getElementById('proj-name').value||'Chantier',
                     addr: document.getElementById('proj-addr').value, 
-                    details: { code: document.getElementById('proj-code').value, syndic: document.getElementById('proj-syndic').value },
+                    details: { code: document.getElementById('proj-code').value, etage: document.getElementById('proj-etage').value, syndic: document.getElementById('proj-syndic').value, plombier: document.getElementById('proj-plombier').value },
                     rooms:['Cuisine'], activeRoom:'Cuisine', metrics:{'Cuisine':{L:0,l:0,h:2.7}}, items:[]
                 };
                 Store.data.chantiers.unshift(ch); Store.data.activeChantierId=ch.id; Store.save();
@@ -475,10 +548,10 @@
             getActiveChantier() { return Store.data.chantiers.find(c=>c.id==Store.data.activeChantierId); },
             renderDevis() {
                 const ch = this.getActiveChantier();
-                if(!ch) return document.getElementById('devis-items-list').innerHTML='<div style="text-align:center;padding:20px;color:#999">Aucun chantier</div>';
+                if(!ch) return document.getElementById('devis-items-list').innerHTML='<div style="text-align:center;padding:30px;color:#999">Aucun chantier actif</div>';
                 
                 const cli = Store.data.clients.find(c=>c.id==ch.clientId);
-                document.getElementById('devis-client-name').innerText = cli?(cli.type==='morale'?cli.company:cli.nom):'Client?';
+                document.getElementById('devis-client-name').innerText = cli?(cli.type==='morale'?cli.company:cli.nom):'Inconnu';
                 document.getElementById('devis-chantier-name').innerText = ch.name;
 
                 // Rooms
@@ -488,32 +561,28 @@
                     p.onclick=()=>{ch.activeRoom=r; Store.save(); App.renderDevis();}; tabs.appendChild(p);
                 });
                 const add=document.createElement('div'); add.className='room-pill'; add.innerHTML='+'; 
-                add.onclick=()=>{const n=prompt('Nom?'); if(n){ch.rooms.push(n); ch.metrics[n]={L:0,l:0,h:2.7}; ch.activeRoom=n; Store.save(); App.renderDevis();}}; tabs.appendChild(add);
+                add.onclick=()=>{const n=prompt('Nom pièce?'); if(n){ch.rooms.push(n); ch.metrics[n]={L:0,l:0,h:2.7}; ch.activeRoom=n; Store.save(); App.renderDevis();}}; tabs.appendChild(add);
 
                 // Metrics
                 const m=ch.metrics[ch.activeRoom]||{L:0,l:0,h:2.7};
                 document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h;
                 this.calcMetrics(false);
 
-                // Items
+                // Items List
                 const list=document.getElementById('devis-items-list'); list.innerHTML='';
-                let tot=0;
+                let gTot=0;
                 ch.items.filter(i=>i.room==ch.activeRoom).forEach(i=>{
-                    const t=i.qty*i.price; tot+=t;
+                    const t=i.qty*i.price; 
                     const d=document.createElement('div'); d.className='ouvr-card';
-                    d.innerHTML=`<div><div style="font-size:0.7rem;color:#1E3A8A;font-weight:700;">${i.fam}</div><div style="font-weight:600;">${i.desc}</div><div style="font-size:0.8rem;color:#666;">${i.qty} x ${i.price}€</div></div><div style="font-weight:900;">${t.toFixed(0)}€</div>`;
+                    d.innerHTML=`<div><div style="font-size:0.7rem;color:#1E3A8A;font-weight:700;">${i.fam}</div><div style="font-weight:600;">${i.desc}</div><div style="font-size:0.8rem;color:#666;">${i.qty} x ${i.price}€</div></div><div style="font-weight:900;font-size:1.1rem;">${t.toFixed(0)}€</div>`;
                     list.appendChild(d);
                 });
-                
-                // Global Total
-                let gTot=0; ch.items.forEach(i=>gTot+=i.qty*i.price);
+                ch.items.forEach(i=>gTot+=i.qty*i.price);
                 document.getElementById('devis-total').innerText = gTot.toFixed(0)+'€';
                 document.getElementById('kpi-revenue').innerText = gTot.toFixed(0)+'€';
             },
             calcMetrics(save=true) {
-                const L=parseFloat(document.getElementById('m-L').value)||0;
-                const l=parseFloat(document.getElementById('m-l').value)||0;
-                const h=parseFloat(document.getElementById('m-h').value)||0;
+                const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; const h=parseFloat(document.getElementById('m-h').value)||0;
                 document.getElementById('m-surf').innerText=(L*l).toFixed(2);
                 if(save){ const ch=this.getActiveChantier(); if(ch){ ch.metrics[ch.activeRoom]={L,l,h}; Store.save(); }}
             },
@@ -522,7 +591,7 @@
                 for(const [f,its] of Object.entries(Config.LIBRARY)) {
                     const h=document.createElement('div'); h.style='background:#eee;padding:10px;font-weight:bold;color:#1E3A8A'; h.innerText=f; cont.appendChild(h);
                     its.forEach(it=>{
-                        const r=document.createElement('div'); r.style='padding:15px;border-bottom:1px solid #ddd'; r.innerText=it;
+                        const r=document.createElement('div'); r.style='padding:15px;border-bottom:1px solid #ddd;background:white'; r.innerText=it;
                         r.onclick=()=>{App.addItem(f,it); App.closeModal('modal-library');}; cont.appendChild(r);
                     });
                 }
@@ -536,14 +605,17 @@
             },
             
             // UTILS
-            openChantierDetails(){ const c=this.getActiveChantier(); if(c) alert(`Code: ${c.details.code}\nSyndic: ${c.details.syndic}`); },
+            openChantierDetails(){ 
+                const c=this.getActiveChantier(); 
+                if(c) alert(`Code: ${c.details.code || '-'}\nEtage: ${c.details.etage || '-'}\nSyndic: ${c.details.syndic || '-'}\nPlombier: ${c.details.plombier || '-'}`); 
+            },
             closeModal(id){document.getElementById(id).classList.remove('open');},
             renderHome(){
                 const l=document.getElementById('home-recent-list'); l.innerHTML='';
                 Store.data.chantiers.slice(0,5).forEach(c=>{
                     const cli=Store.data.clients.find(x=>x.id==c.clientId);
                     const d=document.createElement('div'); d.className='card';
-                    d.innerHTML=`<div style="font-weight:700">${c.name}</div><div class="text-muted">${cli?cli.nom:'?'}</div>`;
+                    d.innerHTML=`<div style="font-weight:700">${c.name}</div><div class="text-muted" style="font-size:0.85rem">${cli?cli.nom:'?'}</div>`;
                     d.onclick=()=>{Store.data.activeChantierId=c.id;Store.save();App.nav('devis');}; l.appendChild(d);
                 });
             }
