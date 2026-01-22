@@ -6,120 +6,211 @@
     <meta name="theme-color" content="#FFFFFF">
     <title>QOTIA Mobile Ultimate</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
+            /* Palette Modernizzata */
             --c-yellow: #FCD34D;
+            --c-yellow-dark: #F59E0B;
             --c-navy: #1E3A8A;
+            --c-navy-light: #2563EB;
             --c-dark: #111827;
-            --c-grey-bg: #FFFFFF;
-            --c-grey-light: #F3F4F6;
+            --c-grey-bg: #F9FAFB; /* Sfondo leggermente più freddo */
+            --c-surface: #FFFFFF;
             --c-border: #E5E7EB;
+            --c-text-sub: #6B7280;
             --c-danger: #EF4444;
             --c-success: #10B981;
             
             --h-nav: 75px;
             --h-header: 60px;
-            --radius: 6px;
+            --radius: 12px; /* Curve più morbide */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; background: var(--c-grey-bg); color: var(--c-dark); font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--c-grey-bg); color: var(--c-dark); font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         /* LAYOUT */
-        .view-section { display: none; flex-direction: column; height: 100%; width: 100%; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-light); }
+        .view-section { display: none; flex-direction: column; height: 100%; width: 100%; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); }
         .view-section.active { display: flex; }
-        #view-devis-editor { padding-bottom: 140px; }
+        
+        /* Padding specifico per l'editor (spazio per footer misure + totali) */
+        #view-devis-editor { padding-bottom: 160px; } 
 
-        /* HEADER */
+        /* HEADER MODERN */
         .mobile-header {
-            flex: 0 0 var(--h-header); background: var(--c-grey-bg); border-bottom: 1px solid var(--c-border);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 15px; z-index: 100;
+            flex: 0 0 var(--h-header); background: var(--c-surface); border-bottom: 1px solid var(--c-border);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100;
+            box-shadow: var(--shadow-sm);
         }
-        .logo-text { font-weight: 900; font-size: 1.2rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; }
-        .header-btn { border: none; background: transparent; font-size: 1.4rem; color: var(--c-navy); cursor: pointer; }
+        .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
+        .header-btn { border: none; background: transparent; font-size: 1.4rem; color: var(--c-dark); cursor: pointer; transition: transform 0.2s; }
+        .header-btn:active { transform: scale(0.9); }
 
         /* BOTTOM NAV */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav);
-            background: var(--c-grey-bg); border-top: 1px solid var(--c-border);
+            background: var(--c-surface); border-top: 1px solid var(--c-border);
             display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; 
-            z-index: 1000; align-items: end; padding-bottom: 10px;
+            z-index: 1000; align-items: end; padding-bottom: 12px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
         }
         .nav-btn {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 500;
-            height: 100%; cursor: pointer; text-transform: uppercase;
+            color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 600;
+            height: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.2s;
         }
-        .nav-btn i { font-size: 1.3rem; margin-bottom: 4px; }
-        .nav-btn.active { color: var(--c-navy); font-weight: 700; }
+        .nav-btn i { font-size: 1.4rem; margin-bottom: 5px; }
+        .nav-btn.active { color: var(--c-navy); }
 
         .nav-btn-ai-wrapper { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
         .ai-circle-big {
-            position: absolute; bottom: 20px; 
-            width: 65px; height: 65px; 
-            background: var(--c-yellow); border: 4px solid var(--c-grey-bg);
+            position: absolute; bottom: 25px; 
+            width: 60px; height: 60px; 
+            background: var(--c-yellow); border: 4px solid var(--c-surface);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1); cursor: pointer;
+            box-shadow: 0 4px 15px rgba(252, 211, 77, 0.4); cursor: pointer;
             font-weight: 900; color: var(--c-navy); font-size: 1.2rem; z-index: 1001;
+            transition: transform 0.2s;
         }
+        .ai-circle-big:active { transform: scale(0.95); }
 
-        /* UI ELEMENTS */
-        .card { background: white; border-radius: var(--radius); padding: 15px; margin: 10px 15px; border: 1px solid var(--c-border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        /* UI CARDS & BUTTONS */
+        .card { 
+            background: var(--c-surface); border-radius: var(--radius); padding: 20px; margin: 15px; 
+            border: 1px solid var(--c-border); box-shadow: var(--shadow-sm); 
+        }
+        
         .top-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px 15px; }
         .action-box {
-            border: 2px solid var(--c-border); border-radius: var(--radius); height: 90px;
+            border: 1px solid var(--c-border); border-radius: var(--radius); height: 100px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; font-weight: 700; font-size: 0.95rem; background: white; cursor: pointer;
-            color: var(--c-navy); transition: all 0.2s;
+            text-align: center; font-weight: 700; font-size: 0.95rem; background: var(--c-surface); cursor: pointer;
+            color: var(--c-dark); box-shadow: var(--shadow-sm); transition: all 0.2s;
         }
-        .action-box:active { background: #EFF6FF; border-color: var(--c-navy); }
-        .section-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; margin: 20px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
+        .action-box:active { background: #EFF6FF; border-color: var(--c-navy); transform: translateY(2px); }
+        .action-box i { font-size: 2rem; margin-bottom: 8px; color: var(--c-navy); }
 
-        /* BADGES */
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
-        .bg-draft { background: #E5E7EB; color: #374151; }
-        .bg-ok { background: #ECFDF5; color: #065F46; }
-        .bg-wait { background: #FFF7ED; color: #9A3412; }
-        .bg-no { background: #FEF2F2; color: #991B1B; }
+        .section-title { 
+            font-size: 0.85rem; font-weight: 700; text-transform: uppercase; 
+            margin: 25px 15px 10px 15px; color: var(--c-text-sub); letter-spacing: 1px; 
+        }
+
+        /* SEGMENTED CONTROLS (Modern Toggles) */
+        .segmented-control {
+            display: flex; background: #E5E7EB; padding: 4px; border-radius: 8px; margin: 10px 15px;
+        }
+        .segment-btn {
+            flex: 1; text-align: center; padding: 8px; font-weight: 600; font-size: 0.85rem;
+            border-radius: 6px; cursor: pointer; color: #666; transition: all 0.2s;
+        }
+        .segment-btn.active {
+            background: white; color: var(--c-navy); box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
         /* LIST ITEMS */
-        .list-item { background: white; padding: 15px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .list-title { font-weight: 700; font-size: 0.95rem; color: var(--c-dark); }
-        .list-sub { font-size: 0.8rem; color: #666; margin-top: 2px; }
+        .list-item { 
+            background: white; padding: 18px 15px; border-bottom: 1px solid var(--c-border); 
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .list-item:active { background: #F3F4F6; }
+        .list-title { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
+        .list-sub { font-size: 0.85rem; color: var(--c-text-sub); margin-top: 4px; }
 
         /* FORMS */
-        .app-input { width: 100%; height: 45px; border: 1px solid #D1D5DB; padding: 0 10px; font-size: 1rem; border-radius: 4px; background: white; }
-        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--c-navy); margin: 10px 0 4px 0; text-transform: uppercase; }
-        .btn-black { width: 100%; height: 50px; background: var(--c-dark); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 4px; cursor: pointer; }
-        .type-switch { display: flex; background: #E5E7EB; padding: 3px; border-radius: 6px; margin-bottom: 15px; }
-        .sw-opt { flex: 1; text-align: center; padding: 8px; font-weight: 600; cursor: pointer; border-radius: 4px; color: #666; }
-        .sw-opt.active { background: white; color: var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-
-        /* EDITOR */
-        .room-scroll-nav { flex: 0 0 50px; background: var(--c-navy); display: flex; overflow-x: auto; align-items: center; padding: 0 10px; gap: 8px; }
-        .room-pill { background: rgba(255,255,255,0.2); color: white; padding: 6px 14px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; cursor: pointer; }
-        .room-pill.active { background: var(--c-yellow); color: var(--c-dark); font-weight: 700; }
-        .measures-footer { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 60px; background: var(--c-dark); display: flex; align-items: center; padding: 5px; gap: 5px; z-index: 900; border-top: 3px solid var(--c-yellow); }
-        .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 4px; height: 35px; font-size: 1rem; }
-        .m-res { color: var(--c-yellow); text-align: center; font-weight: 900; font-size: 1.1rem; line-height: 35px; }
+        .app-input { 
+            width: 100%; height: 50px; border: 1px solid var(--c-border); padding: 0 15px; 
+            font-size: 1rem; border-radius: 8px; background: white; margin-bottom: 15px;
+            transition: border-color 0.2s;
+        }
+        .app-input:focus { border-color: var(--c-navy); outline: none; }
         
+        .form-label { 
+            display: block; font-size: 0.75rem; font-weight: 700; color: var(--c-text-sub); 
+            margin: 0 0 6px 0; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        
+        .btn-primary { 
+            width: 100%; height: 55px; background: var(--c-navy); color: white; 
+            font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; 
+            cursor: pointer; box-shadow: 0 4px 6px rgba(30, 58, 138, 0.2);
+        }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* EDITOR SPECIFICS (Refined) */
+        .editor-header {
+            background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border);
+            position: sticky; top: 0; z-index: 50; box-shadow: var(--shadow-sm);
+        }
+        .editor-info { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .proj-title { font-weight: 800; font-size: 1.1rem; color: var(--c-dark); }
+        .client-sub { font-size: 0.9rem; color: var(--c-text-sub); }
+        .total-display { font-weight: 900; font-size: 1.4rem; color: var(--c-navy); text-align: right; }
+        
+        .room-scroll-nav { 
+            flex: 0 0 55px; background: white; display: flex; overflow-x: auto; 
+            align-items: center; padding: 0 15px; gap: 10px; border-bottom: 1px solid var(--c-border);
+        }
+        .room-pill { 
+            background: #F3F4F6; color: var(--c-text-sub); padding: 8px 16px; border-radius: 20px; 
+            white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid transparent;
+        }
+        .room-pill.active { 
+            background: var(--c-yellow); color: var(--c-navy); border-color: var(--c-yellow-dark);
+        }
+
+        /* ITEM CARD (Complex) */
+        .item-card {
+            background: white; border-radius: 10px; padding: 15px; margin: 10px 15px;
+            border: 1px solid var(--c-border); box-shadow: var(--shadow-sm);
+            display: flex; flex-direction: column; gap: 8px; position: relative;
+            border-left: 4px solid var(--c-navy); /* Default Devis */
+        }
+        .mode-etude .item-card { border-left-color: var(--c-success); } /* Green for Etude */
+
+        .item-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-desc { font-weight: 700; font-size: 1rem; color: var(--c-dark); line-height: 1.4; }
+        .item-badge { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: #F3F4F6; color: #666; margin-bottom: 4px; display: inline-block; }
+        
+        .item-details { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; padding-top: 8px; border-top: 1px dashed #eee; }
+        .detail-group { display: flex; gap: 15px; font-size: 0.9rem; color: #666; }
+        .price-tag { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
+        .tech-tag { font-weight: 700; font-size: 0.9rem; color: var(--c-success); display: none; }
+        
+        /* Mode switching logic inside items */
+        .mode-etude .price-tag { display: none; }
+        .mode-etude .tech-tag { display: block; }
+
+        /* STICKY FOOTER METRICS */
+        .measures-footer { 
+            position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 70px; 
+            background: var(--c-dark); display: flex; align-items: center; padding: 0 10px; gap: 8px; 
+            z-index: 900; border-top: 4px solid var(--c-yellow); 
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+        }
+        .m-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .m-box label { color: #9CA3AF; font-size: 0.65rem; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+        .m-inp { 
+            width: 100%; background: #374151; border: 1px solid #4B5563; color: white; 
+            text-align: center; font-weight: bold; border-radius: 6px; height: 38px; font-size: 1.1rem; 
+        }
+        .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
+
         /* MODALS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-light); z-index: 2000; display: none; flex-direction: column; }
         .full-modal.open { display: flex; }
-        .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; }
+        .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
-        .modal-footer { padding: 15px; background: white; border-top: 1px solid #ddd; }
-
-        /* AI OVERLAY */
-        .ai-overlay { position: fixed; bottom: 0; left: 0; width: 100%; background: white; z-index: 3000; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -10px 50px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.3s; }
-        .ai-overlay.active { transform: translateY(0); }
+        .modal-footer { padding: 20px; background: white; border-top: 1px solid #ddd; }
 
         /* SIDE MENU */
-        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 2500; transition: right 0.3s; box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 2500; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .side-menu.open { right: 0; }
         .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2400; display: none; }
         .side-overlay.open { display: block; }
@@ -130,19 +221,22 @@
 
     <main id="view-home" class="view-section active">
         <header class="mobile-header">
-            <div class="logo-text"><i class="fas fa-hammer text-yellow"></i> QOTIA</div>
+            <div class="logo-text"><i class="fas fa-hammer" style="color:var(--c-yellow)"></i> QOTIA</div>
             <button class="header-btn" onclick="App.toggleMenu()"><i class="fas fa-bars"></i></button>
         </header>
 
-        <div style="padding:20px 15px 0 15px; font-size:1.2rem; font-weight:700;">Bonjour, <span id="user-name">Collaborateur</span></div>
+        <div style="padding:25px 20px 0 20px;">
+            <div style="font-size:1.5rem; font-weight:800; color:var(--c-dark);">Bonjour,</div>
+            <div style="font-size:1.1rem; color:var(--c-text-sub);">Collaborateur</div>
+        </div>
 
         <div class="top-actions-row">
             <div class="action-box" onclick="App.openClientModal()">
-                <i class="fas fa-user-plus" style="font-size:2rem; margin-bottom:5px;"></i>
+                <i class="fas fa-user-plus"></i>
                 Nouveau<br>Client
             </div>
             <div class="action-box" onclick="App.openProjectWizard()">
-                <i class="fas fa-folder-plus" style="font-size:2rem; margin-bottom:5px;"></i>
+                <i class="fas fa-folder-plus"></i>
                 Nouveau<br>Projet
             </div>
         </div>
@@ -151,9 +245,9 @@
         <div id="home-recent-list"></div>
 
         <div class="section-title">Chiffre d'Affaire</div>
-        <div style="background:#FEF2F2; border:1px solid #EF4444; padding:15px; margin:0 15px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="App.nav('factures')">
-            <span style="font-weight:700; color:#B91C1C;">EN ATTENTE</span>
-            <span style="font-weight:900; font-size:1.1rem; color:#B91C1C;" id="home-kpi-rev">0,00 €</span>
+        <div class="card" style="background:#FFF7ED; border-color:#FED7AA; display:flex; justify-content:space-between; align-items:center;" onclick="App.nav('factures')">
+            <span style="font-weight:700; color:#C2410C;">EN ATTENTE</span>
+            <span style="font-weight:900; font-size:1.2rem; color:#C2410C;" id="home-kpi-rev">0,00 €</span>
         </div>
     </main>
 
@@ -162,45 +256,56 @@
             <div class="logo-text">CLIENTS</div>
             <button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
         </header>
-        <div style="padding:15px;">
-            <input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)">
+        <div style="padding:20px;">
+            <input type="text" class="app-input" placeholder="Rechercher nom, entreprise..." onkeyup="App.renderClients(this.value)">
         </div>
         <div id="clients-list"></div>
     </main>
 
     <main id="view-projets" class="view-section">
         <header class="mobile-header"><div class="logo-text">PROJETS</div></header>
-        <div style="padding:15px; display:flex; gap:10px; overflow-x:auto;">
-            <button class="badge bg-draft" style="border:none; padding:8px 12px; cursor:pointer;" onclick="App.renderProjects('all')">Tous</button>
-            <button class="badge bg-wait" style="border:none; padding:8px 12px; cursor:pointer;" onclick="App.renderProjects('Brouillon')">Brouillons</button>
-            <button class="badge bg-ok" style="border:none; padding:8px 12px; cursor:pointer;" onclick="App.renderProjects('Accepte')">Acceptés</button>
+        <div style="padding:20px 15px;">
+            <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px;">
+                <button class="room-pill active" onclick="App.renderProjects('all')">Tous</button>
+                <button class="room-pill" onclick="App.renderProjects('Brouillon')">Brouillons</button>
+                <button class="room-pill" onclick="App.renderProjects('Accepte')">Acceptés</button>
+            </div>
+            <div id="projects-list-full"></div>
         </div>
-        <div id="projects-list-full"></div>
     </main>
 
     <main id="view-factures" class="view-section">
         <header class="mobile-header"><div class="logo-text">FACTURES</div></header>
-        <div style="padding:15px;">
-            <div class="section-title" style="margin:0 0 10px 0;">Liste Factures</div>
+        <div style="padding:20px;">
             <div id="invoice-list"></div>
         </div>
     </main>
 
     <main id="view-devis-editor" class="view-section">
-        <header class="mobile-header" style="height:auto; flex-direction:column; align-items:stretch; padding:10px 15px; border:none;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+        <div class="editor-header">
+            <div class="editor-info">
                 <div>
-                    <div style="font-weight:900; color:var(--c-navy);" id="ed-proj-name">Projet</div>
-                    <div style="font-size:0.8rem; color:#666;" id="ed-cli-name">Client</div>
+                    <div class="proj-title" id="ed-proj-name">Nom Projet</div>
+                    <div class="client-sub" id="ed-cli-name">Nom Client</div>
                 </div>
-                <div style="text-align:right;">
-                    <div style="font-weight:900; font-size:1.1rem; color:var(--c-navy);" id="ed-total">0 €</div>
-                    <span class="badge bg-draft" id="ed-status">Brouillon</span>
+                <div>
+                    <div class="total-display" id="ed-total">0 €</div>
+                    <div style="text-align:right; font-size:0.7rem; color:#aaa; text-transform:uppercase;">Total HT</div>
                 </div>
             </div>
-        </header>
+            
+            <div class="segmented-control">
+                <div class="segment-btn active" id="btn-mode-devis" onclick="App.switchMode('devis')">DEVIS (PRIX)</div>
+                <div class="segment-btn" id="btn-mode-etude" onclick="App.switchMode('etude')">ÉTUDE (TECH)</div>
+            </div>
+            <div class="segmented-control" style="margin-top:5px;">
+                <div class="segment-btn active" id="btn-view-piece" onclick="App.switchView('piece')">PAR PIÈCE</div>
+                <div class="segment-btn" id="btn-view-ouvrage" onclick="App.switchView('ouvrage')">RÉCAP GLOBAL</div>
+            </div>
+        </div>
 
         <div class="room-scroll-nav" id="room-tabs"></div>
+
         <div id="devis-items-list" style="padding:10px 0;"></div>
 
         <div class="measures-footer">
@@ -210,18 +315,21 @@
             <div class="m-box" style="flex:0.8"><label>M²</label><div class="m-res" id="m-surf">0</div></div>
         </div>
         
-        <button onclick="App.openLibrary()" style="position:fixed; bottom:145px; right:20px; width:55px; height:55px; background:var(--c-navy); color:white; border-radius:50%; border:2px solid white; box-shadow:0 4px 10px rgba(0,0,0,0.2); font-size:1.5rem; z-index:950; cursor:pointer;">+</button>
+        <button onclick="App.openLibrary()" style="position:fixed; bottom:160px; right:20px; width:60px; height:60px; background:var(--c-navy); color:white; border-radius:50%; border:2px solid white; box-shadow:0 6px 20px rgba(30, 58, 138, 0.4); font-size:1.8rem; z-index:950; cursor:pointer;">+</button>
     </main>
 
     <div class="side-overlay" id="side-overlay" onclick="App.toggleMenu()"></div>
     <div class="side-menu" id="side-menu">
-        <div style="padding:20px; background:var(--c-navy); color:white; font-weight:700; font-size:1.2rem;">Mon Compte</div>
+        <div style="padding:30px 20px; background:var(--c-navy); color:white;">
+            <div style="font-weight:800; font-size:1.4rem;">Menu</div>
+            <div style="opacity:0.8; font-size:0.9rem;">QOTIA Mobile</div>
+        </div>
         <div style="padding:20px;">
-            <div class="list-item" style="border:none;">Profil Utilisateur</div>
-            <div class="list-item" style="border:none;">Gestion Abonnement</div>
-            <div class="list-item" style="border:none;">Info Société</div>
-            <hr>
-            <button class="btn-black" onclick="localStorage.clear(); location.reload();" style="background:var(--c-danger); margin-top:20px;">Réinitialiser Application</button>
+            <div class="list-item" style="border:none;"><i class="fas fa-user-circle" style="margin-right:10px;"></i> Profil</div>
+            <div class="list-item" style="border:none;"><i class="fas fa-credit-card" style="margin-right:10px;"></i> Abonnement</div>
+            <div class="list-item" style="border:none;"><i class="fas fa-building" style="margin-right:10px;"></i> Société</div>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <button class="btn-primary" onclick="localStorage.clear(); location.reload();" style="background:var(--c-danger);">Réinitialiser App</button>
         </div>
     </div>
 
@@ -229,34 +337,24 @@
         <button class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i> HOME</button>
         <button class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i> CLIENTS</button>
         <div class="nav-btn-ai-wrapper">
-            <div class="ai-circle-big" onclick="AI.open()">IA</div>
+            <div class="ai-circle-big" onclick="alert('IA Assistant Bientôt disponible')">IA</div>
         </div>
         <button class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-folder"></i> PROJETS</button>
-        <button class="nav-btn" onclick="App.nav('factures')" id="nav-factures"><i class="fas fa-file-invoice-dollar"></i> FACTURES</button>
+        <button class="nav-btn" onclick="App.nav('factures')" id="nav-factures"><i class="fas fa-file-invoice"></i> FACTURES</button>
     </nav>
-
-    <div id="ai-overlay" class="ai-overlay">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="color:var(--c-navy); margin:0;">IA Assistant</h3>
-            <button onclick="AI.close()" style="border:none; background:none; font-size:1.5rem;">&times;</button>
-        </div>
-        <p style="color:#666; font-size:0.9rem;">Dites: "Créer client Marc à Paris" ou "Ajouter Peinture 40m2"</p>
-        <textarea id="ai-text" class="app-input" style="height:100px; margin-bottom:10px;"></textarea>
-        <button class="btn-black" onclick="AI.process()">Envoyer</button>
-    </div>
 
     <div id="modal-client" class="full-modal">
         <div class="modal-header"><h3>Fiche Client</h3><button onclick="App.closeModal('modal-client')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
             <input type="hidden" id="cli-id">
-            <div class="type-switch">
-                <div class="sw-opt active" id="sw-phys" onclick="App.cliType('phys')">Physique (Particulier)</div>
-                <div class="sw-opt" id="sw-mor" onclick="App.cliType('mor')">Morale (Société)</div>
+            <div class="segmented-control" style="margin:0 0 20px 0;">
+                <div class="segment-btn active" id="sw-phys" onclick="App.cliType('phys')">Particulier</div>
+                <div class="segment-btn" id="sw-mor" onclick="App.cliType('mor')">Société</div>
             </div>
 
             <label class="form-label">Coordonnées</label>
-            <input type="email" id="cli-email" class="app-input" placeholder="Email Principal" style="margin-bottom:10px;">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <input type="email" id="cli-email" class="app-input" placeholder="Email Principal">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                 <input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone">
                 <input type="tel" id="cli-mob" class="app-input" placeholder="Mobile">
             </div>
@@ -264,88 +362,88 @@
 
             <div id="grp-phys">
                 <label class="form-label">Identité</label>
-                <div style="display:grid; grid-template-columns:80px 1fr; gap:10px; margin-bottom:10px;">
+                <div style="display:grid; grid-template-columns:90px 1fr; gap:15px;">
                     <select id="cli-civ" class="app-input"><option>M.</option><option>Mme</option></select>
-                    <input type="text" id="cli-nom" class="app-input" placeholder="Nom">
+                    <input type="text" id="cli-nom" class="app-input" placeholder="Nom de famille">
                 </div>
                 <input type="text" id="cli-pre" class="app-input" placeholder="Prénom">
             </div>
 
             <div id="grp-mor" style="display:none;">
-                <label class="form-label">Société</label>
-                <input type="text" id="cli-soc" class="app-input" placeholder="Raison Sociale" style="margin-bottom:10px;">
-                <select id="cli-form" class="app-input" style="margin-bottom:10px;"><option>SARL</option><option>SAS</option><option>SCI</option><option>EI</option></select>
-                <input type="text" id="cli-siret" class="app-input" placeholder="SIRET" style="margin-bottom:10px;">
+                <label class="form-label">Détails Entreprise</label>
+                <input type="text" id="cli-soc" class="app-input" placeholder="Raison Sociale">
+                <select id="cli-form" class="app-input"><option>SARL</option><option>SAS</option><option>SCI</option><option>EI</option></select>
+                <input type="text" id="cli-siret" class="app-input" placeholder="N° SIRET">
                 <input type="text" id="cli-tva" class="app-input" placeholder="TVA Intracommunautaire">
             </div>
 
-            <label class="form-label">Interne</label>
-            <textarea id="cli-note" class="app-input" style="height:80px;" placeholder="Notes..."></textarea>
+            <label class="form-label">Notes Interne</label>
+            <textarea id="cli-note" class="app-input" style="height:80px;" placeholder="..."></textarea>
         </div>
         <div class="modal-footer">
-            <button class="btn-black" onclick="App.saveClient()">Enregistrer</button>
+            <button class="btn-primary" onclick="App.saveClient()">Enregistrer</button>
         </div>
     </div>
 
     <div id="modal-projet" class="full-modal">
         <div class="modal-header"><h3>Nouveau Projet</h3><button onclick="App.closeModal('modal-projet')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
-            <label class="form-label">1. Client</label>
-            <select id="prj-cli" class="app-input" style="margin-bottom:10px;"><option value="">Sélectionner...</option></select>
+            <label class="form-label">1. Sélection Client</label>
+            <select id="prj-cli" class="app-input"><option value="">Choisir...</option></select>
             
             <label class="form-label">2. Infos Générales</label>
-            <input type="text" id="prj-nom" class="app-input" placeholder="Nom du projet (ex: Rénovation SDB)" style="margin-bottom:10px;">
-            <input type="text" id="prj-addr" class="app-input" placeholder="Adresse du chantier (si différente)">
+            <input type="text" id="prj-nom" class="app-input" placeholder="Nom du projet (ex: Rénovation SDB)">
+            <input type="text" id="prj-addr" class="app-input" placeholder="Adresse du chantier">
 
-            <label class="form-label">3. Détails Techniques</label>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <label class="form-label">3. Technique & Accès</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                 <input type="text" id="prj-code" class="app-input" placeholder="Digicode">
                 <input type="text" id="prj-etage" class="app-input" placeholder="Etage">
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                 <select id="prj-asc" class="app-input"><option value="Oui">Ascenseur: Oui</option><option value="Non">Ascenseur: Non</option></select>
                 <select id="prj-heat" class="app-input"><option>Chauff. Indiv.</option><option>Chauff. Coll.</option></select>
             </div>
-            <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien" style="margin-bottom:10px;">
-            <input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble" style="margin-bottom:10px;">
-            <input type="text" id="prj-keys" class="app-input" placeholder="Gestion des clés / Compteurs">
+            <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien">
+            <input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble">
+            <input type="text" id="prj-keys" class="app-input" placeholder="Info Clés / Compteurs">
         </div>
         <div class="modal-footer">
-            <button class="btn-black" onclick="App.createProject()">Créer Projet</button>
+            <button class="btn-primary" onclick="App.createProject()">Créer Projet</button>
         </div>
     </div>
 
     <div id="modal-item" class="full-modal">
-        <div class="modal-header"><h3>Modifier Ouvrage</h3><button onclick="App.closeModal('modal-item')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
+        <div class="modal-header"><h3>Détail Ouvrage</h3><button onclick="App.closeModal('modal-item')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
             <input type="hidden" id="it-id">
             <label class="form-label">Description</label>
-            <textarea id="it-desc" class="app-input" style="height:70px; margin-bottom:10px;"></textarea>
+            <textarea id="it-desc" class="app-input" style="height:80px; font-weight:600;"></textarea>
             
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
-                <div><label class="form-label">Quantité</label><input type="number" id="it-qty" class="app-input" style="font-weight:bold;"></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div><label class="form-label">Quantité</label><input type="number" id="it-qty" class="app-input" style="font-weight:900; font-size:1.1rem; color:var(--c-navy);"></div>
                 <div><label class="form-label">Unité</label><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div>
             </div>
 
-            <div style="background:#F3F4F6; padding:10px; border-radius:6px; margin-bottom:10px; border:1px solid #ddd;">
-                <label class="form-label" style="color:#B91C1C;">Coûts (Interne)</label>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <div><span style="font-size:0.7rem;">Matériel (€ Total)</span><input type="number" id="it-mat" class="app-input"></div>
-                    <div><span style="font-size:0.7rem;">Temps (Heures)</span><input type="number" id="it-time" class="app-input"></div>
+            <div style="background:#FFF7ED; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #FED7AA;">
+                <label class="form-label" style="color:#C2410C; border-bottom:1px solid #FED7AA; padding-bottom:5px; margin-bottom:10px;">ANALYSE COÛTS (INTERNE)</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div><span style="font-size:0.7rem; color:#9A3412;">Matériel (€ Total)</span><input type="number" id="it-mat" class="app-input" style="border-color:#FED7AA;"></div>
+                    <div><span style="font-size:0.7rem; color:#9A3412;">Temps (Heures)</span><input type="number" id="it-time" class="app-input" style="border-color:#FED7AA;"></div>
                 </div>
             </div>
 
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                 <div><label class="form-label">Prix Vente (€/u)</label><input type="number" id="it-price" class="app-input" style="font-weight:900; color:var(--c-navy);"></div>
                 <div><label class="form-label">TVA</label><select id="it-tva" class="app-input"><option value="0.1">10%</option><option value="0.2">20%</option><option value="0.055">5.5%</option></select></div>
             </div>
             
-            <label class="form-label">Note</label>
+            <label class="form-label">Note Technique</label>
             <input type="text" id="it-note" class="app-input">
         </div>
         <div class="modal-footer">
-            <button class="btn-black" onclick="App.saveItem()">Valider</button>
-            <button style="width:100%; margin-top:10px; border:none; background:white; color:red; font-weight:bold;" onclick="App.deleteItem()">Supprimer</button>
+            <button class="btn-primary" onclick="App.saveItem()">Valider Modifications</button>
+            <button style="width:100%; margin-top:15px; border:1px solid var(--c-danger); background:white; color:var(--c-danger); font-weight:700; height:50px; border-radius:8px; cursor:pointer;" onclick="App.deleteItem()">Supprimer cet Ouvrage</button>
         </div>
     </div>
 
@@ -355,27 +453,40 @@
     </div>
 
     <script>
-        // --- STORE ---
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
+                // SAFETY: Reset if corrupted
                 try {
-                    const s = localStorage.getItem('qotia_data_fix'); 
+                    const s = localStorage.getItem('qotia_final_v4'); 
                     if(s) this.data = JSON.parse(s);
                     else this.seed();
-                } catch(e) { console.error(e); this.seed(); }
+                } catch(e) { console.log('Reset Data'); this.seed(); }
             },
             seed() {
-                this.data.clients = [{id:1, type:'physique', nom:'Durant', prenom:'Bernard', addr:'Paris', email:'b.d@mail.com'}];
-                this.data.chantiers = [{id:101, clientId:1, ref:'D-2025-001', name:'Rénovation SDB', status:'Accepte', activeRoom:'SDB', rooms:['SDB'], metrics:{'SDB':{L:3,l:2,h:2.5}}, items:[], details:{}, total:4500}];
+                this.data.clients = [{id:1, type:'physique', nom:'Durant', prenom:'Bernard', addr:'12 Rue de la Paix, Paris', email:'b.durant@gmail.com'}];
+                this.data.chantiers = [{id:101, clientId:1, ref:'D-2025-001', name:'Rénovation Complète SDB', status:'Accepte', activeRoom:'SDB', rooms:['SDB','Couloir'], metrics:{'SDB':{L:3,l:2,h:2.5}}, items:[], details:{}, total:4500}];
             },
-            save() { localStorage.setItem('qotia_data_fix', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_final_v4', JSON.stringify(this.data)); }
         };
 
-        const Config = { LIB: { 'Gros Oeuvre': ['Démolition','Evacuation'], 'Second Oeuvre': ['Plâtrerie','Peinture','Carrelage'], 'Tech': ['Plomberie','Electricité'] } };
+        const Config = { 
+            LIB: { 
+                'Démolition': ['Dépose carrelage','Démolition cloison brique','Evacuation gravats'], 
+                'Maçonnerie': ['Ragréage sol P3','Chape traditionnelle','Ouverture mur porteur'], 
+                'Plâtrerie': ['Cloison 72/48','Doublage collé','Faux-plafond suspendu','Enduit général'],
+                'Peinture': ['Impression supports','Peinture Murs Mat','Peinture Plafonds','Laque Portes'],
+                'Sols': ['Pose Carrelage 60x60','Pose Parquet Flottant','Plinthes bois'],
+                'Plomberie': ['WC Suspendu','Receveur Douche','Meuble Vasque','Modification arrivées'],
+                'Electricité': ['Prise de courant','Interrupteur va-et-vient','Tableau 2 rangées','Spots LED']
+            } 
+        };
 
-        // --- APP LOGIC ---
         const App = {
+            // STATE
+            currentMode: 'devis', // 'devis' or 'etude'
+            currentView: 'piece', // 'piece' or 'ouvrage'
+
             init() {
                 Store.init();
                 this.renderHome();
@@ -398,6 +509,7 @@
                 if(view === 'clients') this.renderClients();
                 if(view === 'projets') this.renderProjects('all');
                 if(view === 'factures') this.renderFactures();
+                if(view === 'devis') this.openEditor(Store.data.activeChantierId || Store.data.chantiers[0]?.id);
             },
 
             toggleMenu() { 
@@ -406,171 +518,133 @@
                 else { m.classList.add('open'); o.classList.add('open'); }
             },
 
-            // CLIENTS
-            renderClients(q='') {
-                const list = document.getElementById('clients-list'); list.innerHTML='';
-                Store.data.clients.forEach(c => {
-                    let n = c.type == 'morale' ? c.soc : (c.nom + ' ' + (c.prenom || ''));
-                    if(n.toLowerCase().includes(q.toLowerCase())) {
-                        let d = document.createElement('div'); d.className='list-item';
-                        d.innerHTML = `<div><div class="list-title">${n}</div><div class="list-sub">${c.addr || '-'}</div></div><i class="fas fa-chevron-right" style="color:#ccc;"></i>`;
-                        d.onclick = () => App.editClient(c.id);
-                        list.appendChild(d);
-                    }
-                });
-            },
-            cliType(t) {
-                document.getElementById('sw-phys').className = `sw-opt ${t=='phys'?'active':''}`;
-                document.getElementById('sw-mor').className = `sw-opt ${t=='mor'?'active':''}`;
-                document.getElementById('grp-phys').style.display = t=='phys'?'block':'none';
-                document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
-            },
-            openClientModal() { 
-                ['cli-id','cli-email','cli-tel','cli-mob','cli-addr','cli-nom','cli-pre','cli-soc','cli-siret','cli-tva','cli-note'].forEach(i=>document.getElementById(i).value='');
-                App.cliType('phys');
-                document.getElementById('modal-client').style.display='flex'; 
-            },
-            closeModal(id) { document.getElementById(id).style.display='none'; },
-            saveClient() {
-                const id = document.getElementById('cli-id').value;
-                const type = document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique';
-                const c = {
-                    id: id ? parseInt(id) : Date.now(), type,
-                    email: document.getElementById('cli-email').value, tel: document.getElementById('cli-tel').value, mob: document.getElementById('cli-mob').value, addr: document.getElementById('cli-addr').value, note: document.getElementById('cli-note').value,
-                    civ: document.getElementById('cli-civ').value, nom: document.getElementById('cli-nom').value, prenom: document.getElementById('cli-pre').value,
-                    soc: document.getElementById('cli-soc').value, form: document.getElementById('cli-form').value, siret: document.getElementById('cli-siret').value, tva: document.getElementById('cli-tva').value
-                };
-                if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; }
-                else Store.data.clients.push(c);
-                Store.save(); App.closeModal('modal-client'); App.renderClients();
-            },
-            editClient(id) {
-                const c = Store.data.clients.find(x=>x.id==id);
-                document.getElementById('cli-id').value=c.id;
-                document.getElementById('cli-email').value=c.email; document.getElementById('cli-tel').value=c.tel; document.getElementById('cli-mob').value=c.mob; document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-note').value=c.note;
-                App.cliType(c.type);
-                if(c.type=='physique') { document.getElementById('cli-civ').value=c.civ; document.getElementById('cli-nom').value=c.nom; document.getElementById('cli-pre').value=c.prenom; }
-                else { document.getElementById('cli-soc').value=c.soc; document.getElementById('cli-form').value=c.form; document.getElementById('cli-siret').value=c.siret; document.getElementById('cli-tva').value=c.tva; }
-                document.getElementById('modal-client').style.display='flex';
-            },
-
-            // PROGETTI
-            renderProjects(filter) {
-                const list = document.getElementById('projects-list-full'); list.innerHTML='';
-                let res = Store.data.chantiers;
-                if(filter !== 'all') res = res.filter(c => c.status === filter);
-                
-                res.forEach(c => {
-                    const cli = Store.data.clients.find(x=>x.id==c.clientId);
-                    let cliName = cli ? (cli.type=='morale'?cli.soc:cli.nom) : 'Client Inconnu';
-                    let statusClass = c.status=='Accepte'?'bg-ok':(c.status=='Refuse'?'bg-no':'bg-draft');
-                    
-                    let d = document.createElement('div'); d.className='card';
-                    d.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;">
-                            <div><div style="font-weight:700;">${c.ref}</div><div style="font-size:0.8rem;">${cliName}</div><div style="font-size:0.9rem; color:#1E3A8A; margin-top:2px;">${c.name}</div></div>
-                            <div style="text-align:right;"><span class="badge ${statusClass}">${c.status}</span><div style="font-weight:900; margin-top:5px;">${(c.total||0).toFixed(0)} €</div></div>
-                        </div>
-                    `;
-                    d.onclick = () => App.openEditor(c.id);
-                    list.appendChild(d);
-                });
-            },
-            openProjectWizard() {
-                const sel = document.getElementById('prj-cli'); sel.innerHTML='<option value="">Sélectionner...</option>';
-                Store.data.clients.forEach(c => {
-                    let n = c.type=='morale'?c.soc:`${c.nom} ${c.prenom||''}`;
-                    let o = document.createElement('option'); o.value=c.id; o.text=n; sel.appendChild(o);
-                });
-                ['prj-nom','prj-addr','prj-code','prj-etage','prj-syndic','prj-plomb','prj-keys'].forEach(i=>document.getElementById(i).value='');
-                document.getElementById('modal-projet').style.display='flex';
-            },
-            createProject() {
-                const cid = document.getElementById('prj-cli').value;
-                const nom = document.getElementById('prj-nom').value;
-                if(cid && nom) {
-                    const ch = {
-                        id: Date.now(), clientId: parseInt(cid), name: nom, ref: "D-"+new Date().getFullYear()+"-"+Math.floor(Math.random()*100), status:'Brouillon', total:0,
-                        addr: document.getElementById('prj-addr').value,
-                        details: {
-                            code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value,
-                            asc: document.getElementById('prj-asc').value, heat: document.getElementById('prj-heat').value,
-                            syndic: document.getElementById('prj-syndic').value, plomb: document.getElementById('prj-plomb').value, keys: document.getElementById('prj-keys').value
-                        },
-                        activeRoom: 'Cuisine', rooms:['Cuisine'], metrics:{'Cuisine':{L:0,l:0,h:2.5}}, items:[]
-                    };
-                    Store.data.chantiers.unshift(ch); Store.save();
-                    App.closeModal('modal-projet'); App.openEditor(ch.id);
-                }
-            },
-
-            // EDITOR
+            // --- EDITOR LOGIC (Core) ---
             openEditor(id) {
+                if(!id) return;
                 Store.data.activeChantierId = id; Store.save();
                 const c = Store.data.chantiers.find(x=>x.id==id);
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 document.getElementById('ed-proj-name').innerText = c.name;
-                document.getElementById('ed-cli-name').innerText = cli ? (cli.type=='morale'?cli.soc:cli.nom) : '';
-                document.getElementById('ed-status').innerText = c.status;
-                App.renderRooms();
-                App.nav('devis');
+                document.getElementById('ed-cli-name').innerText = cli ? (cli.type=='morale'?cli.soc:`${cli.nom} ${cli.prenom}`) : 'Client Inconnu';
+                
+                this.currentMode = 'devis';
+                this.currentView = 'piece';
+                this.updateEditorUI();
+                this.renderRooms();
             },
+
+            switchMode(m) {
+                this.currentMode = m;
+                this.updateEditorUI();
+                this.renderItems(); // Re-render items with new mode
+            },
+            switchView(v) {
+                this.currentView = v;
+                this.updateEditorUI();
+                this.renderRooms(); // Update tabs visibility
+                this.renderItems();
+            },
+            updateEditorUI() {
+                // Toggles UI State
+                document.getElementById('btn-mode-devis').className = `segment-btn ${this.currentMode=='devis'?'active':''}`;
+                document.getElementById('btn-mode-etude').className = `segment-btn ${this.currentMode=='etude'?'active':''}`;
+                document.getElementById('btn-view-piece').className = `segment-btn ${this.currentView=='piece'?'active':''}`;
+                document.getElementById('btn-view-ouvrage').className = `segment-btn ${this.currentView=='ouvrage'?'active':''}`;
+                
+                // Show/Hide Tabs
+                document.getElementById('room-tabs').style.display = this.currentView=='piece' ? 'flex' : 'none';
+                
+                // Add class to body for styling hooks
+                document.body.className = this.currentMode === 'etude' ? 'mode-etude' : '';
+            },
+
             renderRooms() {
+                if(this.currentView !== 'piece') return;
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const t = document.getElementById('room-tabs'); t.innerHTML='';
+                
                 c.rooms.forEach(r => {
                     let p = document.createElement('div'); p.className=`room-pill ${c.activeRoom==r?'active':''}`; p.innerText=r;
                     p.onclick = () => { c.activeRoom=r; Store.save(); App.renderRooms(); }; t.appendChild(p);
                 });
+                
                 let add = document.createElement('div'); add.className='room-pill'; add.innerText='+';
                 add.onclick=()=>{ let n=prompt('Nom pièce?'); if(n){c.rooms.push(n); c.metrics[n]={L:0,l:0,h:2.5}; c.activeRoom=n; Store.save(); App.renderRooms();} };
                 t.appendChild(add);
                 
+                // Metrics Logic
                 const m = c.metrics[c.activeRoom] || {L:0,l:0,h:2.5};
                 document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h;
-                App.calcMetrics(false);
-                App.renderItems();
+                this.calcMetrics(false);
+                this.renderItems();
             },
+
             renderItems() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const l = document.getElementById('devis-items-list'); l.innerHTML='';
-                let tot=0;
-                c.items.filter(i=>i.room==c.activeRoom).forEach(i => {
-                    let lineT = i.qty * i.price; tot += lineT;
-                    let d = document.createElement('div'); d.className='card'; d.style.margin='10px 15px'; d.style.borderLeft='4px solid var(--c-yellow)';
+                let itemsToShow = [];
+
+                if(this.currentView === 'piece') {
+                    itemsToShow = c.items.filter(i => i.room === c.activeRoom);
+                } else {
+                    // Aggregate for Recap
+                    const agg = {};
+                    c.items.forEach(i => {
+                        if(!agg[i.desc]) agg[i.desc] = {...i, qty:0, rooms:[]};
+                        agg[i.desc].qty += i.qty;
+                        if(!agg[i.desc].rooms.includes(i.room)) agg[i.desc].rooms.push(i.room);
+                    });
+                    itemsToShow = Object.values(agg);
+                }
+
+                if(itemsToShow.length === 0) l.innerHTML = '<div style="text-align:center; padding:30px; color:#aaa;">Aucun ouvrage.</div>';
+
+                itemsToShow.forEach(i => {
+                    let badge = `<div class="item-badge">${i.fam || 'Divers'}</div>`;
+                    if(this.currentView=='ouvrage') badge += `<div class="item-badge" style="margin-left:5px; background:#EFF6FF; color:#1E3A8A;">${i.rooms.length} Pièces</div>`;
+
+                    let d = document.createElement('div'); d.className='item-card';
                     d.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="flex:1;">
-                                <div style="font-weight:700; color:#374151;">${i.desc}</div>
-                                <div style="font-size:0.8rem; color:#666;">${i.qty} ${i.unit} x ${i.price}€</div>
+                        <div class="item-top">
+                            <div>${badge}<div class="item-desc">${i.desc}</div></div>
+                        </div>
+                        <div class="item-details">
+                            <div class="detail-group">
+                                <span><b>${i.qty.toFixed(1)}</b> ${i.unit}</span>
+                                ${this.currentMode=='devis' ? `<span>PU: ${i.price}€</span>` : ''}
                             </div>
-                            <div style="font-weight:900; font-size:1.1rem; color:var(--c-navy);">${lineT.toFixed(0)}€</div>
+                            <div class="price-tag">${(i.qty*i.price).toFixed(0)} €</div>
+                            <div class="tech-tag">${(i.time*i.qty).toFixed(1)} h</div>
                         </div>
                     `;
                     d.onclick = () => App.editItem(i.id);
                     l.appendChild(d);
                 });
-                
+
+                // Update Header Total
                 let gTot = c.items.reduce((a,b)=>a+(b.qty*b.price),0);
                 document.getElementById('ed-total').innerText = gTot.toFixed(0)+' €';
                 c.total = gTot; Store.save();
             },
+
+            // --- CRUD HELPERS ---
             calcMetrics(save=true) {
-                const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; const h=parseFloat(document.getElementById('m-h').value)||0;
+                const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; 
                 document.getElementById('m-surf').innerText = (L*l).toFixed(2);
-                if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h}; Store.save(); }
+                if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); }
             },
             openLibrary() {
                 const c=document.getElementById('lib-container'); c.innerHTML='';
                 for(let [k,v] of Object.entries(Config.LIB)) {
-                    let h=document.createElement('div'); h.style='padding:10px; background:#eee; font-weight:bold; color:var(--c-navy);'; h.innerText=k; c.appendChild(h);
+                    let h=document.createElement('div'); h.style='padding:10px; background:#F9FAFB; font-weight:700; color:#1E3A8A; font-size:0.85rem; text-transform:uppercase;'; h.innerText=k; c.appendChild(h);
                     v.forEach(it => {
-                        let d=document.createElement('div'); d.style='padding:15px; border-bottom:1px solid #ddd; background:white;'; d.innerText=it;
+                        let d=document.createElement('div'); d.className='list-item'; d.innerText=it;
                         d.onclick = () => {
                             const ch=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                            // Smart Qty
                             const m = ch.metrics[ch.activeRoom]; let qty=1;
-                            if(k.includes('Peint') || k.includes('Sol')) qty=m.L*m.l;
-                            ch.items.push({ id:Date.now(), room:ch.activeRoom, desc:it, qty:parseFloat(qty.toFixed(2)), unit:'m²', price:50, mat:0, time:0, tva:0.1, note:'' });
+                            if(k.match(/Peint|Sol|Platr/)) qty=m.L*m.l;
+                            ch.items.push({ id:Date.now(), room:ch.activeRoom, fam:k, desc:it, qty:parseFloat(qty.toFixed(2)), unit:'m²', price:50, mat:0, time:0.5, tva:0.1, note:'' });
                             Store.save(); App.closeModal('modal-library'); App.renderItems();
                         };
                         c.appendChild(d);
@@ -581,6 +655,7 @@
             editItem(id) {
                 const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const i=c.items.find(x=>x.id==id);
+                if(!i) return; // Case agg view click might fail in this simplified version
                 document.getElementById('it-id').value=id; document.getElementById('it-desc').value=i.desc; document.getElementById('it-qty').value=i.qty;
                 document.getElementById('it-unit').value=i.unit; document.getElementById('it-price').value=i.price; document.getElementById('it-tva').value=i.tva;
                 document.getElementById('it-mat').value=i.mat||0; document.getElementById('it-time').value=i.time||0; document.getElementById('it-note').value=i.note||'';
@@ -603,25 +678,37 @@
                 Store.save(); App.closeModal('modal-item'); App.renderItems();
             },
 
-            // FACTURES
+            // --- GENERIC ---
+            renderClients(q='') {
+                const l = document.getElementById('clients-list'); l.innerHTML='';
+                Store.data.clients.forEach(c => {
+                    let n = c.type=='morale' ? c.soc : `${c.nom} ${c.prenom||''}`;
+                    if(n.toLowerCase().includes(q.toLowerCase())) {
+                        let d = document.createElement('div'); d.className='list-item';
+                        d.innerHTML = `<div><div class="list-title">${n}</div><div class="list-sub">${c.addr||'-'}</div></div><i class="fas fa-chevron-right" style="color:#ddd"></i>`;
+                        d.onclick = () => App.editClient(c.id); l.appendChild(d);
+                    }
+                });
+            },
+            renderProjects(f) {
+                const l = document.getElementById('projects-list-full'); l.innerHTML='';
+                let r = Store.data.chantiers;
+                if(f!=='all') r = r.filter(c => c.status === f);
+                r.forEach(c => {
+                    let st = c.status=='Accepte'?'bg-ok':(c.status=='Refuse'?'bg-no':'bg-draft');
+                    let d = document.createElement('div'); d.className='card';
+                    d.innerHTML = `<div style="display:flex;justify-content:space-between;"><div><div style="font-weight:700">${c.ref}</div><div style="font-size:0.9rem;margin-top:2px;">${c.name}</div></div><div style="text-align:right"><span class="badge ${st}">${c.status}</span><div style="font-weight:900;margin-top:5px">${(c.total||0).toFixed(0)}€</div></div></div>`;
+                    d.onclick = () => App.openEditor(c.id); l.appendChild(d);
+                });
+            },
             renderFactures() {
                 const l = document.getElementById('invoice-list'); l.innerHTML='';
-                const accepted = Store.data.chantiers.filter(c => c.status === 'Accepte');
-                if(accepted.length === 0) l.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Aucune facture disponible.</div>';
-                
-                accepted.forEach(c => {
-                    const cli = Store.data.clients.find(x=>x.id==c.clientId);
-                    let d = document.createElement('div'); d.className='card'; d.style.borderLeft='4px solid #10B981';
-                    d.innerHTML = `
-                        <div style="font-weight:700;">Facture #${c.id}</div>
-                        <div>${c.name} - ${cli?cli.nom:''}</div>
-                        <div style="text-align:right; font-weight:900; margin-top:5px; color:#065F46;">${c.total.toFixed(2)} €</div>
-                    `;
+                Store.data.chantiers.filter(c=>c.status=='Accepte').forEach(c=>{
+                    let d = document.createElement('div'); d.className='list-item';
+                    d.innerHTML = `<div><div class="list-title">Facture #${c.id}</div><div class="list-sub">${c.name}</div></div><div style="font-weight:900;color:#065F46;">${c.total.toFixed(2)}€</div>`;
                     l.appendChild(d);
                 });
             },
-
-            // HOME
             renderHome() {
                 const l=document.getElementById('home-recent-list'); l.innerHTML='';
                 let tot=0;
@@ -633,16 +720,55 @@
                     d.onclick=()=>App.openEditor(c.id); l.appendChild(d);
                 });
                 document.getElementById('home-kpi-rev').innerText = tot.toFixed(2) + " €";
-            }
-        };
+            },
 
-        const AI = {
-            open(){document.getElementById('ai-overlay').classList.add('active')},
-            close(){document.getElementById('ai-overlay').classList.remove('active')},
-            process(){
-                const t = document.getElementById('ai-text').value;
-                if(t) { alert("IA: Traitement de '"+t+"'..."); AI.close(); }
-            }
+            // FORMS
+            cliType(t) {
+                document.getElementById('sw-phys').className = `segment-btn ${t=='phys'?'active':''}`;
+                document.getElementById('sw-mor').className = `segment-btn ${t=='mor'?'active':''}`;
+                document.getElementById('grp-phys').style.display = t=='phys'?'block':'none';
+                document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
+            },
+            openClientModal() { ['cli-id','cli-email','cli-tel','cli-mob','cli-addr','cli-nom','cli-pre','cli-soc','cli-siret','cli-tva','cli-note'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').style.display='flex'; },
+            saveClient() {
+                const id = document.getElementById('cli-id').value;
+                const type = document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique';
+                const c = {
+                    id: id ? parseInt(id) : Date.now(), type,
+                    email: document.getElementById('cli-email').value, tel: document.getElementById('cli-tel').value, mob: document.getElementById('cli-mob').value, addr: document.getElementById('cli-addr').value, note: document.getElementById('cli-note').value,
+                    civ: document.getElementById('cli-civ').value, nom: document.getElementById('cli-nom').value, prenom: document.getElementById('cli-pre').value,
+                    soc: document.getElementById('cli-soc').value, form: document.getElementById('cli-form').value, siret: document.getElementById('cli-siret').value, tva: document.getElementById('cli-tva').value
+                };
+                if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; } else Store.data.clients.push(c);
+                Store.save(); App.closeModal('modal-client'); App.renderClients();
+            },
+            editClient(id) {
+                const c = Store.data.clients.find(x=>x.id==id);
+                document.getElementById('cli-id').value=c.id; document.getElementById('cli-email').value=c.email; document.getElementById('cli-tel').value=c.tel; document.getElementById('cli-mob').value=c.mob; document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-note').value=c.note;
+                App.cliType(c.type);
+                if(c.type=='physique') { document.getElementById('cli-civ').value=c.civ; document.getElementById('cli-nom').value=c.nom; document.getElementById('cli-pre').value=c.prenom; }
+                else { document.getElementById('cli-soc').value=c.soc; document.getElementById('cli-form').value=c.form; document.getElementById('cli-siret').value=c.siret; document.getElementById('cli-tva').value=c.tva; }
+                document.getElementById('modal-client').style.display='flex';
+            },
+            openProjectWizard() {
+                const sel = document.getElementById('prj-cli'); sel.innerHTML='<option value="">Sélectionner...</option>';
+                Store.data.clients.forEach(c => { let n = c.type=='morale'?c.soc:`${c.nom} ${c.prenom||''}`; let o = document.createElement('option'); o.value=c.id; o.text=n; sel.appendChild(o); });
+                ['prj-nom','prj-addr','prj-code','prj-etage','prj-syndic','prj-plomb','prj-keys'].forEach(i=>document.getElementById(i).value='');
+                document.getElementById('modal-projet').style.display='flex';
+            },
+            createProject() {
+                const cid = document.getElementById('prj-cli').value; const nom = document.getElementById('prj-nom').value;
+                if(cid && nom) {
+                    const ch = {
+                        id: Date.now(), clientId: parseInt(cid), name: nom, ref: "D-"+new Date().getFullYear()+"-"+Math.floor(Math.random()*100), status:'Brouillon', total:0,
+                        addr: document.getElementById('prj-addr').value,
+                        details: { code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value, asc: document.getElementById('prj-asc').value, heat: document.getElementById('prj-heat').value, syndic: document.getElementById('prj-syndic').value, plomb: document.getElementById('prj-plomb').value, keys: document.getElementById('prj-keys').value },
+                        activeRoom: 'Cuisine', rooms:['Cuisine'], metrics:{'Cuisine':{L:0,l:0,h:2.5}}, items:[]
+                    };
+                    Store.data.chantiers.unshift(ch); Store.save(); App.closeModal('modal-projet'); App.openEditor(ch.id);
+                }
+            },
+            closeModal(id) { document.getElementById(id).style.display='none'; }
         };
 
         window.onload = () => App.init();
