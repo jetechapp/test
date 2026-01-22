@@ -20,7 +20,6 @@
             --c-border: #E5E7EB;
             --c-danger: #EF4444;
             --c-success: #10B981;
-            --c-warning: #F59E0B;
             
             --h-nav: 75px;
             --h-header: 60px;
@@ -58,7 +57,6 @@
         .nav-btn i { font-size: 1.3rem; margin-bottom: 4px; }
         .nav-btn.active { color: var(--c-navy); font-weight: 700; }
 
-        /* AI BUTTON CENTRALE */
         .nav-btn-ai-wrapper { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
         .ai-circle-big {
             position: absolute; bottom: 20px; 
@@ -135,6 +133,9 @@
         <h1 style="color:var(--c-navy); margin-bottom:10px;">QOTIA Mobile</h1>
         <div style="background:#F3F4F6; padding:20px; border-radius:8px; width:100%; max-width:350px;">
             <button class="btn-black" onclick="App.login()">CONNEXION</button>
+            <div style="text-align:center; margin-top:15px;">
+                <a href="#" onclick="localStorage.clear(); location.reload();" style="color:#999; font-size:0.8rem;">Réinitialiser l'application</a>
+            </div>
         </div>
     </div>
 
@@ -368,22 +369,17 @@
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
-                // SAFETY TRY/CATCH to prevent crash on old data
                 try {
-                    const s = localStorage.getItem('qotia_vFinal_3'); 
+                    const s = localStorage.getItem('qotia_vFinal_Fixed'); 
                     if(s) this.data = JSON.parse(s);
                     else this.seed();
-                } catch(e) {
-                    console.log("Resetting Data");
-                    localStorage.clear();
-                    this.seed();
-                }
+                } catch(e) { console.error(e); this.seed(); }
             },
             seed() {
                 this.data.clients = [{id:1, type:'physique', nom:'Durant', prenom:'Bernard', addr:'Paris', email:'b.d@mail.com'}];
                 this.data.chantiers = [{id:101, clientId:1, ref:'D-2025-001', name:'Rénovation SDB', status:'Accepte', activeRoom:'SDB', rooms:['SDB'], metrics:{'SDB':{L:3,l:2,h:2.5}}, items:[], details:{}, total:4500}];
             },
-            save() { localStorage.setItem('qotia_vFinal_3', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_vFinal_Fixed', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Gros Oeuvre': ['Démolition','Evacuation'], 'Second Oeuvre': ['Plâtrerie','Peinture','Carrelage'], 'Tech': ['Plomberie','Electricité'] } };
@@ -399,8 +395,15 @@
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active'));
                 document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));
-                document.getElementById('view-'+(view=='devis'?'devis-editor':view)).classList.add('active');
-                if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
+                
+                let targetView = view;
+                if(view === 'devis') targetView = 'devis-editor';
+                
+                const el = document.getElementById('view-'+targetView);
+                if(el) el.classList.add('active');
+                
+                const navBtn = document.getElementById('nav-'+view);
+                if(navBtn) navBtn.classList.add('active');
                 
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
@@ -445,7 +448,6 @@
                 const c = {
                     id: id ? parseInt(id) : Date.now(), type,
                     email: document.getElementById('cli-email').value, tel: document.getElementById('cli-tel').value, mob: document.getElementById('cli-mob').value, addr: document.getElementById('cli-addr').value, note: document.getElementById('cli-note').value,
-                    // Specifics
                     civ: document.getElementById('cli-civ').value, nom: document.getElementById('cli-nom').value, prenom: document.getElementById('cli-pre').value,
                     soc: document.getElementById('cli-soc').value, form: document.getElementById('cli-form').value, siret: document.getElementById('cli-siret').value, tva: document.getElementById('cli-tva').value
                 };
@@ -535,7 +537,6 @@
                 add.onclick=()=>{ let n=prompt('Nom pièce?'); if(n){c.rooms.push(n); c.metrics[n]={L:0,l:0,h:2.5}; c.activeRoom=n; Store.save(); App.renderRooms();} };
                 t.appendChild(add);
                 
-                // Metrics
                 const m = c.metrics[c.activeRoom] || {L:0,l:0,h:2.5};
                 document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h;
                 App.calcMetrics(false);
@@ -561,7 +562,6 @@
                     l.appendChild(d);
                 });
                 
-                // Global Calc
                 let gTot = c.items.reduce((a,b)=>a+(b.qty*b.price),0);
                 document.getElementById('ed-total').innerText = gTot.toFixed(0)+' €';
                 c.total = gTot; Store.save();
@@ -579,7 +579,6 @@
                         let d=document.createElement('div'); d.style='padding:15px; border-bottom:1px solid #ddd; background:white;'; d.innerText=it;
                         d.onclick = () => {
                             const ch=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                            // Auto logic
                             const m = ch.metrics[ch.activeRoom]; let qty=1;
                             if(k.includes('Peint') || k.includes('Sol')) qty=m.L*m.l;
                             ch.items.push({ id:Date.now(), room:ch.activeRoom, desc:it, qty:parseFloat(qty.toFixed(2)), unit:'m²', price:50, mat:0, time:0, tva:0.1, note:'' });
@@ -623,7 +622,7 @@
                 
                 accepted.forEach(c => {
                     const cli = Store.data.clients.find(x=>x.id==c.clientId);
-                    let d = document.createElement('div'); d.className='card'; d.style.borderLeftColor=var(--c-success);
+                    let d = document.createElement('div'); d.className='card'; d.style.borderLeft='4px solid #10B981';
                     d.innerHTML = `
                         <div style="font-weight:700;">Facture #${c.id}</div>
                         <div>${c.name} - ${cli?cli.nom:''}</div>
