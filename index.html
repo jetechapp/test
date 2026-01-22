@@ -22,7 +22,7 @@
             --c-success: #10B981;
             --c-warning: #F59E0B;
             
-            --h-nav: 75px; /* Footer leggermente più alto per l'IA */
+            --h-nav: 75px;
             --h-header: 60px;
             --radius: 6px;
         }
@@ -43,7 +43,7 @@
         .logo-text { font-weight: 900; font-size: 1.2rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; }
         .header-btn { border: none; background: transparent; font-size: 1.4rem; color: var(--c-navy); cursor: pointer; }
 
-        /* BOTTOM NAV - 5 ITEMS */
+        /* BOTTOM NAV */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav);
             background: var(--c-grey-bg); border-top: 1px solid var(--c-border);
@@ -61,7 +61,7 @@
         /* AI BUTTON CENTRALE */
         .nav-btn-ai-wrapper { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; }
         .ai-circle-big {
-            position: absolute; bottom: 20px; /* Floating up */
+            position: absolute; bottom: 20px; 
             width: 65px; height: 65px; 
             background: var(--c-yellow); border: 4px solid var(--c-grey-bg);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -81,7 +81,7 @@
         .action-box:active { background: #EFF6FF; border-color: var(--c-navy); }
         .section-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; margin: 20px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
 
-        /* STATUS BADGES */
+        /* BADGES */
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #E5E7EB; color: #374151; }
         .bg-ok { background: #ECFDF5; color: #065F46; }
@@ -89,10 +89,7 @@
         .bg-no { background: #FEF2F2; color: #991B1B; }
 
         /* LIST ITEMS */
-        .list-item { 
-            background: white; padding: 15px; border-bottom: 1px solid var(--c-border); 
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
+        .list-item { background: white; padding: 15px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .list-title { font-weight: 700; font-size: 0.95rem; color: var(--c-dark); }
         .list-sub { font-size: 0.8rem; color: #666; margin-top: 2px; }
 
@@ -104,7 +101,7 @@
         .sw-opt { flex: 1; text-align: center; padding: 8px; font-weight: 600; cursor: pointer; border-radius: 4px; color: #666; }
         .sw-opt.active { background: white; color: var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
 
-        /* EDITOR SPECIFICS */
+        /* EDITOR */
         .room-scroll-nav { flex: 0 0 50px; background: var(--c-navy); display: flex; overflow-x: auto; align-items: center; padding: 0 10px; gap: 8px; }
         .room-pill { background: rgba(255,255,255,0.2); color: white; padding: 6px 14px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; cursor: pointer; }
         .room-pill.active { background: var(--c-yellow); color: var(--c-dark); font-weight: 700; }
@@ -123,7 +120,7 @@
         .ai-overlay { position: fixed; bottom: 0; left: 0; width: 100%; background: white; z-index: 3000; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -10px 50px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.3s; }
         .ai-overlay.active { transform: translateY(0); }
 
-        /* SIDEMENU (MON COMPTE) */
+        /* SIDE MENU */
         .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 2500; transition: right 0.3s; box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .side-menu.open { right: 0; }
         .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2400; display: none; }
@@ -161,8 +158,7 @@
         </div>
 
         <div class="section-title">Chantiers en cours</div>
-        <div id="home-recent-list">
-            </div>
+        <div id="home-recent-list"></div>
 
         <div class="section-title">Chiffre d'Affaire</div>
         <div style="background:#FEF2F2; border:1px solid #EF4444; padding:15px; margin:0 15px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="App.nav('factures')">
@@ -235,7 +231,7 @@
             <div class="list-item" style="border:none;">Gestion Abonnement</div>
             <div class="list-item" style="border:none;">Info Société</div>
             <hr>
-            <button class="btn-black" onclick="location.reload()" style="background:var(--c-danger); margin-top:20px;">Déconnexion</button>
+            <button class="btn-black" onclick="localStorage.clear(); location.reload();" style="background:var(--c-danger); margin-top:20px;">Déconnexion</button>
         </div>
     </div>
 
@@ -248,6 +244,16 @@
         <button class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-folder"></i> PROJETS</button>
         <button class="nav-btn" onclick="App.nav('factures')" id="nav-factures"><i class="fas fa-file-invoice-dollar"></i> FACTURES</button>
     </nav>
+
+    <div id="ai-overlay" class="ai-overlay">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="color:var(--c-navy); margin:0;">IA Assistant</h3>
+            <button onclick="AI.close()" style="border:none; background:none; font-size:1.5rem;">&times;</button>
+        </div>
+        <p style="color:#666; font-size:0.9rem;">Dites: "Créer client Marc à Paris" ou "Ajouter Peinture 40m2"</p>
+        <textarea id="ai-text" class="app-input" style="height:100px; margin-bottom:10px;"></textarea>
+        <button class="btn-black" onclick="AI.process()">Envoyer</button>
+    </div>
 
     <div id="modal-client" class="full-modal">
         <div class="modal-header"><h3>Fiche Client</h3><button onclick="App.closeModal('modal-client')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
@@ -312,7 +318,7 @@
             </div>
             <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien" style="margin-bottom:10px;">
             <input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble" style="margin-bottom:10px;">
-            <input type="text" id="prj-keys" class="app-input" placeholder="Gestion des clés">
+            <input type="text" id="prj-keys" class="app-input" placeholder="Gestion des clés / Compteurs">
         </div>
         <div class="modal-footer">
             <button class="btn-black" onclick="App.createProject()">Créer Projet</button>
@@ -358,33 +364,30 @@
         <div class="modal-body" id="lib-container" style="padding:0;"></div>
     </div>
 
-    <div id="ai-overlay" class="ai-overlay">
-        <h3 style="color:var(--c-navy); margin-top:0;">Assistant IA</h3>
-        <p style="color:#666; font-size:0.9rem;">Dites: "Créer client Marc à Paris" ou "Ajouter Peinture 40m2"</p>
-        <textarea id="ai-text" class="app-input" style="height:100px; margin-bottom:10px;"></textarea>
-        <button class="btn-black" onclick="AI.process()">Envoyer</button>
-        <button onclick="AI.close()" style="width:100%; margin-top:10px; border:none; background:transparent;">Fermer</button>
-    </div>
-
     <script>
-        // --- STORE DATA ---
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
-                const s=localStorage.getItem('qotia_vFinal_2'); 
-                if(s) this.data=JSON.parse(s); 
-                else {
-                    // Seed Data
-                    this.data.clients = [{id:1, type:'physique', nom:'Durant', prenom:'Bernard', addr:'Paris', email:'b.d@mail.com'}];
-                    this.data.chantiers = [{id:101, clientId:1, ref:'D-2025-001', name:'Rénovation SDB', status:'Accepte', activeRoom:'SDB', rooms:['SDB'], metrics:{'SDB':{L:3,l:2,h:2.5}}, items:[], details:{}, total:4500}];
+                // SAFETY TRY/CATCH to prevent crash on old data
+                try {
+                    const s = localStorage.getItem('qotia_vFinal_3'); 
+                    if(s) this.data = JSON.parse(s);
+                    else this.seed();
+                } catch(e) {
+                    console.log("Resetting Data");
+                    localStorage.clear();
+                    this.seed();
                 }
             },
-            save() { localStorage.setItem('qotia_vFinal_2', JSON.stringify(this.data)); }
+            seed() {
+                this.data.clients = [{id:1, type:'physique', nom:'Durant', prenom:'Bernard', addr:'Paris', email:'b.d@mail.com'}];
+                this.data.chantiers = [{id:101, clientId:1, ref:'D-2025-001', name:'Rénovation SDB', status:'Accepte', activeRoom:'SDB', rooms:['SDB'], metrics:{'SDB':{L:3,l:2,h:2.5}}, items:[], details:{}, total:4500}];
+            },
+            save() { localStorage.setItem('qotia_vFinal_3', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Gros Oeuvre': ['Démolition','Evacuation'], 'Second Oeuvre': ['Plâtrerie','Peinture','Carrelage'], 'Tech': ['Plomberie','Electricité'] } };
 
-        // --- APP CONTROLLER ---
         const App = {
             init() {
                 Store.init();
