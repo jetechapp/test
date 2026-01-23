@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile V14</title>
+    <title>QOTIA Mobile V15 Master</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            /* Palette Ufficiale */
+            /* Palette */
             --c-yellow: #FCD34D;
             --c-yellow-dark: #F59E0B;
             --c-navy: #1E3A8A;
@@ -22,6 +22,7 @@
             --c-border: #E5E7EB;
             --c-danger: #EF4444;
             --c-success: #10B981;
+            --c-docs: #6366f1; /* Colore viola per Documenti */
             
             --h-nav: 80px; 
             --h-header: 65px;
@@ -31,20 +32,18 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--c-grey-bg); color: var(--c-dark); font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* LAYOUT MANAGER */
+        /* LAYOUT */
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
-        
-        /* PADDING PER SCROLL */
         #view-editor { padding-bottom: 160px; background: white; }
-        #view-home { padding-bottom: 140px; /* Spazio per KPI fisso + Scroll */ }
+        #view-home { padding-bottom: 140px; }
 
         /* HEADER */
         .mobile-header { flex: 0 0 var(--h-header); background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 30; }
         .logo-text { font-weight: 900; font-size: 1.4rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
         .header-btn { border: none; background: transparent; font-size: 1.5rem; color: var(--c-dark); cursor: pointer; padding: 5px; }
 
-        /* DASHBOARD GRID (HOME) */
+        /* DASHBOARD GRID */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
         .dash-btn { height: 110px; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); transition: transform 0.1s; }
         .dash-btn:active { transform: scale(0.97); }
@@ -52,7 +51,7 @@
         
         .btn-home-clients { background: white; color: var(--c-navy); border: 2px solid var(--c-navy); }
         .btn-home-new { background: var(--c-yellow); color: var(--c-dark); border: 2px solid var(--c-yellow-dark); }
-        .btn-home-docs { background: var(--c-dark); color: white; border: 2px solid #000; }
+        .btn-home-docs { background: var(--c-docs); color: white; border: 2px solid #4f46e5; }
         .btn-home-agenda { background: white; color: #666; border: 2px solid #ccc; }
 
         /* LIST ITEM */
@@ -62,9 +61,10 @@
         .list-sub { font-size: 0.85rem; color: #666; margin-top: 3px; }
         
         /* AZIONI LISTA */
-        .list-actions { display: flex; gap: 12px; align-items: center; }
-        .btn-icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s; }
+        .list-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s; border: none; cursor: pointer; }
         .btn-call { background: #ECFDF5; color: var(--c-success); border: 1px solid var(--c-success); text-decoration: none; }
+        .btn-map { background: #EFF6FF; color: var(--c-navy); border: 1px solid var(--c-navy); text-decoration: none; }
         .btn-edit { background: #F3F4F6; color: #4B5563; border: 1px solid #D1D5DB; }
 
         /* TAGS */
@@ -74,7 +74,9 @@
 
         /* DOCUMENT LIST */
         .doc-item { background: white; border-left: 5px solid #ccc; padding: 15px; margin: 10px 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .doc-devis { border-left-color: var(--c-navy); } .doc-facture { border-left-color: var(--c-danger); }
+        .doc-devis { border-left-color: var(--c-navy); } 
+        .doc-facture { border-left-color: var(--c-danger); }
+        .doc-etude { border-left-color: var(--c-success); }
         .doc-type { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; opacity: 0.7; }
 
         /* KPI FIXED */
@@ -107,7 +109,7 @@
         .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
 
         /* FOOTER NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; z-index: 100; align-items: end; padding-bottom: 12px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; align-items: end; padding-bottom: 15px; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; }
         .nav-btn i { font-size: 1.5rem; margin-bottom: 6px; }
         .nav-btn.active { color: var(--c-navy); }
@@ -121,10 +123,16 @@
         .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
         .app-input { width: 100%; height: 50px; border: 1px solid var(--c-border); padding: 0 15px; font-size: 1rem; border-radius: 8px; background: white; margin-bottom: 15px; }
         .btn-primary { width: 100%; height: 55px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #666; margin-bottom: 5px; text-transform: uppercase; }
         
         .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #E5E7EB; color: #374151; } .bg-ok { background: #ECFDF5; color: #065F46; } .bg-pay { background: #FEF2F2; color: #991B1B; }
+
+        /* SHARE GRID */
+        .share-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .share-btn { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 15px; background: white; border-radius: 12px; border: 1px solid #eee; cursor: pointer; }
+        .share-btn i { font-size: 2rem; }
 
         /* SIDE MENU */
         .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
@@ -133,6 +141,11 @@
         .side-overlay.open { display: block; }
         .menu-header { padding: 40px 20px; background: var(--c-navy); color: white; }
         .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 600; color: #333; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+
+        /* INVOICE CARD */
+        .inv-card { background: #FFF; border-left: 5px solid var(--c-danger); border-radius: 8px; padding: 15px; margin: 10px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .inv-card.paid { border-left-color: var(--c-success); background: #F0FDF4; }
+        .btn-pay { background: white; border: 1px solid var(--c-success); color: var(--c-success); font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; }
 
     </style>
 </head>
@@ -182,7 +195,10 @@
     </main>
 
     <main id="view-clients" class="view-section">
-        <header class="mobile-header"><div class="logo-text">CLIENTS</div><button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button></header>
+        <header class="mobile-header">
+            <div class="logo-text">CLIENTS</div>
+            <button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
+        </header>
         <div style="padding:15px;"><input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)"></div>
         <div id="clients-list"></div>
     </main>
@@ -194,6 +210,7 @@
                 <button class="badge bg-draft" onclick="App.renderDocuments('all')">Tous</button>
                 <button class="badge bg-ok" onclick="App.renderDocuments('Devis')">Devis</button>
                 <button class="badge bg-pay" onclick="App.renderDocuments('Facture')">Factures</button>
+                <button class="badge" style="background:#059669; color:white;" onclick="App.renderDocuments('Etude')">Etudes</button>
             </div>
             <div id="documents-list"></div>
         </div>
@@ -296,32 +313,32 @@
         <div class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i><span>FACTURES</span></div>
     </nav>
 
-    <div id="modal-agenda" class="full-modal">
-        <div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">&times;</button></div>
-        <div class="modal-body">
-            <label class="form-label">Titre RDV</label>
-            <input type="text" id="agenda-title" class="app-input" placeholder="Ex: Début Chantier">
-            <label class="form-label">Date & Heure</label>
-            <input type="datetime-local" id="agenda-date" class="app-input">
-            <div style="margin-top:20px; background:#EFF6FF; padding:15px; border-radius:8px; font-size:0.9rem; color:var(--c-navy);">
-                <i class="fas fa-info-circle"></i> Cet événement sera synchronisé avec le calendrier de votre téléphone.
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-primary" onclick="App.saveAgendaEvent()">AJOUTER AU CALENDRIER</button>
-        </div>
-    </div>
-
     <div id="modal-share" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;">
         <div style="background:white; border-radius:20px 20px 0 0; padding:25px;">
             <div style="text-align:center; font-weight:800; font-size:1.2rem; margin-bottom:20px;">Partager le Document</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
-                <div class="dash-btn" onclick="alert('Ouverture PDF...')"><i class="fas fa-file-pdf" style="color:var(--c-danger);"></i><div>PDF</div></div>
-                <div class="dash-btn" onclick="alert('Envoi WhatsApp...')"><i class="fab fa-whatsapp" style="color:#25D366;"></i><div>WhatsApp</div></div>
-                <div class="dash-btn" onclick="alert('Envoi Email...')"><i class="fas fa-envelope" style="color:var(--c-navy);"></i><div>Email</div></div>
+            <div class="share-grid">
+                <div class="share-btn" onclick="alert('PDF généré !')"><i class="fas fa-file-pdf" style="color:var(--c-danger);"></i><div>PDF</div></div>
+                <div class="share-btn" onclick="alert('Ouverture WhatsApp...')"><i class="fab fa-whatsapp" style="color:#25D366;"></i><div>WhatsApp</div></div>
+                <div class="share-btn" onclick="alert('Ouverture Email...')"><i class="fas fa-envelope" style="color:var(--c-navy);"></i><div>Email</div></div>
             </div>
             <button class="btn-primary" style="margin-top:20px; background:#eee; color:#333;" onclick="App.closeModal('modal-share')">Annuler</button>
         </div>
+    </div>
+
+    <div id="modal-agenda" class="full-modal">
+        <div class="modal-header"><h3>Agenda Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">&times;</button></div>
+        <div class="modal-body">
+            <label class="form-label">Chantier</label>
+            <select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select>
+            <label class="form-label">Devis (Optionnel)</label>
+            <select id="agd-devis" class="app-input"></select>
+            <label class="form-label">Date & Heure</label>
+            <input type="datetime-local" id="agd-date" class="app-input">
+            <div style="background:#EFF6FF; padding:15px; border-radius:8px; margin-top:20px;">
+                <i class="fas fa-info-circle" style="color:var(--c-navy);"></i> Synchronisation avec calendrier téléphone.
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">AJOUTER AU CALENDRIER</button></div>
     </div>
 
     <div id="modal-invoice" class="full-modal">
@@ -357,10 +374,21 @@
                 <button class="room-pill active" id="sw-phys" onclick="App.cliType('phys')" style="flex:1">Physique</button>
                 <button class="room-pill" id="sw-mor" onclick="App.cliType('mor')" style="flex:1">Société</button>
             </div>
-            <input type="text" id="cli-nom" class="app-input" placeholder="Nom / Raison Sociale">
-            <input type="text" id="cli-addr" class="app-input" placeholder="Adresse">
-            <input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone">
-            <div id="grp-mor" style="display:none;"><input type="text" id="cli-siret" class="app-input" placeholder="SIRET"></div>
+            <label class="form-label">Infos Principales</label>
+            <div style="display:flex; gap:10px;">
+                <select id="cli-civ" class="app-input" style="flex:0 0 80px;"><option>M.</option><option>Mme</option></select>
+                <input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet / Raison Sociale">
+            </div>
+            <input type="text" id="cli-addr" class="app-input" placeholder="Adresse Facturation">
+            <input type="email" id="cli-email" class="app-input" placeholder="Email">
+            <input type="tel" id="cli-tel" class="app-input" placeholder="Mobile">
+            <div id="grp-mor" style="display:none;">
+                <label class="form-label">Infos Société</label>
+                <input type="text" id="cli-siret" class="app-input" placeholder="SIRET">
+                <input type="text" id="cli-tva" class="app-input" placeholder="TVA Intra">
+            </div>
+            <label class="form-label">Note Interne</label>
+            <input type="text" id="cli-note" class="app-input">
         </div>
         <div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">Enregistrer</button></div>
     </div>
@@ -368,11 +396,30 @@
     <div id="modal-projet" class="full-modal">
         <div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-projet')"><i class="fas fa-times"></i></button></div>
         <div class="modal-body">
-            <label class="form-label">Client</label>
-            <select id="prj-cli" class="app-input"><option value="">Sélectionner...</option></select>
-            <label class="form-label">Détails</label>
-            <input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier">
-            <input type="text" id="prj-addr" class="app-input" placeholder="Adresse">
+            <div style="display:flex; align-items:flex-end; gap:10px;">
+                <div style="flex:1;">
+                    <label class="form-label">Client</label>
+                    <select id="prj-cli" class="app-input"><option value="">Sélectionner...</option></select>
+                </div>
+                <button class="btn-primary" style="width:50px; margin-bottom:15px;" onclick="App.openClientModal()">+</button>
+            </div>
+            <label class="form-label">Détails Chantier</label>
+            <input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier (Ex: Cuisine)">
+            <input type="text" id="prj-addr" class="app-input" placeholder="Adresse Chantier">
+            
+            <label class="form-label">Détails Techniques</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <input type="text" id="prj-code" class="app-input" placeholder="Digicode">
+                <input type="text" id="prj-etage" class="app-input" placeholder="Etage">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <input type="text" id="prj-asc" class="app-input" placeholder="Ascenseur">
+                <input type="text" id="prj-heat" class="app-input" placeholder="Chauffage">
+            </div>
+            <input type="text" id="prj-keys" class="app-input" placeholder="Clés / Accès">
+            <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien">
+            <input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble">
+            <input type="text" id="prj-compteur" class="app-input" placeholder="Emplacement Compteurs">
         </div>
         <div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">Créer & Ouvrir</button></div>
     </div>
@@ -410,7 +457,7 @@
     <script>
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null },
-            init() { try { const s = localStorage.getItem('qotia_v14_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            init() { try { const s = localStorage.getItem('qotia_v15_master'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [{id:101, type:'physique', nom:'Jean Dupont', addr:'Nice', tel:'0600000000'}, {id:102, type:'morale', nom:'SCI Immo', addr:'Cannes'}];
                 this.data.chantiers = [{
@@ -422,7 +469,7 @@
                     factures: []
                 }];
             },
-            save() { localStorage.setItem('qotia_v14_final', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v15_master', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -456,32 +503,41 @@
             },
             hardReset() { if(confirm("Effacer tout ?")) { localStorage.clear(); location.reload(); } },
 
-            // --- AGENDA SYNC ---
-            openAgenda() { document.getElementById('modal-agenda').classList.add('open'); },
+            // --- AGENDA ---
+            openAgenda() {
+                const sC = document.getElementById('agd-chantier'); sC.innerHTML='<option value="">Sélectionner Chantier...</option>';
+                Store.data.chantiers.forEach(c => {
+                    let o = document.createElement('option'); o.value=c.id; o.text=c.name; sC.appendChild(o);
+                });
+                document.getElementById('modal-agenda').classList.add('open');
+            },
+            loadDevisForAgenda() {
+                const cid = document.getElementById('agd-chantier').value;
+                const sD = document.getElementById('agd-devis'); sD.innerHTML='<option value="">Sélectionner Devis...</option>';
+                if(!cid) return;
+                const c = Store.data.chantiers.find(x=>x.id==cid);
+                if(c && c.devisList) c.devisList.forEach(d => {
+                    let o = document.createElement('option'); o.value=d.id; o.text=d.name; sD.appendChild(o);
+                });
+            },
             saveAgendaEvent() {
-                const title = document.getElementById('agenda-title').value || "Rendez-vous Chantier";
-                const date = document.getElementById('agenda-date').value;
-                if(!date) return alert("Sélectionnez une date");
+                const cid = document.getElementById('agd-chantier').value;
+                const date = document.getElementById('agd-date').value;
+                if(!cid || !date) return alert("Chantier et Date requis");
                 
-                // Create .ics file content
-                const d = new Date(date);
-                const iso = d.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0,15) + "Z";
-                const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:${title}
-DTSTART:${iso}
-DESCRIPTION:Rendez-vous créé via QOTIA Mobile
-END:VEVENT
-END:VCALENDAR`;
-
-                const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-                const link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.setAttribute('download', 'rdv_chantier.ics');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                const c = Store.data.chantiers.find(x=>x.id==cid);
+                const did = document.getElementById('agd-devis').value;
+                const d = c.devisList?c.devisList.find(x=>x.id==did):null;
+                
+                const title = `QOTIA: ${c.name}`;
+                const desc = `Chantier: ${c.name}\nDevis: ${d?d.ref:'-'}\nClient: ${c.clientId}`;
+                
+                const dt = new Date(date);
+                const iso = dt.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0,15) + "Z";
+                const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDESCRIPTION:${desc}\nDTSTART:${iso}\nEND:VEVENT\nEND:VCALENDAR`;
+                
+                const blob = new Blob([ics], {type:'text/calendar'});
+                const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='rdv.ics'; a.click();
                 App.closeModal('modal-agenda');
             },
 
@@ -492,14 +548,19 @@ END:VCALENDAR`;
                 Store.data.chantiers.forEach(c => {
                     const cli = Store.data.clients.find(x=>x.id==c.clientId);
                     const cliName = cli ? cli.nom : 'Inconnu';
-                    if(c.devisList) c.devisList.forEach(d => docs.push({ type:'Devis', ref:d.ref, client:cliName, amount:d.total }));
+                    if(c.devisList) {
+                        c.devisList.forEach(d => {
+                            docs.push({ type:'Devis', ref:d.ref, client:cliName, amount:d.total });
+                            docs.push({ type:'Etude', ref:d.ref+' (Etude)', client:cliName, amount:0 });
+                        });
+                    }
                     if(c.factures) c.factures.forEach(f => docs.push({ type:'Facture', ref:f.ref, client:cliName, amount:f.amount }));
                 });
                 if(filter !== 'all') docs = docs.filter(d => d.type === filter);
                 docs.forEach(d => {
-                    let dClass = d.type==='Devis' ? 'doc-devis' : 'doc-facture';
+                    let dClass = d.type==='Devis'?'doc-devis':(d.type==='Facture'?'doc-facture':'doc-etude');
                     let div = document.createElement('div'); div.className = `doc-item ${dClass}`;
-                    div.innerHTML = `<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem; color:#666;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount.toFixed(0)}€</div><i class="fas fa-ellipsis-v" style="color:#ccc; margin-top:5px;"></i></div>`;
+                    div.innerHTML = `<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem; color:#666;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount>0?d.amount.toFixed(0)+'€':''}</div><i class="fas fa-share-alt" style="color:#ccc; margin-top:5px;"></i></div>`;
                     div.onclick = () => document.getElementById('modal-share').classList.add('open');
                     l.appendChild(div);
                 });
@@ -512,8 +573,10 @@ END:VCALENDAR`;
                     if(c.nom.toLowerCase().includes(q.toLowerCase())) {
                         let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
                         let call = c.tel ? `<a href="tel:${c.tel}" class="btn-icon-circle btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : '';
+                        let map = c.addr ? `<a href="https://maps.google.com/?q=${c.addr}" target="_blank" class="btn-icon-circle btn-map" onclick="event.stopPropagation()"><i class="fas fa-map-marker-alt"></i></a>` : '';
+                        
                         let d=document.createElement('div'); d.className='list-item'; 
-                        d.innerHTML=`<div class="list-content" onclick="App.editClient(${c.id})">${tag}<div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions">${call}<button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`;
+                        d.innerHTML=`<div class="list-content" onclick="App.editClient(${c.id})">${tag}<div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions">${map}${call}<button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`;
                         l.appendChild(d);
                     }
                 });
@@ -626,11 +689,18 @@ END:VCALENDAR`;
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const l = document.getElementById('proj-invoice-list'); l.innerHTML='';
                 if(c.factures) c.factures.forEach(f => {
-                    let d = document.createElement('div'); d.className=`list-item`;
-                    d.innerHTML = `<div><div style="font-weight:700;">${f.ref}</div><div>${f.type}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
+                    let st = f.paid ? '<span style="color:#10B981">PAGATA</span>' : '<span style="color:#EF4444">DA PAGARE</span>';
+                    let btn = !f.paid ? `<div class="btn-pay" onclick="App.payInvoice(${f.id})">INCASSA</div>` : '';
+                    let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
+                    d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div>${f.type}</div>${st}</div><div style="text-align:right"><div class="inv-amt">${f.amount.toFixed(2)}€</div>${btn}</div>`;
                     l.appendChild(d);
                 });
                 this.nav('project-invoices');
+            },
+            payInvoice(id) {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const f = c.factures.find(f=>f.id==id);
+                if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); }
             },
 
             // --- SHARED ---
@@ -660,13 +730,27 @@ END:VCALENDAR`;
                 document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
                 document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
             },
-            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
+            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel','cli-siret','cli-tva','cli-note'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
             saveClient() {
                 const n = document.getElementById('cli-nom').value;
                 const id = document.getElementById('cli-id').value;
-                const c = { id: id ? parseInt(id) : Date.now(), nom:n, tel:document.getElementById('cli-tel').value, addr:document.getElementById('cli-addr').value, type: document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique' };
+                const c = { 
+                    id: id ? parseInt(id) : Date.now(), 
+                    nom:n, tel:document.getElementById('cli-tel').value, 
+                    addr:document.getElementById('cli-addr').value, 
+                    type: document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique' 
+                };
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); }
-                Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
+                Store.save(); App.closeModal('modal-client'); 
+                
+                // If opened from Project Wizard, populate and close
+                const prjCli = document.getElementById('prj-cli');
+                if(prjCli && document.getElementById('modal-projet').classList.contains('open')) {
+                    App.updateProjectClientSelect(c.id);
+                } else {
+                    App.renderClients();
+                }
+                return c.id;
             },
             editClient(id) {
                 const c = Store.data.clients.find(x=>x.id==id);
@@ -674,10 +758,14 @@ END:VCALENDAR`;
                 document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel;
                 App.cliType(c.type); document.getElementById('modal-client').classList.add('open');
             },
-            openProjectWizard(pid) {
+            updateProjectClientSelect(selectedId) {
                 const s = document.getElementById('prj-cli'); s.innerHTML='<option value="">Sélectionner</option>';
                 Store.data.clients.forEach(c=>{let o=document.createElement('option');o.value=c.id;o.innerText=c.nom;s.appendChild(o)});
-                if(pid) s.value=pid;
+                if(selectedId) s.value = selectedId;
+            },
+            openProjectWizard(pid) {
+                App.updateProjectClientSelect(pid);
+                ['prj-nom','prj-addr','prj-code','prj-etage','prj-asc','prj-heat','prj-keys','prj-syndic','prj-plomb','prj-compteur'].forEach(i=>document.getElementById(i).value='');
                 document.getElementById('modal-projet').classList.add('open');
             },
             createProject() {
@@ -686,7 +774,14 @@ END:VCALENDAR`;
                     const ch={
                         id:Date.now(), clientId:cid, name:nom, ref:"C-"+new Date().getFullYear(),
                         activeRoom:'Cuisine', rooms:['Cuisine'], metrics:{'Cuisine':{L:0,l:0,h:2.7}}, 
-                        devisList: [], factures:[]
+                        devisList: [], factures: [],
+                        details: { 
+                            code: document.getElementById('prj-code').value, 
+                            etage: document.getElementById('prj-etage').value,
+                            asc: document.getElementById('prj-asc').value,
+                            heat: document.getElementById('prj-heat').value,
+                            keys: document.getElementById('prj-keys').value
+                        }
                     };
                     const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 };
                     ch.devisList.push(defDevis);
@@ -697,28 +792,19 @@ END:VCALENDAR`;
                 }
             },
             closeModal(id) { document.getElementById(id).classList.remove('open'); },
-            setInvType(t) {
-                this.state.invType = t;
-                document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill';
-                document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill';
-                document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none';
-                this.calcInvPreview();
-            },
-            calcMetrics(save=true) {
-                const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; 
-                document.getElementById('m-surf').innerText = (L*l).toFixed(2);
-                if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); }
-            },
             renderFacturesGlobal() {
                 const l = document.getElementById('global-invoice-list'); l.innerHTML='';
                 Store.data.chantiers.forEach(c => {
                     if(c.factures) c.factures.forEach(f => {
-                         let d = document.createElement('div'); d.className=`list-item`;
-                         d.innerHTML = `<div><div style="font-weight:700;">${f.ref}</div><div>${c.name}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
+                         let st = f.paid ? '<span style="color:#10B981">PAGATA</span>' : '<span style="color:#EF4444">DA PAGARE</span>';
+                         let btn = !f.paid ? `<div class="btn-pay" onclick="App.payInvoiceGlobal(${c.id}, ${f.id})">INCASSA</div>` : '';
+                         let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
+                         d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${c.name}</div>${st}</div><div style="text-align:right"><div class="inv-amt">${f.amount.toFixed(2)}€</div>${btn}</div>`;
                          l.appendChild(d);
                     });
                 });
             },
+            payInvoiceGlobal(cid, fid) { Store.data.activeChantierId = cid; App.payInvoice(fid); App.renderFacturesGlobal(); },
             editItem(id) {
                 const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d=c.devisList.find(x=>x.id==Store.data.activeDevisId);
