@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile V12</title>
+    <title>QOTIA Mobile V13</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -33,50 +33,39 @@
         /* LAYOUT */
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
-        
         #view-editor { padding-bottom: 160px; background: white; }
         #view-home { padding-bottom: 120px; }
 
         /* HEADER */
         .mobile-header { flex: 0 0 var(--h-header); background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 30; }
         .logo-text { font-weight: 900; font-size: 1.4rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
-        .header-btn { border: none; background: transparent; font-size: 1.4rem; color: var(--c-dark); cursor: pointer; }
+        .header-btn { border: none; background: transparent; font-size: 1.5rem; color: var(--c-dark); cursor: pointer; padding: 5px; }
 
-        /* HOME DASHBOARD GRID */
-        .dashboard-grid { 
-            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; 
-        }
-        .dash-btn {
-            height: 110px; border-radius: var(--radius); display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; text-align: center; 
-            font-weight: 800; font-size: 0.9rem; cursor: pointer; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.1s;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
+        /* SIDE MENU (RIPRISTINATO) */
+        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
+        .side-menu.open { right: 0; }
+        .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
+        .side-overlay.open { display: block; }
+        .menu-header { padding: 40px 20px; background: var(--c-navy); color: white; }
+        .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 600; color: #333; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        
+        /* DASHBOARD GRID */
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .dash-btn { height: 110px; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); transition: transform 0.1s; }
         .dash-btn:active { transform: scale(0.97); }
         .dash-btn i { font-size: 2.2rem; margin-bottom: 10px; }
-
-        /* Colori Bottoni Home */
         .btn-home-clients { background: white; color: var(--c-navy); border: 2px solid var(--c-navy); }
         .btn-home-new { background: var(--c-yellow); color: var(--c-dark); border: 2px solid var(--c-yellow-dark); }
         .btn-home-docs { background: var(--c-dark); color: white; border: 2px solid #000; }
         .btn-home-agenda { background: white; color: #666; border: 2px solid #ccc; }
 
-        /* LIST ITEM STYLES (CLIENTI RIPRISTINATI) */
-        .list-item { 
-            background: white; padding: 15px; border-bottom: 1px solid var(--c-border); 
-            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
+        /* LIST ITEM */
+        .list-item { background: white; padding: 15px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .list-content { flex: 1; }
         .list-title { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
         .list-sub { font-size: 0.85rem; color: #666; margin-top: 3px; }
-        
-        /* AZIONI LISTA CLIENTI */
         .list-actions { display: flex; gap: 12px; align-items: center; }
-        .btn-icon-circle { 
-            width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            font-size: 1.2rem; transition: background 0.2s; 
-        }
+        .btn-icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s; }
         .btn-call { background: #ECFDF5; color: var(--c-success); border: 1px solid var(--c-success); text-decoration: none; }
         .btn-edit { background: #F3F4F6; color: #4B5563; border: 1px solid #D1D5DB; }
 
@@ -86,66 +75,42 @@
         .tag-priv { background: var(--c-navy); color: white; }
 
         /* DOCUMENT LIST */
-        .doc-item {
-            background: white; border-left: 5px solid #ccc; padding: 15px; margin: 10px 15px; 
-            border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;
-        }
-        .doc-devis { border-left-color: var(--c-navy); }
-        .doc-facture { border-left-color: var(--c-danger); }
-        .doc-etude { border-left-color: var(--c-success); }
+        .doc-item { background: white; border-left: 5px solid #ccc; padding: 15px; margin: 10px 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .doc-devis { border-left-color: var(--c-navy); } .doc-facture { border-left-color: var(--c-danger); }
         .doc-type { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; opacity: 0.7; }
 
-        /* EDITOR & HUB UI */
-        .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
-        .hub-btn { background: white; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .hub-icon { width: 50px; height: 50px; background: var(--c-grey-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--c-navy); }
-        .hub-info { flex: 1; }
-        .hub-title { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
-
-        .editor-header { background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 40; }
-        .room-scroll-nav { flex: 0 0 55px; background: white; display: flex; overflow-x: auto; align-items: center; padding: 0 15px; gap: 10px; border-bottom: 1px solid var(--c-border); }
-        .room-pill { background: #F3F4F6; color: #666; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
-        .room-pill.active { background: var(--c-yellow); color: var(--c-navy); }
-
-        /* FOOTER NAV FIXED */
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); 
-            background: var(--c-surface); border-top: 1px solid var(--c-border); 
-            display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; 
-            z-index: 100; align-items: end; padding-bottom: 12px;
-        }
-        .nav-btn { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; 
-            font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; 
-        }
+        /* FOOTER NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; z-index: 100; align-items: end; padding-bottom: 12px; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; }
         .nav-btn i { font-size: 1.5rem; margin-bottom: 6px; }
         .nav-btn.active { color: var(--c-navy); }
-        
         .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
-        .ai-circle-big { 
-            position: absolute; bottom: 25px; 
-            width: 65px; height: 65px; background: var(--c-yellow); 
-            border: 5px solid var(--c-surface); border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); 
-            cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; 
-        }
+        .ai-circle-big { position: absolute; bottom: 25px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
 
-        /* KPI & MISC */
-        .home-kpi-fixed {
-            position: fixed; bottom: var(--h-nav); left: 0; width: 100%;
-            background: rgba(243, 244, 246, 0.95); backdrop-filter: blur(5px);
-            padding: 10px 15px; z-index: 90; border-top: 1px solid var(--c-border);
-        }
+        /* KPI */
+        .home-kpi-fixed { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; background: rgba(243, 244, 246, 0.95); backdrop-filter: blur(5px); padding: 10px 15px; z-index: 90; border-top: 1px solid var(--c-border); }
         .kpi-split-card { display: flex; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--c-border); height: 70px; }
         .kpi-half { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 5px; }
         .kpi-half:first-child { border-right: 1px solid var(--c-border); }
         .kpi-val { font-size: 1rem; font-weight: 900; }
-        .kpi-red { color: var(--c-danger); } .kpi-green { color: var(--c-success); }
         .kpi-bg-red { background: #FEF2F2; } .kpi-bg-green { background: #ECFDF5; }
+        .kpi-red { color: var(--c-danger); } .kpi-green { color: var(--c-success); }
 
-        /* MODALS */
+        /* EDITOR UI */
+        .editor-header { background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 40; }
+        .room-scroll-nav { flex: 0 0 55px; background: white; display: flex; overflow-x: auto; align-items: center; padding: 0 15px; gap: 10px; border-bottom: 1px solid var(--c-border); }
+        .room-pill { background: #F3F4F6; color: #666; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        .room-pill.active { background: var(--c-yellow); color: var(--c-navy); }
+        .item-card { background: white; border-radius: 10px; padding: 15px; margin: 10px 15px; border: 1px solid var(--c-border); border-left: 5px solid var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        body.mode-etude .item-card { border-left-color: #059669; }
+        .view-price { display: block; font-weight: 900; font-size: 1.1rem; color: var(--c-navy); }
+        .view-tech { display: none; font-size: 0.85rem; color: #059669; margin-top: 5px; font-weight: 600; }
+        body.mode-etude .view-price { display: none; } body.mode-etude .view-tech { display: block; }
+        .measures-footer { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 70px; background: var(--c-dark); display: flex; align-items: center; padding: 0 10px; gap: 8px; z-index: 90; border-top: 4px solid var(--c-yellow); }
+        .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 6px; height: 38px; font-size: 1.1rem; }
+        .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
+
+        /* MODALS & FORMS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
         .full-modal.open { display: flex; }
         .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
@@ -153,16 +118,9 @@
         .app-input { width: 100%; height: 50px; border: 1px solid var(--c-border); padding: 0 15px; font-size: 1rem; border-radius: 8px; background: white; margin-bottom: 15px; }
         .btn-primary { width: 100%; height: 55px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; }
         
-        /* SHARE MODAL */
-        .share-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .share-btn { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 15px; background: white; border-radius: 12px; border: 1px solid #eee; }
-        .share-btn i { font-size: 2rem; }
-
-        /* SIDE MENU */
-        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
-        .side-menu.open { right: 0; }
-        .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
-        .side-overlay.open { display: block; }
+        .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .bg-draft { background: #E5E7EB; color: #374151; } .bg-ok { background: #ECFDF5; color: #065F46; } .bg-pay { background: #FEF2F2; color: #991B1B; }
 
     </style>
 </head>
@@ -189,7 +147,7 @@
             <div class="dash-btn btn-home-docs" onclick="App.nav('documents')">
                 <i class="fas fa-folder-open"></i> DOCUMENTS
             </div>
-            <div class="dash-btn btn-home-agenda" onclick="alert('Fonctionnalité à venir')">
+            <div class="dash-btn btn-home-agenda" onclick="alert('Bientôt disponible')">
                 <i class="fas fa-calendar-alt"></i> AGENDA
             </div>
         </div>
@@ -255,10 +213,12 @@
             <div id="hub-devis-list"></div>
             
             <div style="margin-top:30px;">
-                <div class="hub-btn" onclick="App.openProjectInvoices()">
-                    <div class="hub-icon" style="background:#FEE2E2; color:var(--c-danger);"><i class="fas fa-file-invoice"></i></div>
-                    <div class="hub-info"><div class="hub-title" style="color:var(--c-danger);">FACTURES</div><div style="font-size:0.8rem; color:#666;">Gestion Acomptes & Soldes</div></div>
-                    <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                <div class="dash-btn" style="height:70px; flex-direction:row; gap:15px; background:#FEE2E2; border-color:#FCA5A5;" onclick="App.openProjectInvoices()">
+                    <i class="fas fa-file-invoice" style="font-size:1.5rem; color:var(--c-danger); margin:0;"></i>
+                    <div style="text-align:left;">
+                        <div style="font-weight:800; color:var(--c-danger);">FACTURES</div>
+                        <div style="font-size:0.8rem; color:#666;">Gestion Acomptes & Soldes</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -280,13 +240,19 @@
         </div>
         <div class="room-scroll-nav" id="room-tabs"></div>
         <div id="editor-list" style="padding:10px 0;"></div>
+        <div class="measures-footer">
+            <div class="m-box"><label>L</label><input type="number" class="m-inp" id="m-L" onchange="App.calcMetrics()"></div>
+            <div class="m-box"><label>l</label><input type="number" class="m-inp" id="m-l" onchange="App.calcMetrics()"></div>
+            <div class="m-box"><label>H</label><input type="number" class="m-inp" id="m-h" value="2.70" onchange="App.calcMetrics()"></div>
+            <div class="m-box" style="flex:0.8"><label>M²</label><div class="m-res" id="m-surf">0</div></div>
+        </div>
         <button onclick="App.openLibrary()" style="position:fixed; bottom:160px; right:20px; width:60px; height:60px; background:var(--c-navy); color:white; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size:1.8rem; z-index:950; border:2px solid white;">+</button>
     </main>
 
     <main id="view-project-invoices" class="view-section">
         <header class="mobile-header">
             <button class="header-btn" onclick="App.nav('hub')"><i class="fas fa-arrow-left"></i></button>
-            <div class="logo-text">FACTURES</div><div style="width:20px;"></div>
+            <div class="logo-text">FACTURES CHANTIER</div><div style="width:20px;"></div>
         </header>
         <div style="padding:20px;">
             <button class="btn-primary" onclick="App.openCreateInvoiceModal()">+ Créer Facture</button>
@@ -300,6 +266,19 @@
         <div style="padding:20px;" id="global-invoice-list"></div>
     </main>
 
+    <div class="side-overlay" id="side-overlay" onclick="App.toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <div class="menu-header">
+            <div style="font-size:1.5rem; font-weight:900;">MENU</div>
+            <div>Collaborateur</div>
+        </div>
+        <div class="menu-item"><i class="fas fa-id-card"></i> Mon Profil</div>
+        <div class="menu-item"><i class="fas fa-users"></i> Mes Collègues</div>
+        <div style="padding:20px;">
+            <button class="btn-primary" style="background:var(--c-danger);" onclick="App.hardReset()">RÉINITIALISER / REFRESH</button>
+        </div>
+    </div>
+
     <nav class="bottom-nav">
         <div class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i><span>HOME</span></div>
         <div class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i><span>CLIENTS</span></div>
@@ -307,20 +286,6 @@
         <div class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i><span>CHANTIERS</span></div>
         <div class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i><span>FACTURES</span></div>
     </nav>
-
-    <div class="side-overlay" id="side-overlay" onclick="App.toggleMenu()"></div>
-    <div class="side-menu" id="side-menu">
-        <div style="padding:30px 20px; background:var(--c-navy); color:white;">
-            <div style="font-weight:800; font-size:1.4rem;">Menu</div>
-            <div style="opacity:0.8;">Collaborateur</div>
-        </div>
-        <div style="padding:20px;">
-            <div class="list-item" style="border:none;">Mon Profil</div>
-            <div class="list-item" style="border:none;">Mes Collègues</div>
-            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
-            <button class="btn-primary" style="background:var(--c-danger);" onclick="localStorage.clear(); location.reload();">RESET APP</button>
-        </div>
-    </div>
 
     <div id="modal-share" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;">
         <div style="background:white; border-radius:20px 20px 0 0; padding:25px;">
@@ -420,7 +385,7 @@
     <script>
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null },
-            init() { try { const s = localStorage.getItem('qotia_v12_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            init() { try { const s = localStorage.getItem('qotia_v13_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [{id:101, type:'physique', nom:'Jean Dupont', addr:'Nice', tel:'0600000000'}, {id:102, type:'morale', nom:'SCI Immo', addr:'Cannes'}];
                 this.data.chantiers = [{
@@ -432,7 +397,7 @@
                     factures: []
                 }];
             },
-            save() { localStorage.setItem('qotia_v12_final', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v13_final', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -464,6 +429,7 @@
                 if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); }
                 else { m.classList.add('open'); o.classList.add('open'); }
             },
+            hardReset() { if(confirm("Effacer toutes les données et recommencer ?")) { localStorage.clear(); location.reload(); } },
 
             // --- DOCUMENTS SYSTEM ---
             renderDocuments(filter) {
@@ -666,7 +632,13 @@
                 document.getElementById('home-revenue').innerText = tot.toFixed(0)+" €";
                 document.getElementById('home-unpaid').innerText = unpaid.toFixed(0)+" €";
             },
-            renderProjets() { /* ... similar logic ... */ },
+            renderProjets() {
+                const l=document.getElementById('projects-list-full'); l.innerHTML='';
+                Store.data.chantiers.forEach(c=>{
+                    let d=document.createElement('div'); d.className='card'; d.innerHTML=`<b>${c.name}</b>`;
+                    d.onclick=()=>App.openHub(c.id); l.appendChild(d);
+                });
+            },
             cliType(t) {
                 document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`;
                 document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
@@ -722,13 +694,6 @@
                 const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; 
                 document.getElementById('m-surf').innerText = (L*l).toFixed(2);
                 if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); }
-            },
-            renderProjects() {
-                const l=document.getElementById('projects-list-full'); l.innerHTML='';
-                Store.data.chantiers.forEach(c=>{
-                    let d=document.createElement('div'); d.className='card'; d.innerHTML=`<b>${c.name}</b>`;
-                    d.onclick=()=>App.openHub(c.id); l.appendChild(d);
-                });
             },
             renderFacturesGlobal() {
                 const l = document.getElementById('global-invoice-list'); l.innerHTML='';
