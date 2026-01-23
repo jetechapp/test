@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile V13</title>
+    <title>QOTIA Mobile V14</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,6 +12,7 @@
 
     <style>
         :root {
+            /* Palette Ufficiale */
             --c-yellow: #FCD34D;
             --c-yellow-dark: #F59E0B;
             --c-navy: #1E3A8A;
@@ -30,30 +31,25 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--c-grey-bg); color: var(--c-dark); font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* LAYOUT */
+        /* LAYOUT MANAGER */
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
+        
+        /* PADDING PER SCROLL */
         #view-editor { padding-bottom: 160px; background: white; }
-        #view-home { padding-bottom: 120px; }
+        #view-home { padding-bottom: 140px; /* Spazio per KPI fisso + Scroll */ }
 
         /* HEADER */
         .mobile-header { flex: 0 0 var(--h-header); background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 30; }
         .logo-text { font-weight: 900; font-size: 1.4rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
         .header-btn { border: none; background: transparent; font-size: 1.5rem; color: var(--c-dark); cursor: pointer; padding: 5px; }
 
-        /* SIDE MENU (RIPRISTINATO) */
-        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
-        .side-menu.open { right: 0; }
-        .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
-        .side-overlay.open { display: block; }
-        .menu-header { padding: 40px 20px; background: var(--c-navy); color: white; }
-        .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 600; color: #333; display: flex; align-items: center; gap: 10px; cursor: pointer; }
-        
-        /* DASHBOARD GRID */
+        /* DASHBOARD GRID (HOME) */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
         .dash-btn { height: 110px; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: 0.9rem; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05); transition: transform 0.1s; }
         .dash-btn:active { transform: scale(0.97); }
         .dash-btn i { font-size: 2.2rem; margin-bottom: 10px; }
+        
         .btn-home-clients { background: white; color: var(--c-navy); border: 2px solid var(--c-navy); }
         .btn-home-new { background: var(--c-yellow); color: var(--c-dark); border: 2px solid var(--c-yellow-dark); }
         .btn-home-docs { background: var(--c-dark); color: white; border: 2px solid #000; }
@@ -64,6 +60,8 @@
         .list-content { flex: 1; }
         .list-title { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
         .list-sub { font-size: 0.85rem; color: #666; margin-top: 3px; }
+        
+        /* AZIONI LISTA */
         .list-actions { display: flex; gap: 12px; align-items: center; }
         .btn-icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s; }
         .btn-call { background: #ECFDF5; color: var(--c-success); border: 1px solid var(--c-success); text-decoration: none; }
@@ -79,15 +77,7 @@
         .doc-devis { border-left-color: var(--c-navy); } .doc-facture { border-left-color: var(--c-danger); }
         .doc-type { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; opacity: 0.7; }
 
-        /* FOOTER NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; z-index: 100; align-items: end; padding-bottom: 12px; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; }
-        .nav-btn i { font-size: 1.5rem; margin-bottom: 6px; }
-        .nav-btn.active { color: var(--c-navy); }
-        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
-        .ai-circle-big { position: absolute; bottom: 25px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
-
-        /* KPI */
+        /* KPI FIXED */
         .home-kpi-fixed { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; background: rgba(243, 244, 246, 0.95); backdrop-filter: blur(5px); padding: 10px 15px; z-index: 90; border-top: 1px solid var(--c-border); }
         .kpi-split-card { display: flex; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--c-border); height: 70px; }
         .kpi-half { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 5px; }
@@ -96,7 +86,13 @@
         .kpi-bg-red { background: #FEF2F2; } .kpi-bg-green { background: #ECFDF5; }
         .kpi-red { color: var(--c-danger); } .kpi-green { color: var(--c-success); }
 
-        /* EDITOR UI */
+        /* EDITOR & HUB UI */
+        .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
+        .hub-btn { background: white; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .hub-icon { width: 50px; height: 50px; background: var(--c-grey-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--c-navy); }
+        .hub-info { flex: 1; }
+        .hub-title { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
+
         .editor-header { background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 40; }
         .room-scroll-nav { flex: 0 0 55px; background: white; display: flex; overflow-x: auto; align-items: center; padding: 0 15px; gap: 10px; border-bottom: 1px solid var(--c-border); }
         .room-pill { background: #F3F4F6; color: #666; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
@@ -110,7 +106,15 @@
         .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 6px; height: 38px; font-size: 1.1rem; }
         .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
 
-        /* MODALS & FORMS */
+        /* FOOTER NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; z-index: 100; align-items: end; padding-bottom: 12px; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; }
+        .nav-btn i { font-size: 1.5rem; margin-bottom: 6px; }
+        .nav-btn.active { color: var(--c-navy); }
+        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
+        .ai-circle-big { position: absolute; bottom: 25px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
+
+        /* MODALS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
         .full-modal.open { display: flex; }
         .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
@@ -121,6 +125,14 @@
         .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #E5E7EB; color: #374151; } .bg-ok { background: #ECFDF5; color: #065F46; } .bg-pay { background: #FEF2F2; color: #991B1B; }
+
+        /* SIDE MENU */
+        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
+        .side-menu.open { right: 0; }
+        .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
+        .side-overlay.open { display: block; }
+        .menu-header { padding: 40px 20px; background: var(--c-navy); color: white; }
+        .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 600; color: #333; display: flex; align-items: center; gap: 10px; cursor: pointer; }
 
     </style>
 </head>
@@ -147,7 +159,7 @@
             <div class="dash-btn btn-home-docs" onclick="App.nav('documents')">
                 <i class="fas fa-folder-open"></i> DOCUMENTS
             </div>
-            <div class="dash-btn btn-home-agenda" onclick="alert('Bientôt disponible')">
+            <div class="dash-btn btn-home-agenda" onclick="App.openAgenda()">
                 <i class="fas fa-calendar-alt"></i> AGENDA
             </div>
         </div>
@@ -170,10 +182,7 @@
     </main>
 
     <main id="view-clients" class="view-section">
-        <header class="mobile-header">
-            <div class="logo-text">CLIENTS</div>
-            <button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
-        </header>
+        <header class="mobile-header"><div class="logo-text">CLIENTS</div><button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button></header>
         <div style="padding:15px;"><input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)"></div>
         <div id="clients-list"></div>
     </main>
@@ -287,13 +296,29 @@
         <div class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i><span>FACTURES</span></div>
     </nav>
 
+    <div id="modal-agenda" class="full-modal">
+        <div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">&times;</button></div>
+        <div class="modal-body">
+            <label class="form-label">Titre RDV</label>
+            <input type="text" id="agenda-title" class="app-input" placeholder="Ex: Début Chantier">
+            <label class="form-label">Date & Heure</label>
+            <input type="datetime-local" id="agenda-date" class="app-input">
+            <div style="margin-top:20px; background:#EFF6FF; padding:15px; border-radius:8px; font-size:0.9rem; color:var(--c-navy);">
+                <i class="fas fa-info-circle"></i> Cet événement sera synchronisé avec le calendrier de votre téléphone.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" onclick="App.saveAgendaEvent()">AJOUTER AU CALENDRIER</button>
+        </div>
+    </div>
+
     <div id="modal-share" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;">
         <div style="background:white; border-radius:20px 20px 0 0; padding:25px;">
             <div style="text-align:center; font-weight:800; font-size:1.2rem; margin-bottom:20px;">Partager le Document</div>
-            <div class="share-grid">
-                <div class="share-btn" onclick="alert('Ouverture PDF...')"><i class="fas fa-file-pdf" style="color:var(--c-danger);"></i><div>Voir PDF</div></div>
-                <div class="share-btn" onclick="alert('Envoi WhatsApp...')"><i class="fab fa-whatsapp" style="color:#25D366;"></i><div>WhatsApp</div></div>
-                <div class="share-btn" onclick="alert('Envoi Email...')"><i class="fas fa-envelope" style="color:var(--c-navy);"></i><div>Email</div></div>
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px;">
+                <div class="dash-btn" onclick="alert('Ouverture PDF...')"><i class="fas fa-file-pdf" style="color:var(--c-danger);"></i><div>PDF</div></div>
+                <div class="dash-btn" onclick="alert('Envoi WhatsApp...')"><i class="fab fa-whatsapp" style="color:#25D366;"></i><div>WhatsApp</div></div>
+                <div class="dash-btn" onclick="alert('Envoi Email...')"><i class="fas fa-envelope" style="color:var(--c-navy);"></i><div>Email</div></div>
             </div>
             <button class="btn-primary" style="margin-top:20px; background:#eee; color:#333;" onclick="App.closeModal('modal-share')">Annuler</button>
         </div>
@@ -385,7 +410,7 @@
     <script>
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null },
-            init() { try { const s = localStorage.getItem('qotia_v13_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            init() { try { const s = localStorage.getItem('qotia_v14_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [{id:101, type:'physique', nom:'Jean Dupont', addr:'Nice', tel:'0600000000'}, {id:102, type:'morale', nom:'SCI Immo', addr:'Cannes'}];
                 this.data.chantiers = [{
@@ -397,7 +422,7 @@
                     factures: []
                 }];
             },
-            save() { localStorage.setItem('qotia_v13_final', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v14_final', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -429,38 +454,53 @@
                 if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); }
                 else { m.classList.add('open'); o.classList.add('open'); }
             },
-            hardReset() { if(confirm("Effacer toutes les données et recommencer ?")) { localStorage.clear(); location.reload(); } },
+            hardReset() { if(confirm("Effacer tout ?")) { localStorage.clear(); location.reload(); } },
 
-            // --- DOCUMENTS SYSTEM ---
+            // --- AGENDA SYNC ---
+            openAgenda() { document.getElementById('modal-agenda').classList.add('open'); },
+            saveAgendaEvent() {
+                const title = document.getElementById('agenda-title').value || "Rendez-vous Chantier";
+                const date = document.getElementById('agenda-date').value;
+                if(!date) return alert("Sélectionnez une date");
+                
+                // Create .ics file content
+                const d = new Date(date);
+                const iso = d.toISOString().replace(/-|:|\.\d\d\d/g,"").slice(0,15) + "Z";
+                const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+DTSTART:${iso}
+DESCRIPTION:Rendez-vous créé via QOTIA Mobile
+END:VEVENT
+END:VCALENDAR`;
+
+                const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.setAttribute('download', 'rdv_chantier.ics');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                App.closeModal('modal-agenda');
+            },
+
+            // --- DOCUMENTS ---
             renderDocuments(filter) {
                 const l = document.getElementById('documents-list'); l.innerHTML='';
                 let docs = [];
-                
                 Store.data.chantiers.forEach(c => {
                     const cli = Store.data.clients.find(x=>x.id==c.clientId);
                     const cliName = cli ? cli.nom : 'Inconnu';
-                    
-                    if(c.devisList) c.devisList.forEach(d => docs.push({ type:'Devis', ref:d.ref, client:cliName, amount:d.total, date:'-', raw:d }));
-                    if(c.factures) c.factures.forEach(f => docs.push({ type:'Facture', ref:f.ref, client:cliName, amount:f.amount, date:f.date, raw:f }));
+                    if(c.devisList) c.devisList.forEach(d => docs.push({ type:'Devis', ref:d.ref, client:cliName, amount:d.total }));
+                    if(c.factures) c.factures.forEach(f => docs.push({ type:'Facture', ref:f.ref, client:cliName, amount:f.amount }));
                 });
-
                 if(filter !== 'all') docs = docs.filter(d => d.type === filter);
-
                 docs.forEach(d => {
                     let dClass = d.type==='Devis' ? 'doc-devis' : 'doc-facture';
                     let div = document.createElement('div'); div.className = `doc-item ${dClass}`;
-                    div.innerHTML = `
-                        <div>
-                            <div class="doc-type">${d.type}</div>
-                            <div style="font-weight:700;">${d.ref}</div>
-                            <div style="font-size:0.8rem; color:#666;">${d.client}</div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-weight:900;">${d.amount.toFixed(0)}€</div>
-                            <i class="fas fa-ellipsis-v" style="color:#ccc; margin-top:5px;"></i>
-                        </div>
-                    `;
-                    div.onclick = () => document.getElementById('modal-share').style.display='flex';
+                    div.innerHTML = `<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem; color:#666;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount.toFixed(0)}€</div><i class="fas fa-ellipsis-v" style="color:#ccc; margin-top:5px;"></i></div>`;
+                    div.onclick = () => document.getElementById('modal-share').classList.add('open');
                     l.appendChild(div);
                 });
             },
@@ -472,19 +512,8 @@
                     if(c.nom.toLowerCase().includes(q.toLowerCase())) {
                         let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
                         let call = c.tel ? `<a href="tel:${c.tel}" class="btn-icon-circle btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : '';
-                        
                         let d=document.createElement('div'); d.className='list-item'; 
-                        d.innerHTML=`
-                            <div class="list-content" onclick="App.editClient(${c.id})">
-                                ${tag}
-                                <div class="list-title">${c.nom}</div>
-                                <div class="list-sub">${c.addr||'-'}</div>
-                            </div>
-                            <div class="list-actions">
-                                ${call}
-                                <button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button>
-                            </div>
-                        `;
+                        d.innerHTML=`<div class="list-content" onclick="App.editClient(${c.id})">${tag}<div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions">${call}<button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`;
                         l.appendChild(d);
                     }
                 });
@@ -506,10 +535,7 @@
                 c.devisList.forEach(d => {
                     let div = document.createElement('div'); div.className = `list-item`;
                     div.style.borderLeft = d.status=='Accepte' ? '5px solid #10B981' : '5px solid #1E3A8A';
-                    div.innerHTML = `
-                        <div><div style="font-weight:700;">${d.name}</div><div style="font-size:0.8rem;">${d.ref}</div></div>
-                        <div style="font-weight:900;">${d.total.toFixed(0)}€</div>
-                    `;
+                    div.innerHTML = `<div><div style="font-weight:700;">${d.name}</div><div style="font-size:0.8rem;">${d.ref}</div></div><div style="font-weight:900;">${d.total.toFixed(0)}€</div>`;
                     div.onclick = () => App.openEditor(d.id, 'devis');
                     l.appendChild(div);
                 });
@@ -542,20 +568,12 @@
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
                 const l = document.getElementById('editor-list'); l.innerHTML='';
-                
                 d.items.filter(i=>i.room==c.activeRoom).forEach(i => {
                     let div = document.createElement('div'); div.className='item-card';
-                    div.innerHTML = `
-                        <div style="font-weight:700;">${i.desc}</div>
-                        <div style="display:flex; justify-content:space-between; margin-top:5px; color:#666; font-size:0.9rem;">
-                            <span>${i.qty} ${i.unit}</span>
-                            <span class="view-price">${(i.qty*i.price).toFixed(0)} €</span>
-                            <span class="view-tech">${i.time||0}h / ${i.mat||0}€</span>
-                        </div>`;
+                    div.innerHTML = `<div style="font-weight:700;">${i.desc}</div><div style="display:flex; justify-content:space-between; margin-top:5px; color:#666; font-size:0.9rem;"><span>${i.qty} ${i.unit}</span><span class="view-price">${(i.qty*i.price).toFixed(0)} €</span><span class="view-tech">${i.time||0}h / ${i.mat||0}€</span></div>`;
                     div.onclick = () => App.editItem(i.id);
                     l.appendChild(div);
                 });
-                
                 d.total = d.items.reduce((a,b)=>a+(b.qty*b.price),0);
                 document.getElementById('ed-total').innerText = d.total.toFixed(0)+' €';
                 Store.save();
@@ -587,7 +605,6 @@
                 if(!d) return;
                 const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0);
                 let amt = 0;
-                
                 if(this.state.invType === 'acompte') {
                     const perc = parseFloat(document.getElementById('inv-percent').value) || 0;
                     amt = d.total * (perc/100);
@@ -601,7 +618,6 @@
                 const did = document.getElementById('inv-devis-select').value;
                 const d = c.devisList.find(x=>x.id==did);
                 let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€',''));
-                
                 const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*1000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() };
                 if(!c.factures) c.factures=[]; c.factures.push(inv);
                 Store.save(); App.closeModal('modal-invoice'); App.openProjectInvoices();
@@ -674,10 +690,8 @@
                     };
                     const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 };
                     ch.devisList.push(defDevis);
-                    
                     Store.data.chantiers.unshift(ch); Store.save();
                     App.closeModal('modal-projet');
-                    
                     Store.data.activeChantierId = ch.id;
                     App.openEditor(defDevis.id, 'devis'); 
                 }
