@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile Pro</title>
+    <title>QOTIA Mobile System</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            /* Palette Ufficiale */
+            /* Palette */
             --c-yellow: #FCD34D;
             --c-navy: #1E3A8A;
             --c-dark: #111827;
@@ -30,97 +30,89 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--c-grey-bg); color: var(--c-dark); font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* --- LAYOUT --- */
+        /* LAYOUT */
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
+        
+        /* Padding specifici */
         #view-editor { padding-bottom: 160px; background: white; }
+        #view-project-invoices { background: white; }
 
-        /* --- HEADER --- */
+        /* HEADER */
         .mobile-header { flex: 0 0 var(--h-header); background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 30; }
         .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
         .header-btn { border: none; background: transparent; font-size: 1.4rem; color: var(--c-dark); cursor: pointer; }
 
-        /* --- UI COMPONENTS --- */
+        /* UI GENERICS */
         .card { background: var(--c-surface); border-radius: var(--radius); padding: 20px; margin: 15px; border: 1px solid var(--c-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        
-        .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
-
         .list-item { background: white; padding: 18px 15px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .list-title { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
-        .list-sub { font-size: 0.85rem; color: #666; margin-top: 4px; }
-
-        /* HUB CHANTIER BUTTONS */
-        .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
-        .hub-btn {
-            background: white; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px;
-            display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: transform 0.1s;
-        }
-        .hub-btn:active { transform: scale(0.98); background: #EFF6FF; }
-        .hub-icon { width: 50px; height: 50px; background: var(--c-grey-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--c-navy); }
-        .hub-info { flex: 1; }
-        .hub-title { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
-        .hub-desc { font-size: 0.85rem; color: #666; margin-top: 2px; }
-
-        /* STATUS BADGES */
+        .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #E5E7EB; color: #374151; }
         .bg-ok { background: #ECFDF5; color: #065F46; }
-        .bg-wait { background: #FFF7ED; color: #9A3412; }
+        .bg-pay { background: #FEF2F2; color: #991B1B; } /* Da pagare */
 
-        /* --- EDITOR UI --- */
+        /* HUB Buttons */
+        .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
+        .hub-btn { background: white; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .hub-icon { width: 50px; height: 50px; background: var(--c-grey-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--c-navy); }
+        .hub-info { flex: 1; }
+        .hub-title { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
+
+        /* EDITOR UI (Devis vs Cahier des Charges) */
         .editor-header { background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 40; }
-        .mode-banner { padding: 5px; text-align: center; color: white; font-weight: 700; font-size: 0.8rem; letter-spacing: 1px; border-radius: 4px; margin-bottom: 10px; }
-        .mode-devis .mode-banner { background: var(--c-navy); }
-        .mode-etude .mode-banner { background: #059669; }
-
+        .mode-banner { padding: 8px; text-align: center; color: white; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px; border-radius: 6px; }
+        
+        /* Stili dinamici in base alla modalità */
+        body.mode-devis .mode-banner { background: var(--c-navy); }
+        body.mode-etude .mode-banner { background: #059669; }
+        
         .room-scroll-nav { flex: 0 0 55px; background: white; display: flex; overflow-x: auto; align-items: center; padding: 0 15px; gap: 10px; border-bottom: 1px solid var(--c-border); }
         .room-pill { background: #F3F4F6; color: #666; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
         .room-pill.active { background: var(--c-yellow); color: var(--c-navy); }
 
+        /* ITEM CARD */
+        .item-card { background: white; border-radius: 10px; padding: 15px; margin: 10px 15px; border: 1px solid var(--c-border); border-left: 5px solid var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        body.mode-etude .item-card { border-left-color: #059669; } /* Verde per Cahier des charges */
+
+        .item-row-main { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-desc { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
+        .item-qty { background: #EFF6FF; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: var(--c-navy); margin-top: 5px; display: inline-block; }
+        
+        /* Visibilità condizionale */
+        .view-price { display: block; font-weight: 900; font-size: 1.1rem; color: var(--c-navy); }
+        .view-tech { display: none; font-size: 0.85rem; color: #059669; margin-top: 5px; font-weight: 600; }
+        
+        body.mode-etude .view-price { display: none; }
+        body.mode-etude .view-tech { display: block; }
+
+        /* FOOTER MISURE */
         .measures-footer { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 70px; background: var(--c-dark); display: flex; align-items: center; padding: 0 10px; gap: 8px; z-index: 90; border-top: 4px solid var(--c-yellow); }
+        .m-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
+        .m-box label { color: #9CA3AF; font-size: 0.65rem; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
         .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 6px; height: 38px; font-size: 1.1rem; }
         .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
 
-        /* ITEM CARD */
-        .item-card {
-            background: white; border-radius: 10px; padding: 15px; margin: 10px 15px;
-            border: 1px solid var(--c-border); border-left: 4px solid var(--c-navy);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        .mode-etude .item-card { border-left-color: #059669; }
-        .item-desc { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
-        
-        /* Visibility Logic */
-        .show-in-devis { display: block; }
-        .show-in-etude { display: none; }
-        .mode-etude .show-in-devis { display: none; }
-        .mode-etude .show-in-etude { display: block; }
-
-        /* --- MODALS --- */
+        /* MODALS & FORMS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
         .full-modal.open { display: flex; }
         .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
         .app-input { width: 100%; height: 50px; border: 1px solid var(--c-border); padding: 0 15px; font-size: 1rem; border-radius: 8px; background: white; margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #666; margin-bottom: 5px; text-transform: uppercase; }
         .btn-primary { width: 100%; height: 55px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; }
 
-        /* BOTTOM NAV */
+        /* NAV */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; align-items: end; padding-bottom: 15px; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 600; height: 100%; cursor: pointer; text-transform: uppercase; }
-        .nav-btn i { font-size: 1.4rem; margin-bottom: 5px; }
         .nav-btn.active { color: var(--c-navy); }
         .ai-circle-big { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
 
         /* SIDE MENU */
-        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; box-shadow: -5px 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
         .side-menu.open { right: 0; }
         .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
         .side-overlay.open { display: block; }
-
-        /* AI OVERLAY */
-        .ai-overlay { position: fixed; bottom: 0; left: 0; width: 100%; background: white; z-index: 6000; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -10px 50px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform 0.3s; }
-        .ai-overlay.active { transform: translateY(0); }
 
     </style>
 </head>
@@ -131,12 +123,10 @@
             <div class="logo-text"><i class="fas fa-hammer" style="color:var(--c-yellow)"></i> QOTIA</div>
             <button class="header-btn" onclick="App.toggleMenu()"><i class="fas fa-bars"></i></button>
         </header>
-
         <div style="padding:25px 20px 0 20px;">
             <div style="font-size:1.5rem; font-weight:800; color:var(--c-dark);">Bonjour,</div>
             <div style="font-size:1.1rem; color:#666;">Jean (Collaborateur)</div>
         </div>
-
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:20px;">
             <div class="card" style="margin:0; text-align:center; cursor:pointer;" onclick="App.openClientModal()">
                 <i class="fas fa-user-plus" style="font-size:2rem; color:var(--c-navy); margin-bottom:10px;"></i>
@@ -147,77 +137,43 @@
                 <div style="font-weight:700;">Nouveau Chantier</div>
             </div>
         </div>
-
         <div class="section-title">Chantiers en cours</div>
         <div id="home-recent-list"></div>
-
-        <div class="section-title">Chiffre d'Affaire</div>
-        <div class="card" style="background:#FFF7ED; border-color:#FED7AA; display:flex; justify-content:space-between; align-items:center; margin-top:0;">
-            <span style="font-weight:700; color:#C2410C;">EN ATTENTE</span>
-            <span style="font-weight:900; font-size:1.2rem; color:#C2410C;" id="home-kpi-rev">0,00 €</span>
-        </div>
     </main>
 
     <main id="view-clients" class="view-section">
-        <header class="mobile-header">
-            <div class="logo-text">CLIENTS</div>
-            <button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
-        </header>
+        <header class="mobile-header"><div class="logo-text">CLIENTS</div><button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button></header>
         <div style="padding:15px;"><input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)"></div>
         <div id="clients-list"></div>
     </main>
 
     <main id="view-projets" class="view-section">
         <header class="mobile-header"><div class="logo-text">CHANTIERS</div></header>
-        <div style="padding:15px;">
-            <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button class="badge bg-draft" onclick="App.renderProjects('all')" style="border:none; cursor:pointer;">Tous</button>
-                <button class="badge bg-wait" onclick="App.renderProjects('Brouillon')" style="border:none; cursor:pointer;">Brouillons</button>
-                <button class="badge bg-ok" onclick="App.renderProjects('Accepte')" style="border:none; cursor:pointer;">Acceptés</button>
-            </div>
-            <div id="projects-list-full"></div>
-        </div>
+        <div style="padding:15px;" id="projects-list-full"></div>
     </main>
 
     <main id="view-hub" class="view-section">
         <header class="mobile-header">
             <button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button>
-            <div class="logo-text" style="font-size:1rem;" id="hub-title">Chantier</div>
-            <div style="width:20px;"></div>
+            <div class="logo-text" style="font-size:1rem;">Tableau de Bord</div><div style="width:20px;"></div>
         </header>
-        
         <div style="padding:20px; background:white; border-bottom:1px solid #eee;">
-            <div style="color:#666; font-size:0.9rem;" id="hub-client">Client</div>
-            <div style="font-weight:800; font-size:1.4rem; margin-top:5px;" id="hub-name">Nom Chantier</div>
-            <div style="margin-top:10px;"><span class="badge bg-draft" id="hub-status">Statut</span></div>
+            <div style="color:#666;" id="hub-client">Client</div>
+            <div style="font-weight:800; font-size:1.4rem; color:var(--c-navy);" id="hub-name">Projet</div>
+            <div style="margin-top:5px;"><span class="badge bg-draft" id="hub-status">Statut</span></div>
         </div>
-
         <div class="hub-grid">
             <div class="hub-btn" onclick="App.openEditor('devis')">
                 <div class="hub-icon"><i class="fas fa-file-invoice-dollar"></i></div>
-                <div class="hub-info">
-                    <div class="hub-title">Devis</div>
-                    <div class="hub-desc">Prix, Quantités, Total HT/TTC</div>
-                </div>
-                <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                <div class="hub-info"><div class="hub-title">DEVIS</div><div style="font-size:0.8rem; color:#666;">Mode Commercial (Prix)</div></div>
             </div>
-
             <div class="hub-btn" onclick="App.openEditor('etude')">
-                <div class="hub-icon"><i class="fas fa-hard-hat"></i></div>
-                <div class="hub-info">
-                    <div class="hub-title">Cahier des Charges</div>
-                    <div class="hub-desc">Détails techniques, Temps, Matériaux</div>
-                </div>
-                <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                <div class="hub-icon" style="color:#059669;"><i class="fas fa-hard-hat"></i></div>
+                <div class="hub-info"><div class="hub-title" style="color:#059669;">CAHIER DES CHARGES</div><div style="font-size:0.8rem; color:#666;">Mode Technique (Temps/Mat)</div></div>
             </div>
-
             <div class="hub-btn" onclick="App.openProjectInvoices()">
-                <div class="hub-icon"><i class="fas fa-file-invoice"></i></div>
-                <div class="hub-info">
-                    <div class="hub-title">Factures</div>
-                    <div class="hub-desc">Générer ou voir les factures</div>
-                </div>
-                <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                <div class="hub-icon" style="color:#B91C1C;"><i class="fas fa-file-invoice"></i></div>
+                <div class="hub-info"><div class="hub-title" style="color:#B91C1C;">FACTURES</div><div style="font-size:0.8rem; color:#666;">Acomptes & Soldes</div></div>
             </div>
         </div>
     </main>
@@ -227,34 +183,35 @@
             <div class="mode-banner" id="editor-banner">MODE DEVIS</div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <button class="header-btn" onclick="App.nav('hub')"><i class="fas fa-arrow-left"></i></button>
-                <div style="text-align:right;">
-                    <div style="font-weight:900; font-size:1.3rem; color:var(--c-navy);" id="ed-total">0 €</div>
-                </div>
-            </div>
-            <div style="display:flex; background:#E5E7EB; padding:3px; border-radius:8px; margin-top:10px;">
-                <div class="room-pill active" style="flex:1; text-align:center; border-radius:6px;" id="btn-piece" onclick="App.switchView('piece')">Par Pièce</div>
-                <div class="room-pill" style="flex:1; text-align:center; border-radius:6px;" id="btn-ouvr" onclick="App.switchView('ouvrage')">Récap Global</div>
+                <div style="text-align:right;"><div style="font-weight:900; font-size:1.3rem; color:var(--c-navy);" id="ed-total">0 €</div></div>
             </div>
         </div>
-
         <div class="room-scroll-nav" id="room-tabs"></div>
         <div id="editor-list" style="padding:10px 0;"></div>
-
         <div class="measures-footer">
-            <div class="m-box" style="flex:1"><label>L(m)</label><input type="number" class="m-inp" id="m-L" onchange="App.calcMetrics()"></div>
-            <div class="m-box" style="flex:1"><label>l(m)</label><input type="number" class="m-inp" id="m-l" onchange="App.calcMetrics()"></div>
-            <div class="m-box" style="flex:1"><label>H(m)</label><input type="number" class="m-inp" id="m-h" value="2.70" onchange="App.calcMetrics()"></div>
+            <div class="m-box"><label>L(m)</label><input type="number" class="m-inp" id="m-L" onchange="App.calcMetrics()"></div>
+            <div class="m-box"><label>l(m)</label><input type="number" class="m-inp" id="m-l" onchange="App.calcMetrics()"></div>
+            <div class="m-box"><label>H(m)</label><input type="number" class="m-inp" id="m-h" value="2.70" onchange="App.calcMetrics()"></div>
             <div class="m-box" style="flex:0.8"><label>M²</label><div class="m-res" id="m-surf">0</div></div>
         </div>
-        
-        <button onclick="App.openLibrary()" style="position:fixed; bottom:160px; right:20px; width:60px; height:60px; background:var(--c-navy); color:white; border-radius:50%; border:2px solid white; box-shadow:0 6px 20px rgba(30, 58, 138, 0.4); font-size:1.8rem; z-index:950; cursor:pointer;">+</button>
+        <button onclick="App.openLibrary()" style="position:fixed; bottom:160px; right:20px; width:60px; height:60px; background:var(--c-navy); color:white; border-radius:50%; border:2px solid white; box-shadow:0 6px 20px rgba(0,0,0,0.2); font-size:1.8rem; z-index:950; cursor:pointer;">+</button>
     </main>
 
-    <main id="view-factures" class="view-section">
-        <header class="mobile-header"><div class="logo-text">FACTURES</div></header>
+    <main id="view-project-invoices" class="view-section">
+        <header class="mobile-header">
+            <button class="header-btn" onclick="App.nav('hub')"><i class="fas fa-arrow-left"></i></button>
+            <div class="logo-text">FACTURES</div><div style="width:20px;"></div>
+        </header>
         <div style="padding:20px;">
-            <div id="invoice-list"></div>
+            <button class="btn-primary" onclick="App.openCreateInvoiceModal()">+ Créer Facture (Acompte/Solde)</button>
+            <div class="section-title">Historique</div>
+            <div id="proj-invoice-list"></div>
         </div>
+    </main>
+
+    <main id="view-factures-global" class="view-section">
+        <header class="mobile-header"><div class="logo-text">TOUTES FACTURES</div></header>
+        <div style="padding:20px;" id="global-invoice-list"></div>
     </main>
 
     <div class="side-overlay" id="side-overlay" onclick="App.toggleMenu()"></div>
@@ -264,9 +221,8 @@
             <div style="opacity:0.8;">Collaborateur</div>
         </div>
         <div style="padding:20px;">
-            <div class="list-item" style="border:none;"><i class="fas fa-id-card" style="margin-right:10px;"></i> Mon Profil</div>
-            <div class="list-item" style="border:none;"><i class="fas fa-users" style="margin-right:10px;"></i> Équipe / Collaborateurs</div>
-            <div class="list-item" style="border:none;"><i class="fas fa-building" style="margin-right:10px;"></i> Entreprise</div>
+            <div class="list-item" style="border:none;">Mon Profil</div>
+            <div class="list-item" style="border:none;">Collègues (Équipe)</div>
             <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
             <button class="btn-primary" onclick="localStorage.clear(); location.reload();" style="background:var(--c-danger);">Réinitialiser App</button>
         </div>
@@ -275,33 +231,49 @@
     <nav class="bottom-nav">
         <button class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i> HOME</button>
         <button class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i> CLIENTS</button>
-        <div class="ai-circle-big" onclick="AI.open()">IA</div>
+        <div class="ai-circle-big" onclick="alert('IA Assistant')">IA</div>
         <button class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-folder"></i> CHANTIERS</button>
-        <button class="nav-btn" onclick="App.nav('factures')" id="nav-factures"><i class="fas fa-file-invoice-dollar"></i> FACTURES</button>
+        <button class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice"></i> FACTURES</button>
     </nav>
 
-    <div id="ai-overlay" class="ai-overlay">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h3 style="color:var(--c-navy); margin:0;">IA Assistant</h3>
-            <button onclick="AI.close()" style="border:none; background:none; font-size:1.5rem;">&times;</button>
+    <div id="modal-invoice" class="full-modal">
+        <div class="modal-header"><h3>Nouvelle Facture</h3><button onclick="App.closeModal('modal-invoice')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
+        <div class="modal-body">
+            <div style="background:#EFF6FF; padding:15px; border-radius:8px; margin-bottom:20px;">
+                <div style="font-size:0.8rem; color:#666;">Montant Devis Total</div>
+                <div style="font-weight:900; font-size:1.5rem; color:var(--c-navy);" id="inv-total-quote">0 €</div>
+            </div>
+            
+            <label class="form-label">Type de Facture</label>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button class="room-pill active" onclick="App.setInvType('acompte')" id="btn-acompte" style="flex:1;">Acompte %</button>
+                <button class="room-pill" onclick="App.setInvType('solde')" id="btn-solde" style="flex:1;">Solde Final</button>
+            </div>
+
+            <div id="grp-acompte">
+                <label class="form-label">Pourcentage Acompte</label>
+                <input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()">
+            </div>
+
+            <div style="padding:15px; border:1px solid #ddd; border-radius:8px; text-align:center;">
+                <div style="font-size:0.9rem;">Montant Facture (HT)</div>
+                <div style="font-size:1.8rem; font-weight:900; color:var(--c-success);" id="inv-preview-amount">0 €</div>
+            </div>
         </div>
-        <textarea id="ai-text" class="app-input" style="height:100px; margin-bottom:15px;" placeholder="Ex: Créer projet... ou Ajouter Peinture..."></textarea>
-        <button class="btn-primary" onclick="AI.process()">Envoyer</button>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer Facture</button></div>
     </div>
 
     <div id="modal-client" class="full-modal">
         <div class="modal-header"><h3>Client</h3><button onclick="App.closeModal('modal-client')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
             <input type="hidden" id="cli-id">
-            <div style="display:flex; background:#eee; padding:3px; border-radius:6px; margin-bottom:15px;">
-                <div class="room-pill active" id="sw-phys" onclick="App.cliType('phys')" style="flex:1; text-align:center;">Physique</div>
-                <div class="room-pill" id="sw-mor" onclick="App.cliType('mor')" style="flex:1; text-align:center;">Morale</div>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="room-pill active" id="sw-phys" onclick="App.cliType('phys')" style="flex:1">Physique</button>
+                <button class="room-pill" id="sw-mor" onclick="App.cliType('mor')" style="flex:1">Société</button>
             </div>
             <input type="text" id="cli-nom" class="app-input" placeholder="Nom / Raison Sociale">
             <input type="text" id="cli-addr" class="app-input" placeholder="Adresse">
             <input type="email" id="cli-email" class="app-input" placeholder="Email">
-            <input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone">
-            
             <div id="grp-mor" style="display:none;">
                 <input type="text" id="cli-siret" class="app-input" placeholder="SIRET">
                 <input type="text" id="cli-tva" class="app-input" placeholder="TVA">
@@ -309,21 +281,23 @@
         </div>
         <div class="modal-footer" style="display:flex; flex-direction:column; gap:10px;">
             <button class="btn-primary" onclick="App.saveClient()">Enregistrer</button>
-            <button class="btn-primary" style="background:#ECFDF5; color:#065F46;" onclick="App.createChantierFromClient()">Créer Chantier</button>
+            <button class="btn-primary" style="background:#ECFDF5; color:#065F46;" onclick="App.createChantierFromClient()">+ Créer Chantier</button>
         </div>
     </div>
 
     <div id="modal-projet" class="full-modal">
         <div class="modal-header"><h3>Nouveau Chantier</h3><button onclick="App.closeModal('modal-projet')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
-            <select id="prj-cli" class="app-input"><option value="">Client...</option></select>
-            <input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier">
+            <label class="form-label">Client</label>
+            <select id="prj-cli" class="app-input"><option value="">Sélectionner...</option></select>
+            <label class="form-label">Détails</label>
+            <input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier (ex: Cuisine)">
             <input type="text" id="prj-addr" class="app-input" placeholder="Adresse">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="text" id="prj-code" class="app-input" placeholder="Digicode">
+                <input type="text" id="prj-code" class="app-input" placeholder="Code">
                 <input type="text" id="prj-etage" class="app-input" placeholder="Etage">
             </div>
-            <input type="text" id="prj-syndic" class="app-input" placeholder="Syndic">
+            <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic">
         </div>
         <div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">Créer</button></div>
     </div>
@@ -332,23 +306,22 @@
         <div class="modal-header"><h3>Ouvrage</h3><button onclick="App.closeModal('modal-item')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
             <input type="hidden" id="it-id">
-            <textarea id="it-desc" class="app-input" style="height:70px;"></textarea>
+            <label class="form-label">Description</label>
+            <textarea id="it-desc" class="app-input" style="height:70px; font-weight:600;"></textarea>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="number" id="it-qty" class="app-input" placeholder="Qté">
-                <select id="it-unit" class="app-input"><option>m²</option><option>U</option></select>
+                <div><label class="form-label">Quantité</label><input type="number" id="it-qty" class="app-input"></div>
+                <div><label class="form-label">Unité</label><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div>
             </div>
-            <div style="background:#FFF7ED; padding:10px; margin-bottom:10px; border:1px solid #FED7AA; border-radius:6px;">
-                <label style="color:#C2410C; font-size:0.7rem; font-weight:700;">CAHIER DES CHARGES (TECH)</label>
+            <div style="background:#FFF7ED; padding:10px; border:1px solid #FED7AA; border-radius:8px; margin-bottom:15px;">
+                <label style="color:#C2410C; font-size:0.7rem; font-weight:700;">CAHIER CHARGES (TECH)</label>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                    <input type="number" id="it-mat" class="app-input" placeholder="Mat (€)">
-                    <input type="number" id="it-time" class="app-input" placeholder="Temps (h)">
+                    <div><span style="font-size:0.7rem;">Matériel (€)</span><input type="number" id="it-mat" class="app-input"></div>
+                    <div><span style="font-size:0.7rem;">Temps (h)</span><input type="number" id="it-time" class="app-input"></div>
                 </div>
-                <input type="text" id="it-note" class="app-input" placeholder="Note Technique">
+                <input type="text" id="it-note" class="app-input" placeholder="Note technique...">
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="number" id="it-price" class="app-input" placeholder="Prix Vente">
-                <select id="it-tva" class="app-input"><option value="0.1">10%</option><option value="0.2">20%</option></select>
-            </div>
+            <label class="form-label">Prix Vente (€/u)</label>
+            <input type="number" id="it-price" class="app-input" style="font-weight:900; color:var(--c-navy);">
         </div>
         <div class="modal-footer">
             <button class="btn-primary" onclick="App.saveItem()">Valider</button>
@@ -362,25 +335,30 @@
     </div>
 
     <script>
+        // --- STORE ---
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
                 try {
-                    const s = localStorage.getItem('qotia_final_v6'); 
+                    const s = localStorage.getItem('qotia_full_system'); 
                     if(s) this.data = JSON.parse(s); else this.seed();
                 } catch(e) { this.seed(); }
             },
             seed() {
                 this.data.clients = [{id:1, type:'physique', nom:'Durant Bernard', addr:'Paris'}];
-                this.data.chantiers = [{id:101, clientId:1, ref:'D-2025-001', name:'Rénovation SDB', status:'Accepte', activeRoom:'SDB', rooms:['SDB'], metrics:{'SDB':{L:3,l:2,h:2.5}}, items:[], details:{}, total:0}];
+                this.data.chantiers = [{
+                    id:101, clientId:1, ref:'D-2025-001', name:'Rénovation SDB', status:'Accepte', 
+                    activeRoom:'SDB', rooms:['SDB'], metrics:{'SDB':{L:3,l:2,h:2.5}}, 
+                    items:[], details:{}, total:0, factures:[] 
+                }];
             },
-            save() { localStorage.setItem('qotia_final_v6', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_full_system', JSON.stringify(this.data)); }
         };
 
-        const Config = { LIB: { 'Gros Oeuvre': ['Démolition','Evacuation'], 'Second Oeuvre': ['Plâtrerie','Peinture','Carrelage'], 'Tech': ['Plomberie','Electricité'] } };
+        const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
 
         const App = {
-            state: { mode:'devis', view:'piece' }, // devis|etude, piece|ouvrage
+            state: { mode:'devis', invType:'acompte' },
 
             init() { Store.init(); this.nav('home'); },
             
@@ -389,10 +367,11 @@
                 document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
                 document.getElementById('view-'+view).classList.add('active');
                 if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
+                
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
-                if(view==='projets') this.renderProjects('all');
-                if(view==='factures') this.renderFactures();
+                if(view==='projets') this.renderProjects();
+                if(view==='factures-global') this.renderGlobalInvoices();
             },
 
             toggleMenu() { 
@@ -408,107 +387,139 @@
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 document.getElementById('hub-name').innerText = c.name;
                 document.getElementById('hub-client').innerText = cli ? cli.nom : '';
-                document.getElementById('hub-status').innerText = c.status;
-                document.getElementById('hub-status').className = `badge ${c.status=='Accepte'?'bg-ok':'bg-draft'}`;
                 this.nav('hub');
             },
             openEditor(mode) {
                 this.state.mode = mode;
                 const banner = document.getElementById('editor-banner');
-                banner.innerText = mode==='devis' ? "MODE DEVIS (PRIX)" : "MODE CAHIER DES CHARGES (TECH)";
+                banner.innerText = mode==='devis' ? "MODE DEVIS (PRIX)" : "MODE CAHIER CHARGES (TECH)";
                 document.body.className = mode==='etude' ? 'mode-etude' : 'mode-devis';
                 
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const cli = Store.data.clients.find(x=>x.id==c.clientId);
-                document.getElementById('ed-proj-name').innerText = c.name;
-                document.getElementById('ed-cli-name').innerText = cli ? cli.nom : '';
-                
-                this.switchView('piece');
+                document.getElementById('ed-total').innerText = c.total.toFixed(0)+' €';
+                this.renderRooms();
                 this.nav('editor');
             },
-            openProjectInvoices() {
-                // Filter invoices for this specific project
-                this.nav('factures');
-                // (In real app, filter list by activeChantierId)
-            },
-
-            switchView(v) {
-                this.state.view = v;
-                document.getElementById('btn-piece').className = `room-pill ${v=='piece'?'active':''}`;
-                document.getElementById('btn-ouvr').className = `room-pill ${v=='ouvrage'?'active':''}`;
-                document.getElementById('room-tabs').style.display = v=='piece'?'flex':'none';
-                this.renderRooms();
-            },
-
+            
+            // --- EDITOR LOGIC ---
             renderRooms() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                if(this.state.view == 'piece') {
-                    const t = document.getElementById('room-tabs'); t.innerHTML='';
-                    c.rooms.forEach(r => {
-                        let p = document.createElement('div'); p.className=`room-pill ${c.activeRoom==r?'active':''}`; p.innerText=r;
-                        p.onclick = () => { c.activeRoom=r; Store.save(); App.renderRooms(); }; t.appendChild(p);
-                    });
-                    let add = document.createElement('div'); add.className='room-pill'; add.innerText='+';
-                    add.onclick=()=>{ let n=prompt('Nom pièce?'); if(n){c.rooms.push(n); c.metrics[n]={L:0,l:0,h:2.5}; c.activeRoom=n; Store.save(); App.renderRooms();} };
-                    t.appendChild(add);
-                    // Metrics
-                    const m = c.metrics[c.activeRoom] || {L:0,l:0,h:2.5};
-                    document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h;
-                    App.calcMetrics(false);
-                }
-                this.renderItems();
+                const t = document.getElementById('room-tabs'); t.innerHTML='';
+                c.rooms.forEach(r => {
+                    let p = document.createElement('div'); p.className=`room-pill ${c.activeRoom==r?'active':''}`; p.innerText=r;
+                    p.onclick = () => { c.activeRoom=r; Store.save(); App.renderRooms(); }; t.appendChild(p);
+                });
+                let add = document.createElement('div'); add.className='room-pill'; add.innerText='+';
+                add.onclick=()=>{ let n=prompt('Nom pièce?'); if(n){c.rooms.push(n); c.metrics[n]={L:0,l:0,h:2.5}; c.activeRoom=n; Store.save(); App.renderRooms();} };
+                t.appendChild(add);
+                
+                const m = c.metrics[c.activeRoom] || {L:0,l:0,h:2.5};
+                document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h;
+                App.calcMetrics(false);
+                App.renderItems();
             },
-
             renderItems() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const l = document.getElementById('editor-list'); l.innerHTML='';
-                let itemsToShow = [];
-
-                if(this.state.view === 'piece') {
-                    itemsToShow = c.items.filter(i => i.room === c.activeRoom);
-                } else {
-                    const agg = {};
-                    c.items.forEach(i => {
-                        if(!agg[i.desc]) agg[i.desc] = {...i, qty:0, rooms:[]};
-                        agg[i.desc].qty += i.qty;
-                    });
-                    itemsToShow = Object.values(agg);
-                }
-
-                itemsToShow.forEach(i => {
+                c.items.filter(i=>i.room==c.activeRoom).forEach(i => {
                     let d = document.createElement('div'); d.className='item-card';
                     d.innerHTML = `
-                        <div style="font-weight:700;">${i.desc}</div>
-                        <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:0.9rem; color:#666;">
+                        <div class="item-desc">${i.desc}</div>
+                        <div style="display:flex; justify-content:space-between; margin-top:5px; color:#666; font-size:0.9rem;">
                             <span>${i.qty} ${i.unit}</span>
-                            <span class="show-in-devis" style="font-weight:700; color:var(--c-navy);">${(i.qty*i.price).toFixed(0)}€</span>
-                            <span class="show-in-etude" style="font-weight:700; color:#059669;">${i.time?i.time+'h':''} ${i.mat?'Mat:'+i.mat+'€':''}</span>
-                        </div>
-                    `;
+                            <span class="view-price">${(i.qty*i.price).toFixed(0)} €</span>
+                            <span class="view-tech">${i.time||0}h - Mat:${i.mat||0}€</span>
+                        </div>`;
                     d.onclick = () => App.editItem(i.id);
                     l.appendChild(d);
                 });
-
-                let gTot = c.items.reduce((a,b)=>a+(b.qty*b.price),0);
-                document.getElementById('ed-total').innerText = gTot.toFixed(0)+' €';
-                c.total = gTot; Store.save();
+                let tot = c.items.reduce((a,b)=>a+(b.qty*b.price),0);
+                c.total = tot; document.getElementById('ed-total').innerText=tot.toFixed(0)+' €'; Store.save();
             },
-
-            // --- CRUD ---
             calcMetrics(save=true) {
                 const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; 
                 document.getElementById('m-surf').innerText = (L*l).toFixed(2);
                 if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); }
             },
+            
+            // --- INVOICE SYSTEM (NEW) ---
+            openProjectInvoices() {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const l = document.getElementById('proj-invoice-list'); l.innerHTML='';
+                
+                if(!c.factures) c.factures = [];
+                
+                c.factures.forEach(f => {
+                    let d = document.createElement('div'); d.className='list-item';
+                    d.innerHTML = `<div><div class="list-title">${f.ref}</div><div class="list-sub">${f.type}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
+                    l.appendChild(d);
+                });
+                this.nav('project-invoices');
+            },
+            openCreateInvoiceModal() {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                document.getElementById('inv-total-quote').innerText = c.total.toFixed(2) + " €";
+                this.setInvType('acompte');
+                document.getElementById('modal-invoice').style.display='flex';
+            },
+            setInvType(t) {
+                this.state.invType = t;
+                document.getElementById('btn-acompte').className = `room-pill ${t=='acompte'?'active':''}`;
+                document.getElementById('btn-solde').className = `room-pill ${t=='solde'?'active':''}`;
+                document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none';
+                this.calcInvPreview();
+            },
+            calcInvPreview() {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                let amt = 0;
+                if(this.state.invType === 'acompte') {
+                    const perc = parseFloat(document.getElementById('inv-percent').value) || 0;
+                    amt = c.total * (perc/100);
+                } else {
+                    const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
+                    amt = c.total - paid;
+                }
+                document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €";
+            },
+            generateInvoice() {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€',''));
+                const inv = {
+                    id: Date.now(),
+                    ref: "FAC-"+new Date().getFullYear()+"-"+(Math.floor(Math.random()*1000)),
+                    type: this.state.invType === 'acompte' ? "Acompte" : "Solde",
+                    amount: amt,
+                    date: new Date().toLocaleDateString()
+                };
+                if(!c.factures) c.factures=[];
+                c.factures.push(inv);
+                Store.save();
+                this.closeModal('modal-invoice');
+                this.openProjectInvoices();
+            },
+            renderGlobalInvoices() {
+                const l = document.getElementById('global-invoice-list'); l.innerHTML='';
+                Store.data.chantiers.forEach(c => {
+                    if(c.factures) {
+                        c.factures.forEach(f => {
+                            let d = document.createElement('div'); d.className='list-item';
+                            d.innerHTML = `<div><div class="list-title">${f.ref}</div><div class="list-sub">${c.name}</div></div><div style="font-weight:900;color:#065F46;">${f.amount.toFixed(2)}€</div>`;
+                            l.appendChild(d);
+                        });
+                    }
+                });
+            },
+
+            // --- STANDARD CRUD ---
             openLibrary() {
                 const c=document.getElementById('lib-container'); c.innerHTML='';
                 for(let [k,v] of Object.entries(Config.LIB)) {
-                    let h=document.createElement('div'); h.style='padding:10px; background:#eee; font-weight:700;'; h.innerText=k; c.appendChild(h);
+                    let h=document.createElement('div'); h.style='padding:10px; background:#F9FAFB; font-weight:700; color:#1E3A8A;'; h.innerText=k; c.appendChild(h);
                     v.forEach(it => {
                         let d=document.createElement('div'); d.className='list-item'; d.innerText=it;
                         d.onclick = () => {
                             const ch=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                            ch.items.push({ id:Date.now(), room:ch.activeRoom, desc:it, qty:1, unit:'m²', price:50, mat:0, time:0, tva:0.1, note:'' });
+                            ch.items.push({ id:Date.now(), room:ch.activeRoom, desc:it, qty:1, unit:'m²', price:50, mat:0, time:0, tva:0.1 });
                             Store.save(); App.closeModal('modal-library'); App.renderItems();
                         }; c.appendChild(d);
                     });
@@ -540,16 +551,15 @@
                 c.items = c.items.filter(x=>x.id != document.getElementById('it-id').value);
                 Store.save(); App.closeModal('modal-item'); App.renderItems();
             },
-
-            // --- STANDARD VIEWS ---
+            
+            // --- LIST RENDERERS ---
             renderHome() {
                 const l=document.getElementById('home-recent-list'); l.innerHTML='';
                 let tot=0;
                 Store.data.chantiers.slice(0,5).forEach(c => {
-                    const cli=Store.data.clients.find(x=>x.id==c.clientId);
                     if(c.status === 'Accepte') tot += c.total;
                     let d=document.createElement('div'); d.className='card';
-                    d.innerHTML=`<div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem; color:#666;">${cli?cli.nom:''}</div>`;
+                    d.innerHTML=`<div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem; color:#666;">Ref: ${c.ref}</div>`;
                     d.onclick=()=>App.openHub(c.id); l.appendChild(d);
                 });
                 document.getElementById('home-kpi-rev').innerText = tot.toFixed(2) + " €";
@@ -557,33 +567,24 @@
             renderClients(q='') {
                 const l = document.getElementById('clients-list'); l.innerHTML='';
                 Store.data.clients.forEach(c => {
-                    if(c.nom.toLowerCase().includes(q.toLowerCase())) {
+                    let n = c.type=='morale' ? c.soc : `${c.nom}`;
+                    if(n.toLowerCase().includes(q.toLowerCase())) {
                         let d = document.createElement('div'); d.className='list-item';
-                        d.innerHTML = `<div><div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div>`;
+                        d.innerHTML = `<div><div class="list-title">${n}</div><div class="list-sub">${c.addr||'-'}</div></div>`;
                         l.appendChild(d);
                     }
                 });
             },
-            renderProjects(f) {
+            renderProjects() {
                 const l = document.getElementById('projects-list-full'); l.innerHTML='';
-                let r = Store.data.chantiers;
-                if(f!=='all') r = r.filter(c => c.status === f);
-                r.forEach(c => {
+                Store.data.chantiers.forEach(c => {
                     let d = document.createElement('div'); d.className='card';
-                    d.innerHTML = `<div style="font-weight:700;">${c.ref}</div><div>${c.name}</div><div style="text-align:right; font-weight:700;">${(c.total||0).toFixed(0)}€</div>`;
+                    d.innerHTML = `<div style="font-weight:700;">${c.name}</div><div>${c.total.toFixed(0)}€</div>`;
                     d.onclick = () => App.openHub(c.id); l.appendChild(d);
                 });
             },
-            renderFactures() {
-                const l = document.getElementById('invoice-list'); l.innerHTML='';
-                Store.data.chantiers.filter(c=>c.status=='Accepte').forEach(c=>{
-                    let d = document.createElement('div'); d.className='list-item';
-                    d.innerHTML = `<div><div class="list-title">Facture #${c.id}</div><div class="list-sub">${c.name}</div></div><div style="font-weight:900;color:#065F46;">${c.total.toFixed(2)}€</div>`;
-                    l.appendChild(d);
-                });
-            },
 
-            // FORMS
+            // --- FORMS ---
             cliType(t) {
                 document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`;
                 document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
@@ -596,7 +597,7 @@
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; } else Store.data.clients.push(c);
                 Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
             },
-            createChantierFromClient() { const id=App.saveClient(); App.closeModal('modal-client'); App.openProjectWizard(id); },
+            createChantierFromClient() { const id=App.saveClient(); App.openProjectWizard(id); },
             openProjectWizard(pid) {
                 const sel = document.getElementById('prj-cli'); sel.innerHTML='<option value="">Sélectionner...</option>';
                 Store.data.clients.forEach(c => { let o = document.createElement('option'); o.value=c.id; o.text=c.nom; sel.appendChild(o); });
@@ -608,23 +609,14 @@
                 if(cid && nom) {
                     const ch = {
                         id: Date.now(), clientId: parseInt(cid), name: nom, ref: "D-"+new Date().getFullYear(), status:'Brouillon', total:0,
-                        addr: document.getElementById('prj-addr').value,
-                        details: { code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value, syndic: document.getElementById('prj-syndic').value },
+                        addr: document.getElementById('prj-addr').value, factures:[],
+                        details: { code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value },
                         activeRoom: 'Cuisine', rooms:['Cuisine'], metrics:{'Cuisine':{L:0,l:0,h:2.5}}, items:[]
                     };
                     Store.data.chantiers.unshift(ch); Store.save(); App.closeModal('modal-projet'); App.openHub(ch.id);
                 }
             },
             closeModal(id) { document.getElementById(id).style.display='none'; }
-        };
-
-        const AI = {
-            open(){document.getElementById('ai-overlay').classList.add('active')},
-            close(){document.getElementById('ai-overlay').classList.remove('active')},
-            process(){
-                const t = document.getElementById('ai-text').value;
-                if(t) { alert("IA: Traitement de '"+t+"'..."); AI.close(); }
-            }
         };
 
         window.onload = () => App.init();
