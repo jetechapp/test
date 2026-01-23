@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile Final V4</title>
+    <title>QOTIA Mobile Final V5</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,7 @@
 
     <style>
         :root {
-            /* Palette */
+            /* Palette Originale Rugged */
             --c-yellow: #FCD34D;
             --c-navy: #1E3A8A;
             --c-dark: #111827;
@@ -46,10 +46,17 @@
         .card { background: var(--c-surface); border-radius: var(--radius); padding: 20px; margin: 15px; border: 1px solid var(--c-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .list-item { background: white; padding: 18px 15px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
+        
+        /* BADGES & TAGS */
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #E5E7EB; color: #374151; }
         .bg-ok { background: #ECFDF5; color: #065F46; }
         .bg-pay { background: #FEF2F2; color: #991B1B; }
+
+        /* CLIENT TAGS (Richiesta Specifica) */
+        .tag-cli { font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-bottom: 5px; }
+        .tag-pro { background: var(--c-yellow); color: var(--c-navy); border: 1px solid #F59E0B; } /* Giallo */
+        .tag-priv { background: var(--c-navy); color: white; } /* Blu */
 
         /* HUB Buttons */
         .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
@@ -71,6 +78,7 @@
         /* ITEM CARD */
         .item-card { background: white; border-radius: 10px; padding: 15px; margin: 10px 15px; border: 1px solid var(--c-border); border-left: 5px solid var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         body.mode-etude .item-card { border-left-color: #059669; }
+
         .item-desc { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
         .view-price { display: block; font-weight: 900; font-size: 1.1rem; color: var(--c-navy); }
         .view-tech { display: none; font-size: 0.85rem; color: #059669; margin-top: 5px; font-weight: 600; }
@@ -96,10 +104,7 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; align-items: end; padding-bottom: 15px; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 600; height: 100%; cursor: pointer; text-transform: uppercase; }
         .nav-btn.active { color: var(--c-navy); }
-        
-        /* FOOTER DRITTO: Contenitore IA */
-        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
-        .ai-circle-big { position: absolute; bottom: 25px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
+        .ai-circle-big { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
 
         /* SIDE MENU */
         .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
@@ -113,9 +118,12 @@
             padding: 15px; margin: 10px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex; justify-content: space-between; align-items: center;
         }
+        .inv-card.paid { border-left-color: var(--c-success); background: #F0FDF4; }
         .inv-ref { font-weight: 700; color: var(--c-dark); }
         .inv-proj { font-size: 0.8rem; color: #666; margin-top: 2px; }
         .inv-amt { font-weight: 900; color: var(--c-danger); font-size: 1.1rem; }
+        .inv-card.paid .inv-amt { color: var(--c-success); }
+        .btn-pay { background: white; border: 1px solid var(--c-success); color: var(--c-success); font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; }
 
         /* ACTION BOXES */
         .top-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px 15px; }
@@ -155,15 +163,14 @@
         </div>
 
         <div class="section-title" style="color:var(--c-danger);">Factures à Encaisser</div>
-        <div id="home-unpaid-list">
-            </div>
+        <div id="home-unpaid-list"></div>
 
         <div class="section-title">Chantiers en cours</div>
         <div id="home-recent-list"></div>
 
-        <div class="section-title">Volume d'Affaires (Devis Signés)</div>
+        <div class="section-title">Volume d'Affaires</div>
         <div class="card" style="background:#FFF7ED; border-color:#FED7AA; display:flex; justify-content:space-between; align-items:center; margin-top:0;">
-            <span style="font-weight:700; color:#C2410C;">TOTAL VALIDÉ</span>
+            <span style="font-weight:700; color:#C2410C;">TOTAL DEVIS</span>
             <span style="font-weight:900; font-size:1.2rem; color:#C2410C;" id="home-kpi-rev">0,00 €</span>
         </div>
     </main>
@@ -256,23 +263,13 @@
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-btn active" onclick="App.nav('home')" id="nav-home">
-            <i class="fas fa-home"></i><span>HOME</span>
-        </div>
-        <div class="nav-btn" onclick="App.nav('clients')" id="nav-clients">
-            <i class="fas fa-users"></i><span>CLIENTS</span>
-        </div>
-        
-        <div class="nav-ai-container">
+        <button class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i> HOME</button>
+        <button class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i> CLIENTS</button>
+        <div class="nav-btn-ai-wrapper">
             <div class="ai-circle-big" onclick="alert('IA Assistant')">IA</div>
         </div>
-
-        <div class="nav-btn" onclick="App.nav('projets')" id="nav-projets">
-            <i class="fas fa-folder"></i><span>PROJETS</span>
-        </div>
-        <div class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global">
-            <i class="fas fa-file-invoice-dollar"></i><span>FACTURES</span>
-        </div>
+        <button class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-folder"></i> CHANTIERS</button>
+        <button class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i> FACTURES</button>
     </nav>
 
     <div id="modal-invoice" class="full-modal">
@@ -282,6 +279,7 @@
                 <div style="font-size:0.8rem; color:#666;">Montant Devis (Chantier)</div>
                 <div style="font-weight:900; font-size:1.5rem; color:var(--c-navy);" id="inv-total-quote">0 €</div>
                 <div style="font-size:0.8rem; color:#666; margin-top:5px;" id="inv-details-src">Ref: ...</div>
+                <div style="font-size:0.8rem; color:var(--c-danger); margin-top:5px;">Déjà Facturé: <span id="inv-already">0 €</span></div>
             </div>
             
             <label class="form-label">Type de Facture</label>
@@ -344,7 +342,7 @@
             </div>
             <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic">
         </div>
-        <div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">Créer & Ouvrir Devis</button></div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">Créer & Ouvrir</button></div>
     </div>
 
     <div id="modal-item" class="full-modal">
@@ -385,7 +383,7 @@
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
                 try {
-                    const s = localStorage.getItem('qotia_full_fix_v4'); 
+                    const s = localStorage.getItem('qotia_final_v5'); 
                     if(s) this.data = JSON.parse(s); else this.seed();
                 } catch(e) { this.seed(); }
             },
@@ -397,7 +395,7 @@
                     items:[], details:{}, total:0, factures:[] 
                 }];
             },
-            save() { localStorage.setItem('qotia_full_fix_v4', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_final_v5', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -409,21 +407,9 @@
             
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
-                
-                // Aggiorna navigazione footer (se esiste)
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-                const navBtn = document.getElementById('nav-'+view);
-                if(navBtn) navBtn.classList.add('active');
-                else if(view === 'devis' || view === 'editor') {
-                    // Mantiene attivo il tab Progetti quando sei nell'editor
-                    document.getElementById('nav-projets').classList.add('active');
-                }
-
-                // Gestione redirezioni
-                let targetView = view;
-                if(view === 'devis') targetView = 'editor';
-                
-                document.getElementById('view-'+targetView).classList.add('active');
+                document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+                document.getElementById('view-'+view).classList.add('active');
+                if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
                 
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
@@ -507,17 +493,29 @@
                 if(!c.factures) c.factures = [];
                 
                 c.factures.forEach(f => {
-                    let d = document.createElement('div'); d.className='inv-card';
-                    d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${f.type}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
+                    let st = f.paid ? '<span style="color:#10B981">PAGATA</span>' : '<span style="color:#EF4444">DA PAGARE</span>';
+                    let btn = !f.paid ? `<div class="btn-pay" onclick="App.payInvoice(${f.id})">INCASSA</div>` : '';
+                    let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
+                    d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${f.type}</div>${st}</div><div style="text-align:right"><div class="inv-amt">${f.amount.toFixed(2)}€</div>${btn}</div>`;
                     l.appendChild(d);
                 });
                 this.nav('project-invoices');
+            },
+            payInvoice(id) {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const f = c.factures.find(f=>f.id==id);
+                if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); }
             },
             openCreateInvoiceModal() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 document.getElementById('inv-total-quote').innerText = c.total.toFixed(2) + " €";
                 document.getElementById('inv-details-src').innerText = `Ref: ${c.ref} - ${cli?cli.nom:''}`;
+                
+                // Calc already paid
+                const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
+                document.getElementById('inv-already').innerText = paid.toFixed(2) + " €";
+
                 this.setInvType('acompte');
                 document.getElementById('modal-invoice').style.display='flex';
             },
@@ -545,16 +543,21 @@
             },
             generateInvoice() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€',''));
                 
+                // VALIDATION 100%
+                const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
+                if (paid + amt > c.total + 1) { // 1 euro tolerance for rounding
+                    alert("Erreur: Le total des factures dépasse le devis!");
+                    return;
+                }
+
                 const inv = {
                     id: Date.now(),
                     ref: "FAC-"+new Date().getFullYear()+"-"+(Math.floor(Math.random()*1000)),
                     type: this.state.invType === 'acompte' ? "Acompte" : "Solde",
-                    sourceRef: c.ref, // LINK TO DEVIS
-                    clientData: cli,  // LINK TO CLIENT
                     amount: amt,
+                    paid: false,
                     date: new Date().toLocaleDateString()
                 };
                 if(!c.factures) c.factures=[];
@@ -568,7 +571,7 @@
                 Store.data.chantiers.forEach(c => {
                     if(c.factures) {
                         c.factures.forEach(f => {
-                            let d = document.createElement('div'); d.className='inv-card';
+                            let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
                             d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${c.name}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
                             l.appendChild(d);
                         });
@@ -623,38 +626,44 @@
                 // Cantieri Recenti
                 const l=document.getElementById('home-recent-list'); l.innerHTML='';
                 let tot=0;
+                
+                // UNPAID LIST
+                const ul = document.getElementById('home-unpaid-list'); ul.innerHTML='';
+                let hasUnpaid = false;
+
                 Store.data.chantiers.slice(0,5).forEach(c => {
+                    // Calc Total Validated
                     if(c.status === 'Accepte') tot += c.total;
+                    
+                    // Render List
                     let d=document.createElement('div'); d.className='card';
                     d.innerHTML=`<div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem; color:#666;">Ref: ${c.ref}</div>`;
                     d.onclick=()=>App.openHub(c.id); l.appendChild(d);
-                });
-                document.getElementById('home-kpi-rev').innerText = tot.toFixed(2) + " €";
 
-                // Fatture NON Pagate (Mock logic: Tutte quelle create si presumono da incassare per demo)
-                const ul = document.getElementById('home-unpaid-list'); ul.innerHTML='';
-                let unpaid = [];
-                Store.data.chantiers.forEach(c => {
-                    if(c.factures) c.factures.forEach(f => unpaid.push({...f, projName:c.name}));
+                    // Check Unpaid
+                    if(c.factures) c.factures.forEach(f => {
+                        if(!f.paid) {
+                            hasUnpaid = true;
+                            let ud = document.createElement('div'); ud.className='inv-card';
+                            ud.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${c.name}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
+                            ud.onclick = () => { Store.data.activeChantierId=c.id; App.openProjectInvoices(); };
+                            ul.appendChild(ud);
+                        }
+                    });
                 });
                 
-                if(unpaid.length === 0) {
-                    ul.innerHTML = '<div style="padding:15px; color:#999; text-align:center;">Aucune facture en attente</div>';
-                } else {
-                    unpaid.forEach(f => {
-                        let d = document.createElement('div'); d.className='inv-card';
-                        d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${f.projName}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
-                        ul.appendChild(d);
-                    });
-                }
+                if(!hasUnpaid) ul.innerHTML = '<div style="padding:15px; text-align:center; color:#999;">Aucune facture en attente</div>';
+
+                document.getElementById('home-kpi-rev').innerText = tot.toFixed(2) + " €";
             },
             renderClients(q='') {
                 const l = document.getElementById('clients-list'); l.innerHTML='';
                 Store.data.clients.forEach(c => {
                     let n = c.type=='morale' ? c.soc : `${c.nom}`;
                     if(n.toLowerCase().includes(q.toLowerCase())) {
+                        let tag = c.type=='morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PART</span>';
                         let d = document.createElement('div'); d.className='list-item';
-                        d.innerHTML = `<div><div class="list-title">${n}</div><div class="list-sub">${c.addr||'-'}</div></div>`;
+                        d.innerHTML = `<div>${tag}<div class="list-title">${n}</div><div class="list-sub">${c.addr||'-'}</div></div>`;
                         l.appendChild(d);
                     }
                 });
@@ -677,14 +686,15 @@
             openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').style.display='flex'; },
             saveClient() {
                 const id = document.getElementById('cli-id').value;
-                const c = { id: id ? parseInt(id) : Date.now(), nom: document.getElementById('cli-nom').value, addr: document.getElementById('cli-addr').value };
+                const type = document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique';
+                const c = { id: id ? parseInt(id) : Date.now(), type, nom: document.getElementById('cli-nom').value, addr: document.getElementById('cli-addr').value, soc: document.getElementById('cli-soc').value };
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; } else Store.data.clients.push(c);
                 Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
             },
-            createChantierFromClient() { const id=App.saveClient(); App.closeModal('modal-client'); App.openProjectWizard(id); },
+            createChantierFromClient() { const id=App.saveClient(); App.openProjectWizard(id); },
             openProjectWizard(pid) {
                 const sel = document.getElementById('prj-cli'); sel.innerHTML='<option value="">Sélectionner...</option>';
-                Store.data.clients.forEach(c => { let o = document.createElement('option'); o.value=c.id; o.text=c.nom; sel.appendChild(o); });
+                Store.data.clients.forEach(c => { let o = document.createElement('option'); o.value=c.id; o.text=c.type=='morale'?c.soc:c.nom; sel.appendChild(o); });
                 if(pid) sel.value=pid;
                 document.getElementById('modal-projet').style.display='flex';
             },
@@ -700,7 +710,7 @@
                     Store.data.chantiers.unshift(ch); Store.save(); 
                     App.closeModal('modal-projet'); 
                     Store.data.activeChantierId = ch.id; 
-                    App.openEditor('devis'); // DIRECT NAV
+                    App.openEditor('devis'); // Naviga direttamente all'editor
                 }
             },
             closeModal(id) { document.getElementById(id).style.display='none'; }
