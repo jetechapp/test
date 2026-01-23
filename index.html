@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile System</title>
+    <title>QOTIA Mobile Production</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,7 +34,6 @@
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
         
-        /* Padding specifici */
         #view-editor { padding-bottom: 160px; background: white; }
         #view-project-invoices { background: white; }
 
@@ -50,7 +49,7 @@
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #E5E7EB; color: #374151; }
         .bg-ok { background: #ECFDF5; color: #065F46; }
-        .bg-pay { background: #FEF2F2; color: #991B1B; } /* Da pagare */
+        .bg-pay { background: #FEF2F2; color: #991B1B; }
 
         /* HUB Buttons */
         .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
@@ -59,11 +58,9 @@
         .hub-info { flex: 1; }
         .hub-title { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
 
-        /* EDITOR UI (Devis vs Cahier des Charges) */
+        /* EDITOR UI */
         .editor-header { background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 40; }
         .mode-banner { padding: 8px; text-align: center; color: white; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px; border-radius: 6px; }
-        
-        /* Stili dinamici in base alla modalità */
         body.mode-devis .mode-banner { background: var(--c-navy); }
         body.mode-etude .mode-banner { background: #059669; }
         
@@ -73,16 +70,11 @@
 
         /* ITEM CARD */
         .item-card { background: white; border-radius: 10px; padding: 15px; margin: 10px 15px; border: 1px solid var(--c-border); border-left: 5px solid var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        body.mode-etude .item-card { border-left-color: #059669; } /* Verde per Cahier des charges */
+        body.mode-etude .item-card { border-left-color: #059669; }
 
-        .item-row-main { display: flex; justify-content: space-between; align-items: flex-start; }
         .item-desc { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
-        .item-qty { background: #EFF6FF; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; color: var(--c-navy); margin-top: 5px; display: inline-block; }
-        
-        /* Visibilità condizionale */
         .view-price { display: block; font-weight: 900; font-size: 1.1rem; color: var(--c-navy); }
         .view-tech { display: none; font-size: 0.85rem; color: #059669; margin-top: 5px; font-weight: 600; }
-        
         body.mode-etude .view-price { display: none; }
         body.mode-etude .view-tech { display: block; }
 
@@ -114,6 +106,15 @@
         .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
         .side-overlay.open { display: block; }
 
+        /* INVOICE CARD */
+        .invoice-box {
+            border: 1px solid #ddd; background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .inv-ref { font-weight: bold; color: var(--c-dark); }
+        .inv-type { font-size: 0.8rem; color: #666; text-transform: uppercase; margin-top: 2px; }
+        .inv-amt { font-weight: 900; color: var(--c-success); font-size: 1.1rem; }
+
     </style>
 </head>
 <body>
@@ -139,6 +140,11 @@
         </div>
         <div class="section-title">Chantiers en cours</div>
         <div id="home-recent-list"></div>
+        <div class="section-title">Chiffre d'Affaire (En Attente)</div>
+        <div class="card" style="background:#FFF7ED; border-color:#FED7AA; display:flex; justify-content:space-between; align-items:center; margin-top:0;" onclick="App.nav('factures')">
+            <span style="font-weight:700; color:#C2410C;">TOTAL</span>
+            <span style="font-weight:900; font-size:1.2rem; color:#C2410C;" id="home-kpi-rev">0,00 €</span>
+        </div>
     </main>
 
     <main id="view-clients" class="view-section">
@@ -194,13 +200,13 @@
             <div class="m-box"><label>H(m)</label><input type="number" class="m-inp" id="m-h" value="2.70" onchange="App.calcMetrics()"></div>
             <div class="m-box" style="flex:0.8"><label>M²</label><div class="m-res" id="m-surf">0</div></div>
         </div>
-        <button onclick="App.openLibrary()" style="position:fixed; bottom:160px; right:20px; width:60px; height:60px; background:var(--c-navy); color:white; border-radius:50%; border:2px solid white; box-shadow:0 6px 20px rgba(0,0,0,0.2); font-size:1.8rem; z-index:950; cursor:pointer;">+</button>
+        <button onclick="App.openLibrary()" style="position:fixed; bottom:160px; right:20px; width:60px; height:60px; background:var(--c-navy); color:white; border-radius:50%; border:2px solid white; box-shadow:0 6px 20px rgba(30, 58, 138, 0.4); font-size:1.8rem; z-index:950; cursor:pointer;">+</button>
     </main>
 
     <main id="view-project-invoices" class="view-section">
         <header class="mobile-header">
             <button class="header-btn" onclick="App.nav('hub')"><i class="fas fa-arrow-left"></i></button>
-            <div class="logo-text">FACTURES</div><div style="width:20px;"></div>
+            <div class="logo-text">FACTURES CHANTIER</div><div style="width:20px;"></div>
         </header>
         <div style="padding:20px;">
             <button class="btn-primary" onclick="App.openCreateInvoiceModal()">+ Créer Facture (Acompte/Solde)</button>
@@ -222,7 +228,7 @@
         </div>
         <div style="padding:20px;">
             <div class="list-item" style="border:none;">Mon Profil</div>
-            <div class="list-item" style="border:none;">Collègues (Équipe)</div>
+            <div class="list-item" style="border:none;">Équipe / Collaborateurs</div>
             <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
             <button class="btn-primary" onclick="localStorage.clear(); location.reload();" style="background:var(--c-danger);">Réinitialiser App</button>
         </div>
@@ -240,24 +246,25 @@
         <div class="modal-header"><h3>Nouvelle Facture</h3><button onclick="App.closeModal('modal-invoice')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
             <div style="background:#EFF6FF; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <div style="font-size:0.8rem; color:#666;">Montant Devis Total</div>
+                <div style="font-size:0.8rem; color:#666;">Montant Devis (Chantier)</div>
                 <div style="font-weight:900; font-size:1.5rem; color:var(--c-navy);" id="inv-total-quote">0 €</div>
             </div>
             
             <label class="form-label">Type de Facture</label>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <button class="room-pill active" onclick="App.setInvType('acompte')" id="btn-acompte" style="flex:1;">Acompte %</button>
-                <button class="room-pill" onclick="App.setInvType('solde')" id="btn-solde" style="flex:1;">Solde Final</button>
+                <button class="room-pill" onclick="App.setInvType('solde')" id="btn-solde" style="flex:1;">Solde</button>
             </div>
 
             <div id="grp-acompte">
-                <label class="form-label">Pourcentage Acompte</label>
+                <label class="form-label">Pourcentage</label>
                 <input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()">
             </div>
 
             <div style="padding:15px; border:1px solid #ddd; border-radius:8px; text-align:center;">
                 <div style="font-size:0.9rem;">Montant Facture (HT)</div>
                 <div style="font-size:1.8rem; font-weight:900; color:var(--c-success);" id="inv-preview-amount">0 €</div>
+                <div style="font-size:0.8rem; color:#999; margin-top:5px;">Reste à facturer: <span id="inv-reste">0 €</span></div>
             </div>
         </div>
         <div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer Facture</button></div>
@@ -274,10 +281,14 @@
             <input type="text" id="cli-nom" class="app-input" placeholder="Nom / Raison Sociale">
             <input type="text" id="cli-addr" class="app-input" placeholder="Adresse">
             <input type="email" id="cli-email" class="app-input" placeholder="Email">
+            <input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone">
+            
             <div id="grp-mor" style="display:none;">
                 <input type="text" id="cli-siret" class="app-input" placeholder="SIRET">
                 <input type="text" id="cli-tva" class="app-input" placeholder="TVA">
             </div>
+            <label class="form-label">Note Interne</label>
+            <input type="text" id="cli-note" class="app-input">
         </div>
         <div class="modal-footer" style="display:flex; flex-direction:column; gap:10px;">
             <button class="btn-primary" onclick="App.saveClient()">Enregistrer</button>
@@ -294,10 +305,16 @@
             <input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier (ex: Cuisine)">
             <input type="text" id="prj-addr" class="app-input" placeholder="Adresse">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                <input type="text" id="prj-code" class="app-input" placeholder="Code">
+                <input type="text" id="prj-code" class="app-input" placeholder="Digicode">
                 <input type="text" id="prj-etage" class="app-input" placeholder="Etage">
             </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <select id="prj-asc" class="app-input"><option value="Oui">Asc: Oui</option><option value="Non">Asc: Non</option></select>
+                <select id="prj-heat" class="app-input"><option>Chauff. Indiv</option><option>Chauff. Coll</option></select>
+            </div>
             <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic">
+            <input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble">
+            <input type="text" id="prj-keys" class="app-input" placeholder="Info Clés">
         </div>
         <div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">Créer</button></div>
     </div>
@@ -340,7 +357,7 @@
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
                 try {
-                    const s = localStorage.getItem('qotia_full_system'); 
+                    const s = localStorage.getItem('qotia_full_prod'); 
                     if(s) this.data = JSON.parse(s); else this.seed();
                 } catch(e) { this.seed(); }
             },
@@ -352,7 +369,7 @@
                     items:[], details:{}, total:0, factures:[] 
                 }];
             },
-            save() { localStorage.setItem('qotia_full_system', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_full_prod', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -365,8 +382,16 @@
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
                 document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
-                document.getElementById('view-'+view).classList.add('active');
-                if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
+                
+                let targetView = view;
+                // Mapping per viste logiche
+                if(view === 'devis') targetView = 'editor'; // Devis apre l'editor
+                
+                const el = document.getElementById('view-'+targetView);
+                if(el) el.classList.add('active');
+                
+                const navBtn = document.getElementById('nav-'+view);
+                if(navBtn) navBtn.classList.add('active');
                 
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
@@ -442,7 +467,7 @@
                 if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); }
             },
             
-            // --- INVOICE SYSTEM (NEW) ---
+            // --- INVOICE SYSTEM ---
             openProjectInvoices() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const l = document.getElementById('proj-invoice-list'); l.innerHTML='';
@@ -450,8 +475,8 @@
                 if(!c.factures) c.factures = [];
                 
                 c.factures.forEach(f => {
-                    let d = document.createElement('div'); d.className='list-item';
-                    d.innerHTML = `<div><div class="list-title">${f.ref}</div><div class="list-sub">${f.type}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
+                    let d = document.createElement('div'); d.className='invoice-box';
+                    d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-type">${f.type}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
                     l.appendChild(d);
                 });
                 this.nav('project-invoices');
@@ -471,15 +496,18 @@
             },
             calcInvPreview() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
                 let amt = 0;
+                
                 if(this.state.invType === 'acompte') {
                     const perc = parseFloat(document.getElementById('inv-percent').value) || 0;
                     amt = c.total * (perc/100);
                 } else {
-                    const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
                     amt = c.total - paid;
                 }
+                
                 document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €";
+                document.getElementById('inv-reste').innerText = (c.total - paid - amt).toFixed(2) + " €";
             },
             generateInvoice() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
@@ -502,8 +530,8 @@
                 Store.data.chantiers.forEach(c => {
                     if(c.factures) {
                         c.factures.forEach(f => {
-                            let d = document.createElement('div'); d.className='list-item';
-                            d.innerHTML = `<div><div class="list-title">${f.ref}</div><div class="list-sub">${c.name}</div></div><div style="font-weight:900;color:#065F46;">${f.amount.toFixed(2)}€</div>`;
+                            let d = document.createElement('div'); d.className='invoice-box';
+                            d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-type">${c.name}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
                             l.appendChild(d);
                         });
                     }
@@ -597,7 +625,7 @@
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; } else Store.data.clients.push(c);
                 Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
             },
-            createChantierFromClient() { const id=App.saveClient(); App.openProjectWizard(id); },
+            createChantierFromClient() { const id=App.saveClient(); App.closeModal('modal-client'); App.openProjectWizard(id); },
             openProjectWizard(pid) {
                 const sel = document.getElementById('prj-cli'); sel.innerHTML='<option value="">Sélectionner...</option>';
                 Store.data.clients.forEach(c => { let o = document.createElement('option'); o.value=c.id; o.text=c.nom; sel.appendChild(o); });
