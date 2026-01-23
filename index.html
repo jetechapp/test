@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile Production</title>
+    <title>QOTIA Mobile Final V2</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -68,24 +68,21 @@
         .room-pill { background: #F3F4F6; color: #666; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
         .room-pill.active { background: var(--c-yellow); color: var(--c-navy); }
 
-        /* ITEM CARD */
         .item-card { background: white; border-radius: 10px; padding: 15px; margin: 10px 15px; border: 1px solid var(--c-border); border-left: 5px solid var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         body.mode-etude .item-card { border-left-color: #059669; }
-
         .item-desc { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
         .view-price { display: block; font-weight: 900; font-size: 1.1rem; color: var(--c-navy); }
         .view-tech { display: none; font-size: 0.85rem; color: #059669; margin-top: 5px; font-weight: 600; }
         body.mode-etude .view-price { display: none; }
         body.mode-etude .view-tech { display: block; }
 
-        /* FOOTER MISURE */
         .measures-footer { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 70px; background: var(--c-dark); display: flex; align-items: center; padding: 0 10px; gap: 8px; z-index: 90; border-top: 4px solid var(--c-yellow); }
         .m-box { flex: 1; display: flex; flex-direction: column; align-items: center; }
         .m-box label { color: #9CA3AF; font-size: 0.65rem; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
         .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 6px; height: 38px; font-size: 1.1rem; }
         .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
 
-        /* MODALS & FORMS */
+        /* MODALS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
         .full-modal.open { display: flex; }
         .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
@@ -94,26 +91,36 @@
         .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #666; margin-bottom: 5px; text-transform: uppercase; }
         .btn-primary { width: 100%; height: 55px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; }
 
-        /* NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; align-items: end; padding-bottom: 15px; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 600; height: 100%; cursor: pointer; text-transform: uppercase; }
+        /* FOOTER NAV (Fixed) */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); 
+            background: var(--c-surface); border-top: 1px solid var(--c-border); 
+            display: grid; grid-template-columns: repeat(5, 1fr); 
+            z-index: 100; align-items: end; padding-bottom: 15px; 
+        }
+        .nav-btn { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; 
+            font-weight: 600; height: 100%; cursor: pointer; text-transform: uppercase; 
+        }
         .nav-btn.active { color: var(--c-navy); }
-        .ai-circle-big { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
+        
+        /* AI Button Fixed Placement */
+        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
+        .ai-circle-big { 
+            position: absolute; bottom: 25px; 
+            width: 65px; height: 65px; background: var(--c-yellow); 
+            border: 5px solid var(--c-surface); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); 
+            cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; 
+        }
 
         /* SIDE MENU */
         .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
         .side-menu.open { right: 0; }
         .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
         .side-overlay.open { display: block; }
-
-        /* INVOICE CARD */
-        .invoice-box {
-            border: 1px solid #ddd; background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .inv-ref { font-weight: bold; color: var(--c-dark); }
-        .inv-type { font-size: 0.8rem; color: #666; text-transform: uppercase; margin-top: 2px; }
-        .inv-amt { font-weight: 900; color: var(--c-success); font-size: 1.1rem; }
 
     </style>
 </head>
@@ -237,16 +244,19 @@
     <nav class="bottom-nav">
         <button class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i> HOME</button>
         <button class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i> CLIENTS</button>
-        <div class="ai-circle-big" onclick="alert('IA Assistant')">IA</div>
+        <div class="nav-btn-ai-wrapper">
+            <div class="ai-circle-big" onclick="alert('IA Assistant')">IA</div>
+        </div>
         <button class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-folder"></i> CHANTIERS</button>
-        <button class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice"></i> FACTURES</button>
+        <button class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i> FACTURES</button>
     </nav>
 
     <div id="modal-invoice" class="full-modal">
         <div class="modal-header"><h3>Nouvelle Facture</h3><button onclick="App.closeModal('modal-invoice')" style="border:none;background:none;font-size:1.5rem;">&times;</button></div>
         <div class="modal-body">
             <div style="background:#EFF6FF; padding:15px; border-radius:8px; margin-bottom:20px;">
-                <div style="font-size:0.8rem; color:#666;">Montant Devis (Chantier)</div>
+                <div style="font-weight:bold; color:var(--c-navy); font-size:1.1rem; margin-bottom:5px;" id="inv-source-label">Source</div>
+                <div style="font-size:0.9rem; color:#555; margin-bottom:5px;" id="inv-client-label">Client</div>
                 <div style="font-weight:900; font-size:1.5rem; color:var(--c-navy);" id="inv-total-quote">0 €</div>
             </div>
             
@@ -357,7 +367,7 @@
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
                 try {
-                    const s = localStorage.getItem('qotia_full_prod'); 
+                    const s = localStorage.getItem('qotia_full_fix_v2'); 
                     if(s) this.data = JSON.parse(s); else this.seed();
                 } catch(e) { this.seed(); }
             },
@@ -369,7 +379,7 @@
                     items:[], details:{}, total:0, factures:[] 
                 }];
             },
-            save() { localStorage.setItem('qotia_full_prod', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_full_fix_v2', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -382,16 +392,8 @@
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
                 document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
-                
-                let targetView = view;
-                // Mapping per viste logiche
-                if(view === 'devis') targetView = 'editor'; // Devis apre l'editor
-                
-                const el = document.getElementById('view-'+targetView);
-                if(el) el.classList.add('active');
-                
-                const navBtn = document.getElementById('nav-'+view);
-                if(navBtn) navBtn.classList.add('active');
+                document.getElementById('view-'+view).classList.add('active');
+                if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
                 
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
@@ -475,15 +477,20 @@
                 if(!c.factures) c.factures = [];
                 
                 c.factures.forEach(f => {
-                    let d = document.createElement('div'); d.className='invoice-box';
-                    d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-type">${f.type}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
+                    let d = document.createElement('div'); d.className='list-item';
+                    d.innerHTML = `<div><div class="list-title">${f.ref}</div><div class="list-sub">${f.type}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
                     l.appendChild(d);
                 });
                 this.nav('project-invoices');
             },
             openCreateInvoiceModal() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const cli = Store.data.clients.find(x=>x.id==c.clientId);
+                
+                document.getElementById('inv-source-label').innerText = "Ref Devis: " + c.ref;
+                document.getElementById('inv-client-label').innerText = "Client: " + (cli ? cli.nom : 'Inconnu');
                 document.getElementById('inv-total-quote').innerText = c.total.toFixed(2) + " €";
+                
                 this.setInvType('acompte');
                 document.getElementById('modal-invoice').style.display='flex';
             },
@@ -511,11 +518,15 @@
             },
             generateInvoice() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€',''));
+                
                 const inv = {
                     id: Date.now(),
                     ref: "FAC-"+new Date().getFullYear()+"-"+(Math.floor(Math.random()*1000)),
                     type: this.state.invType === 'acompte' ? "Acompte" : "Solde",
+                    sourceRef: c.ref, // LINK TO DEVIS
+                    clientData: cli,  // LINK TO CLIENT
                     amount: amt,
                     date: new Date().toLocaleDateString()
                 };
@@ -530,8 +541,8 @@
                 Store.data.chantiers.forEach(c => {
                     if(c.factures) {
                         c.factures.forEach(f => {
-                            let d = document.createElement('div'); d.className='invoice-box';
-                            d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-type">${c.name}</div></div><div class="inv-amt">${f.amount.toFixed(2)}€</div>`;
+                            let d = document.createElement('div'); d.className='list-item';
+                            d.innerHTML = `<div><div class="list-title">${f.ref}</div><div class="list-sub">${c.name}</div></div><div style="font-weight:900;color:#065F46;">${f.amount.toFixed(2)}€</div>`;
                             l.appendChild(d);
                         });
                     }
@@ -625,7 +636,7 @@
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; } else Store.data.clients.push(c);
                 Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
             },
-            createChantierFromClient() { const id=App.saveClient(); App.closeModal('modal-client'); App.openProjectWizard(id); },
+            createChantierFromClient() { const id=App.saveClient(); App.openProjectWizard(id); },
             openProjectWizard(pid) {
                 const sel = document.getElementById('prj-cli'); sel.innerHTML='<option value="">Sélectionner...</option>';
                 Store.data.clients.forEach(c => { let o = document.createElement('option'); o.value=c.id; o.text=c.nom; sel.appendChild(o); });
@@ -638,10 +649,13 @@
                     const ch = {
                         id: Date.now(), clientId: parseInt(cid), name: nom, ref: "D-"+new Date().getFullYear(), status:'Brouillon', total:0,
                         addr: document.getElementById('prj-addr').value, factures:[],
-                        details: { code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value },
+                        details: { code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value, asc: document.getElementById('prj-asc').value, heat: document.getElementById('prj-heat').value, syndic: document.getElementById('prj-syndic').value, plomb: document.getElementById('prj-plomb').value, keys: document.getElementById('prj-keys').value },
                         activeRoom: 'Cuisine', rooms:['Cuisine'], metrics:{'Cuisine':{L:0,l:0,h:2.5}}, items:[]
                     };
-                    Store.data.chantiers.unshift(ch); Store.save(); App.closeModal('modal-projet'); App.openHub(ch.id);
+                    Store.data.chantiers.unshift(ch); Store.save(); 
+                    App.closeModal('modal-projet'); 
+                    Store.data.activeChantierId = ch.id; 
+                    App.openEditor('devis'); // Naviga direttamente all'editor
                 }
             },
             closeModal(id) { document.getElementById(id).style.display='none'; }
