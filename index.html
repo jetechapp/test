@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile V15 Master</title>
+    <title>QOTIA Mobile V16</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,7 +12,6 @@
 
     <style>
         :root {
-            /* Palette */
             --c-yellow: #FCD34D;
             --c-yellow-dark: #F59E0B;
             --c-navy: #1E3A8A;
@@ -22,7 +21,7 @@
             --c-border: #E5E7EB;
             --c-danger: #EF4444;
             --c-success: #10B981;
-            --c-docs: #6366f1; /* Colore viola per Documenti */
+            --c-docs: #6366f1;
             
             --h-nav: 80px; 
             --h-header: 65px;
@@ -35,6 +34,7 @@
         /* LAYOUT */
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
+        
         #view-editor { padding-bottom: 160px; background: white; }
         #view-home { padding-bottom: 140px; }
 
@@ -54,23 +54,27 @@
         .btn-home-docs { background: var(--c-docs); color: white; border: 2px solid #4f46e5; }
         .btn-home-agenda { background: white; color: #666; border: 2px solid #ccc; }
 
-        /* LIST ITEM */
+        /* LIST & CARDS */
         .list-item { background: white; padding: 15px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .list-content { flex: 1; }
         .list-title { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
         .list-sub { font-size: 0.85rem; color: #666; margin-top: 3px; }
-        
-        /* AZIONI LISTA */
         .list-actions { display: flex; gap: 10px; align-items: center; }
+        
         .btn-icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s; border: none; cursor: pointer; }
         .btn-call { background: #ECFDF5; color: var(--c-success); border: 1px solid var(--c-success); text-decoration: none; }
         .btn-map { background: #EFF6FF; color: var(--c-navy); border: 1px solid var(--c-navy); text-decoration: none; }
         .btn-edit { background: #F3F4F6; color: #4B5563; border: 1px solid #D1D5DB; }
 
-        /* TAGS */
         .tag-cli { font-size: 0.6rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-bottom: 4px; letter-spacing: 0.5px; }
         .tag-pro { background: var(--c-yellow); color: var(--c-navy); border: 1px solid var(--c-yellow-dark); }
         .tag-priv { background: var(--c-navy); color: white; }
+
+        /* INFO BOX (CHANTIER) */
+        .info-box { background: white; border: 1px solid var(--c-border); padding: 15px; margin-bottom: 20px; border-radius: 8px; font-size: 0.9rem; color: #444; }
+        .info-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { font-weight: 700; color: #888; text-transform: uppercase; font-size: 0.75rem; }
 
         /* DOCUMENT LIST */
         .doc-item { background: white; border-left: 5px solid #ccc; padding: 15px; margin: 10px 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
@@ -79,7 +83,7 @@
         .doc-etude { border-left-color: var(--c-success); }
         .doc-type { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; opacity: 0.7; }
 
-        /* KPI FIXED */
+        /* KPI & FOOTER */
         .home-kpi-fixed { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; background: rgba(243, 244, 246, 0.95); backdrop-filter: blur(5px); padding: 10px 15px; z-index: 90; border-top: 1px solid var(--c-border); }
         .kpi-split-card { display: flex; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--c-border); height: 70px; }
         .kpi-half { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 5px; }
@@ -88,13 +92,14 @@
         .kpi-bg-red { background: #FEF2F2; } .kpi-bg-green { background: #ECFDF5; }
         .kpi-red { color: var(--c-danger); } .kpi-green { color: var(--c-success); }
 
-        /* EDITOR & HUB UI */
-        .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
-        .hub-btn { background: white; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .hub-icon { width: 50px; height: 50px; background: var(--c-grey-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--c-navy); }
-        .hub-info { flex: 1; }
-        .hub-title { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; align-items: end; padding-bottom: 15px; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; }
+        .nav-btn i { font-size: 1.5rem; margin-bottom: 6px; }
+        .nav-btn.active { color: var(--c-navy); }
+        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
+        .ai-circle-big { position: absolute; bottom: 25px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
 
+        /* EDITOR UI */
         .editor-header { background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 40; }
         .room-scroll-nav { flex: 0 0 55px; background: white; display: flex; overflow-x: auto; align-items: center; padding: 0 15px; gap: 10px; border-bottom: 1px solid var(--c-border); }
         .room-pill { background: #F3F4F6; color: #666; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
@@ -107,14 +112,6 @@
         .measures-footer { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 70px; background: var(--c-dark); display: flex; align-items: center; padding: 0 10px; gap: 8px; z-index: 90; border-top: 4px solid var(--c-yellow); }
         .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 6px; height: 38px; font-size: 1.1rem; }
         .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
-
-        /* FOOTER NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; align-items: end; padding-bottom: 15px; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; }
-        .nav-btn i { font-size: 1.5rem; margin-bottom: 6px; }
-        .nav-btn.active { color: var(--c-navy); }
-        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
-        .ai-circle-big { position: absolute; bottom: 25px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
 
         /* MODALS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
@@ -129,10 +126,13 @@
         .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #E5E7EB; color: #374151; } .bg-ok { background: #ECFDF5; color: #065F46; } .bg-pay { background: #FEF2F2; color: #991B1B; }
 
-        /* SHARE GRID */
-        .share-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .share-btn { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 15px; background: white; border-radius: 12px; border: 1px solid #eee; cursor: pointer; }
-        .share-btn i { font-size: 2rem; }
+        /* DOC OPTIONS MODAL */
+        .action-list { display: flex; flex-direction: column; gap: 10px; }
+        .action-btn { 
+            padding: 15px; background: white; border-radius: 12px; border: 1px solid #ddd; 
+            display: flex; align-items: center; gap: 15px; font-weight: 700; cursor: pointer; 
+        }
+        .action-btn i { font-size: 1.5rem; color: var(--c-navy); }
 
         /* SIDE MENU */
         .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
@@ -142,7 +142,6 @@
         .menu-header { padding: 40px 20px; background: var(--c-navy); color: white; }
         .menu-item { padding: 15px 20px; border-bottom: 1px solid #eee; font-weight: 600; color: #333; display: flex; align-items: center; gap: 10px; cursor: pointer; }
 
-        /* INVOICE CARD */
         .inv-card { background: #FFF; border-left: 5px solid var(--c-danger); border-radius: 8px; padding: 15px; margin: 10px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         .inv-card.paid { border-left-color: var(--c-success); background: #F0FDF4; }
         .btn-pay { background: white; border: 1px solid var(--c-success); color: var(--c-success); font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; }
@@ -231,9 +230,16 @@
             <div style="font-weight:800; font-size:1.4rem; color:var(--c-navy);" id="hub-name">Projet</div>
             <div style="margin-top:5px;"><span class="badge bg-draft" id="hub-status">Statut</span></div>
         </div>
+        
         <div style="padding:20px;">
+            <div class="info-box">
+                <div class="info-row"><span class="info-label">Adresse</span><span style="font-weight:600" id="hub-addr">-</span></div>
+                <div class="info-row"><span class="info-label">Digicode</span><span style="font-weight:600" id="hub-code">-</span></div>
+                <div class="info-row"><span class="info-label">Syndic/Gardien</span><span style="font-weight:600" id="hub-syndic">-</span></div>
+            </div>
+
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <div class="section-title" style="margin:0;">DEVIS / ETUDES</div>
+                <div class="section-title" style="margin:0;">MES DEVIS</div>
                 <button class="badge bg-ok" style="border:none; padding:10px;" onclick="App.createNewDevis()">+ NOUVEAU</button>
             </div>
             <div id="hub-devis-list"></div>
@@ -306,27 +312,29 @@
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i><span>HOME</span></div>
-        <div class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i><span>CLIENTS</span></div>
+        <button class="nav-item active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i><span>HOME</span></button>
+        <button class="nav-item" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i><span>CLIENTS</span></button>
         <div class="nav-ai-container"><div class="ai-circle-big" onclick="alert('IA')">IA</div></div>
-        <div class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i><span>CHANTIERS</span></div>
-        <div class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i><span>FACTURES</span></div>
+        <button class="nav-item" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i><span>CHANTIERS</span></button>
+        <button class="nav-item" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i><span>FACTURES</span></button>
     </nav>
 
-    <div id="modal-share" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;">
+    <div id="modal-doc-options" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;">
         <div style="background:white; border-radius:20px 20px 0 0; padding:25px;">
-            <div style="text-align:center; font-weight:800; font-size:1.2rem; margin-bottom:20px;">Partager le Document</div>
-            <div class="share-grid">
-                <div class="share-btn" onclick="alert('PDF généré !')"><i class="fas fa-file-pdf" style="color:var(--c-danger);"></i><div>PDF</div></div>
-                <div class="share-btn" onclick="alert('Ouverture WhatsApp...')"><i class="fab fa-whatsapp" style="color:#25D366;"></i><div>WhatsApp</div></div>
-                <div class="share-btn" onclick="alert('Ouverture Email...')"><i class="fas fa-envelope" style="color:var(--c-navy);"></i><div>Email</div></div>
+            <div style="text-align:center; font-weight:800; font-size:1.2rem; margin-bottom:10px;" id="doc-opt-title">Document</div>
+            <div style="text-align:center; font-size:0.9rem; color:#666; margin-bottom:25px;" id="doc-opt-sub">Détails</div>
+            
+            <div class="action-list">
+                <div class="action-btn" onclick="App.handleDocAction('view')"><i class="fas fa-eye"></i> Voir / Modifier</div>
+                <div class="action-btn" onclick="App.handleDocAction('pdf')"><i class="fas fa-file-pdf" style="color:var(--c-danger)"></i> Générer PDF</div>
+                <div class="action-btn" onclick="App.handleDocAction('share')"><i class="fas fa-share-alt" style="color:var(--c-success)"></i> Partager (WhatsApp/Email)</div>
             </div>
-            <button class="btn-primary" style="margin-top:20px; background:#eee; color:#333;" onclick="App.closeModal('modal-share')">Annuler</button>
+            <button class="btn-primary" style="margin-top:20px; background:#eee; color:#333;" onclick="App.closeModal('modal-doc-options')">Fermer</button>
         </div>
     </div>
 
     <div id="modal-agenda" class="full-modal">
-        <div class="modal-header"><h3>Agenda Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">&times;</button></div>
+        <div class="modal-header"><h3>Agenda Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div>
         <div class="modal-body">
             <label class="form-label">Chantier</label>
             <select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select>
@@ -457,7 +465,7 @@
     <script>
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null },
-            init() { try { const s = localStorage.getItem('qotia_v15_master'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            init() { try { const s = localStorage.getItem('qotia_v16_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [{id:101, type:'physique', nom:'Jean Dupont', addr:'Nice', tel:'0600000000'}, {id:102, type:'morale', nom:'SCI Immo', addr:'Cannes'}];
                 this.data.chantiers = [{
@@ -469,13 +477,13 @@
                     factures: []
                 }];
             },
-            save() { localStorage.setItem('qotia_v15_master', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v16_final', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
 
         const App = {
-            state: { editorMode:'devis', invType:'acompte' },
+            state: { editorMode:'devis', invType:'acompte', tempDoc:null },
 
             init() { Store.init(); this.nav('home'); },
             
@@ -541,29 +549,46 @@
                 App.closeModal('modal-agenda');
             },
 
-            // --- DOCUMENTS ---
+            // --- DOCUMENTS & ACTIONS ---
             renderDocuments(filter) {
                 const l = document.getElementById('documents-list'); l.innerHTML='';
                 let docs = [];
                 Store.data.chantiers.forEach(c => {
                     const cli = Store.data.clients.find(x=>x.id==c.clientId);
                     const cliName = cli ? cli.nom : 'Inconnu';
-                    if(c.devisList) {
-                        c.devisList.forEach(d => {
-                            docs.push({ type:'Devis', ref:d.ref, client:cliName, amount:d.total });
-                            docs.push({ type:'Etude', ref:d.ref+' (Etude)', client:cliName, amount:0 });
-                        });
-                    }
-                    if(c.factures) c.factures.forEach(f => docs.push({ type:'Facture', ref:f.ref, client:cliName, amount:f.amount }));
+                    if(c.devisList) c.devisList.forEach(d => {
+                        docs.push({ type:'Devis', ref:d.ref, client:cliName, amount:d.total, obj:d, cid:c.id });
+                        docs.push({ type:'Etude', ref:d.ref+' (Etude)', client:cliName, amount:0, obj:d, cid:c.id });
+                    });
+                    if(c.factures) c.factures.forEach(f => docs.push({ type:'Facture', ref:f.ref, client:cliName, amount:f.amount, obj:f, cid:c.id }));
                 });
                 if(filter !== 'all') docs = docs.filter(d => d.type === filter);
                 docs.forEach(d => {
                     let dClass = d.type==='Devis'?'doc-devis':(d.type==='Facture'?'doc-facture':'doc-etude');
                     let div = document.createElement('div'); div.className = `doc-item ${dClass}`;
-                    div.innerHTML = `<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem; color:#666;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount>0?d.amount.toFixed(0)+'€':''}</div><i class="fas fa-share-alt" style="color:#ccc; margin-top:5px;"></i></div>`;
-                    div.onclick = () => document.getElementById('modal-share').classList.add('open');
+                    div.innerHTML = `<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem; color:#666;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount>0?d.amount.toFixed(0)+'€':''}</div><i class="fas fa-ellipsis-v" style="color:#ccc; margin-top:5px;"></i></div>`;
+                    div.onclick = () => App.openDocOptions(d);
                     l.appendChild(div);
                 });
+            },
+            openDocOptions(doc) {
+                App.state.tempDoc = doc;
+                document.getElementById('doc-opt-title').innerText = doc.type;
+                document.getElementById('doc-opt-sub').innerText = `${doc.ref} - ${doc.client}`;
+                document.getElementById('modal-doc-options').classList.add('open');
+            },
+            handleDocAction(action) {
+                const d = App.state.tempDoc;
+                if(!d) return;
+                if(action === 'view') {
+                    Store.data.activeChantierId = d.cid;
+                    if(d.type === 'Devis') App.openEditor(d.obj.id, 'devis');
+                    else if(d.type === 'Etude') App.openEditor(d.obj.id, 'etude');
+                    else if(d.type === 'Facture') App.openProjectInvoices(); // Redirect to list for now
+                    App.closeModal('modal-doc-options');
+                } else {
+                    alert(`Action ${action} simulée pour ${d.ref}`);
+                }
             },
 
             // --- CLIENTS ---
@@ -589,6 +614,12 @@
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 document.getElementById('hub-name').innerText = c.name;
                 document.getElementById('hub-client').innerText = cli ? cli.nom : 'Inconnu';
+                
+                // POPULATE TECHNICAL DETAILS
+                document.getElementById('hub-addr').innerText = c.addr || '-';
+                document.getElementById('hub-code').innerText = c.details?.code || '-';
+                document.getElementById('hub-syndic').innerText = c.details?.syndic || '-';
+
                 this.renderHubDevisList(c);
                 this.nav('hub');
             },
@@ -689,18 +720,11 @@
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const l = document.getElementById('proj-invoice-list'); l.innerHTML='';
                 if(c.factures) c.factures.forEach(f => {
-                    let st = f.paid ? '<span style="color:#10B981">PAGATA</span>' : '<span style="color:#EF4444">DA PAGARE</span>';
-                    let btn = !f.paid ? `<div class="btn-pay" onclick="App.payInvoice(${f.id})">INCASSA</div>` : '';
-                    let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
-                    d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div>${f.type}</div>${st}</div><div style="text-align:right"><div class="inv-amt">${f.amount.toFixed(2)}€</div>${btn}</div>`;
+                    let d = document.createElement('div'); d.className=`list-item`;
+                    d.innerHTML = `<div><div style="font-weight:700;">${f.ref}</div><div>${f.type}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
                     l.appendChild(d);
                 });
                 this.nav('project-invoices');
-            },
-            payInvoice(id) {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const f = c.factures.find(f=>f.id==id);
-                if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); }
             },
 
             // --- SHARED ---
@@ -730,26 +754,15 @@
                 document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
                 document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
             },
-            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel','cli-siret','cli-tva','cli-note'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
+            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
             saveClient() {
                 const n = document.getElementById('cli-nom').value;
                 const id = document.getElementById('cli-id').value;
-                const c = { 
-                    id: id ? parseInt(id) : Date.now(), 
-                    nom:n, tel:document.getElementById('cli-tel').value, 
-                    addr:document.getElementById('cli-addr').value, 
-                    type: document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique' 
-                };
+                const c = { id: id ? parseInt(id) : Date.now(), nom:n, tel:document.getElementById('cli-tel').value, addr:document.getElementById('cli-addr').value, type: document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique' };
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); }
                 Store.save(); App.closeModal('modal-client'); 
-                
-                // If opened from Project Wizard, populate and close
                 const prjCli = document.getElementById('prj-cli');
-                if(prjCli && document.getElementById('modal-projet').classList.contains('open')) {
-                    App.updateProjectClientSelect(c.id);
-                } else {
-                    App.renderClients();
-                }
+                if(prjCli && document.getElementById('modal-projet').classList.contains('open')) { App.updateProjectClientSelect(c.id); } else { App.renderClients(); }
                 return c.id;
             },
             editClient(id) {
@@ -780,8 +793,12 @@
                             etage: document.getElementById('prj-etage').value,
                             asc: document.getElementById('prj-asc').value,
                             heat: document.getElementById('prj-heat').value,
-                            keys: document.getElementById('prj-keys').value
-                        }
+                            keys: document.getElementById('prj-keys').value,
+                            syndic: document.getElementById('prj-syndic').value,
+                            plomb: document.getElementById('prj-plomb').value,
+                            compteur: document.getElementById('prj-compteur').value
+                        },
+                        addr: document.getElementById('prj-addr').value
                     };
                     const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 };
                     ch.devisList.push(defDevis);
@@ -796,10 +813,8 @@
                 const l = document.getElementById('global-invoice-list'); l.innerHTML='';
                 Store.data.chantiers.forEach(c => {
                     if(c.factures) c.factures.forEach(f => {
-                         let st = f.paid ? '<span style="color:#10B981">PAGATA</span>' : '<span style="color:#EF4444">DA PAGARE</span>';
-                         let btn = !f.paid ? `<div class="btn-pay" onclick="App.payInvoiceGlobal(${c.id}, ${f.id})">INCASSA</div>` : '';
-                         let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
-                         d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${c.name}</div>${st}</div><div style="text-align:right"><div class="inv-amt">${f.amount.toFixed(2)}€</div>${btn}</div>`;
+                         let d = document.createElement('div'); d.className=`list-item`;
+                         d.innerHTML = `<div><div style="font-weight:700;">${f.ref}</div><div>${c.name}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
                          l.appendChild(d);
                     });
                 });
