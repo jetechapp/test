@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Multi-Devis V11</title>
+    <title>QOTIA Mobile V12</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -23,7 +23,7 @@
             --c-success: #10B981;
             
             --h-nav: 80px; 
-            --h-header: 60px;
+            --h-header: 65px;
             --radius: 12px;
         }
 
@@ -33,72 +33,117 @@
         /* LAYOUT */
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
+        
         #view-editor { padding-bottom: 160px; background: white; }
         #view-home { padding-bottom: 120px; }
 
         /* HEADER */
         .mobile-header { flex: 0 0 var(--h-header); background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 30; }
-        .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
+        .logo-text { font-weight: 900; font-size: 1.4rem; color: var(--c-navy); display: flex; align-items: center; gap: 8px; letter-spacing: -0.5px; }
         .header-btn { border: none; background: transparent; font-size: 1.4rem; color: var(--c-dark); cursor: pointer; }
 
-        /* UI GENERICS */
-        .card { background: var(--c-surface); border-radius: var(--radius); padding: 20px; margin: 15px; border: 1px solid var(--c-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .list-item { background: white; padding: 18px 15px; border-bottom: 1px solid var(--c-border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 15px 10px 15px; color: #6B7280; letter-spacing: 1px; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
-        .bg-draft { background: #E5E7EB; color: #374151; }
-        .bg-ok { background: #ECFDF5; color: #065F46; }
-        .bg-pay { background: #FEF2F2; color: #991B1B; }
-
-        /* DEVIS LIST ITEM IN HUB */
-        .devis-item {
-            background: white; border: 1px solid var(--c-border); border-radius: var(--radius);
-            padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-            border-left: 5px solid var(--c-navy);
+        /* HOME DASHBOARD GRID */
+        .dashboard-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; 
         }
-        .devis-item.ok { border-left-color: var(--c-success); }
-        .devis-info div { margin-bottom: 2px; }
-        .devis-title { font-weight: 700; font-size: 1rem; color: var(--c-navy); }
-        .devis-meta { font-size: 0.8rem; color: #666; }
+        .dash-btn {
+            height: 110px; border-radius: var(--radius); display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; text-align: center; 
+            font-weight: 800; font-size: 0.9rem; cursor: pointer; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: transform 0.1s;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .dash-btn:active { transform: scale(0.97); }
+        .dash-btn i { font-size: 2.2rem; margin-bottom: 10px; }
 
-        /* HOME ACTIONS */
-        .top-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px 15px; }
-        .action-box-client { border: 2px solid var(--c-navy); border-radius: var(--radius); height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 0.95rem; background: white; cursor: pointer; color: var(--c-navy); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .action-box-project { border: 2px solid var(--c-yellow-dark); border-radius: var(--radius); height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 0.95rem; background: var(--c-yellow); cursor: pointer; color: var(--c-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* Colori Bottoni Home */
+        .btn-home-clients { background: white; color: var(--c-navy); border: 2px solid var(--c-navy); }
+        .btn-home-new { background: var(--c-yellow); color: var(--c-dark); border: 2px solid var(--c-yellow-dark); }
+        .btn-home-docs { background: var(--c-dark); color: white; border: 2px solid #000; }
+        .btn-home-agenda { background: white; color: #666; border: 2px solid #ccc; }
 
-        /* KPI FIXED */
-        .home-kpi-fixed { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; background: rgba(243, 244, 246, 0.95); backdrop-filter: blur(5px); padding: 10px 15px; z-index: 90; border-top: 1px solid var(--c-border); }
-        .kpi-split-card { display: flex; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--c-border); height: 70px; }
-        .kpi-half { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 5px; }
-        .kpi-half:first-child { border-right: 1px solid var(--c-border); }
-        .kpi-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
-        .kpi-val { font-size: 1rem; font-weight: 900; }
-        .kpi-red { color: #DC2626; } .kpi-green { color: #059669; }
-        .kpi-bg-red { background: #FEF2F2; } .kpi-bg-green { background: #ECFDF5; }
+        /* LIST ITEM STYLES (CLIENTI RIPRISTINATI) */
+        .list-item { 
+            background: white; padding: 15px; border-bottom: 1px solid var(--c-border); 
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .list-content { flex: 1; }
+        .list-title { font-weight: 700; font-size: 1rem; color: var(--c-dark); }
+        .list-sub { font-size: 0.85rem; color: #666; margin-top: 3px; }
+        
+        /* AZIONI LISTA CLIENTI */
+        .list-actions { display: flex; gap: 12px; align-items: center; }
+        .btn-icon-circle { 
+            width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 1.2rem; transition: background 0.2s; 
+        }
+        .btn-call { background: #ECFDF5; color: var(--c-success); border: 1px solid var(--c-success); text-decoration: none; }
+        .btn-edit { background: #F3F4F6; color: #4B5563; border: 1px solid #D1D5DB; }
 
-        /* EDITOR UI */
+        /* TAGS */
+        .tag-cli { font-size: 0.6rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-bottom: 4px; letter-spacing: 0.5px; }
+        .tag-pro { background: var(--c-yellow); color: var(--c-navy); border: 1px solid var(--c-yellow-dark); }
+        .tag-priv { background: var(--c-navy); color: white; }
+
+        /* DOCUMENT LIST */
+        .doc-item {
+            background: white; border-left: 5px solid #ccc; padding: 15px; margin: 10px 15px; 
+            border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;
+        }
+        .doc-devis { border-left-color: var(--c-navy); }
+        .doc-facture { border-left-color: var(--c-danger); }
+        .doc-etude { border-left-color: var(--c-success); }
+        .doc-type { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; opacity: 0.7; }
+
+        /* EDITOR & HUB UI */
+        .hub-grid { display: grid; grid-template-columns: 1fr; gap: 15px; padding: 20px; }
+        .hub-btn { background: white; border: 1px solid var(--c-border); border-radius: var(--radius); padding: 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .hub-icon { width: 50px; height: 50px; background: var(--c-grey-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--c-navy); }
+        .hub-info { flex: 1; }
+        .hub-title { font-weight: 800; font-size: 1.1rem; color: var(--c-navy); }
+
         .editor-header { background: var(--c-surface); padding: 15px; border-bottom: 1px solid var(--c-border); position: sticky; top: 0; z-index: 40; }
-        .mode-banner { padding: 8px; text-align: center; color: white; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px; border-radius: 6px; }
-        body.mode-devis .mode-banner { background: var(--c-navy); } body.mode-etude .mode-banner { background: #059669; }
         .room-scroll-nav { flex: 0 0 55px; background: white; display: flex; overflow-x: auto; align-items: center; padding: 0 15px; gap: 10px; border-bottom: 1px solid var(--c-border); }
         .room-pill { background: #F3F4F6; color: #666; padding: 8px 16px; border-radius: 20px; white-space: nowrap; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
         .room-pill.active { background: var(--c-yellow); color: var(--c-navy); }
-        
-        .item-card { background: white; border-radius: 10px; padding: 15px; margin: 10px 15px; border: 1px solid var(--c-border); border-left: 5px solid var(--c-navy); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        body.mode-etude .item-card { border-left-color: #059669; }
-        .view-price { display: block; font-weight: 900; font-size: 1.1rem; color: var(--c-navy); }
-        .view-tech { display: none; font-size: 0.85rem; color: #059669; margin-top: 5px; font-weight: 600; }
-        body.mode-etude .view-price { display: none; } body.mode-etude .view-tech { display: block; }
 
-        .measures-footer { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; height: 70px; background: var(--c-dark); display: flex; align-items: center; padding: 0 10px; gap: 8px; z-index: 90; border-top: 4px solid var(--c-yellow); }
-        .m-inp { width: 100%; background: #374151; border: 1px solid #4B5563; color: white; text-align: center; font-weight: bold; border-radius: 6px; height: 38px; font-size: 1.1rem; }
-        .m-res { color: var(--c-yellow); font-weight: 900; font-size: 1.3rem; line-height: 38px; }
-
-        /* BUTTONS */
-        .btn-primary { width: 100%; height: 55px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; }
-        .btn-yellow { width: 100%; height: 55px; background: var(--c-yellow); color: var(--c-dark); font-weight: 700; border: 2px solid var(--c-yellow-dark); font-size: 1rem; border-radius: 8px; cursor: pointer; }
+        /* FOOTER NAV FIXED */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); 
+            background: var(--c-surface); border-top: 1px solid var(--c-border); 
+            display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; 
+            z-index: 100; align-items: end; padding-bottom: 12px;
+        }
+        .nav-btn { 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; 
+            font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; 
+        }
+        .nav-btn i { font-size: 1.5rem; margin-bottom: 6px; }
+        .nav-btn.active { color: var(--c-navy); }
         
-        .fab-add { position: fixed; bottom: 170px; right: 20px; width: 70px; height: 70px; border-radius: 50%; background: var(--c-navy); color: white; border: 4px solid white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; box-shadow: 0 5px 20px rgba(0,0,0,0.3); z-index: 100; cursor: pointer; }
+        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
+        .ai-circle-big { 
+            position: absolute; bottom: 25px; 
+            width: 65px; height: 65px; background: var(--c-yellow); 
+            border: 5px solid var(--c-surface); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); 
+            cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; 
+        }
+
+        /* KPI & MISC */
+        .home-kpi-fixed {
+            position: fixed; bottom: var(--h-nav); left: 0; width: 100%;
+            background: rgba(243, 244, 246, 0.95); backdrop-filter: blur(5px);
+            padding: 10px 15px; z-index: 90; border-top: 1px solid var(--c-border);
+        }
+        .kpi-split-card { display: flex; background: white; border-radius: var(--radius); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--c-border); height: 70px; }
+        .kpi-half { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; padding: 5px; }
+        .kpi-half:first-child { border-right: 1px solid var(--c-border); }
+        .kpi-val { font-size: 1rem; font-weight: 900; }
+        .kpi-red { color: var(--c-danger); } .kpi-green { color: var(--c-success); }
+        .kpi-bg-red { background: #FEF2F2; } .kpi-bg-green { background: #ECFDF5; }
 
         /* MODALS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
@@ -106,22 +151,18 @@
         .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
         .app-input { width: 100%; height: 50px; border: 1px solid var(--c-border); padding: 0 15px; font-size: 1rem; border-radius: 8px; background: white; margin-bottom: 15px; }
-        .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: #666; margin-bottom: 5px; text-transform: uppercase; }
-
-        /* FOOTER NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; align-items: end; padding-bottom: 15px; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9CA3AF; font-size: 0.65rem; border: none; background: transparent; font-weight: 600; height: 100%; cursor: pointer; text-transform: uppercase; }
-        .nav-btn.active { color: var(--c-navy); }
-        .ai-circle-big { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(252, 211, 77, 0.5); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.4rem; z-index: 101; }
-
-        /* MISC */
-        .tag-cli { font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-bottom: 5px; }
-        .tag-pro { background: var(--c-yellow); color: var(--c-navy); border: 1px solid #F59E0B; }
-        .tag-priv { background: var(--c-navy); color: white; }
+        .btn-primary { width: 100%; height: 55px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 8px; cursor: pointer; }
         
-        .inv-card { background: #FFF; border-left: 5px solid var(--c-danger); border-radius: 8px; padding: 15px; margin: 10px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .inv-card.paid { border-left-color: var(--c-success); background: #F0FDF4; }
-        .btn-pay { background: white; border: 1px solid var(--c-success); color: var(--c-success); font-size: 0.7rem; padding: 4px 8px; border-radius: 4px; font-weight: 700; cursor: pointer; }
+        /* SHARE MODAL */
+        .share-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .share-btn { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 15px; background: white; border-radius: 12px; border: 1px solid #eee; }
+        .share-btn i { font-size: 2rem; }
+
+        /* SIDE MENU */
+        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s; display: flex; flex-direction: column; box-shadow: -5px 0 20px rgba(0,0,0,0.1); }
+        .side-menu.open { right: 0; }
+        .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; display: none; }
+        .side-overlay.open { display: block; }
 
     </style>
 </head>
@@ -130,32 +171,65 @@
     <main id="view-home" class="view-section active">
         <header class="mobile-header">
             <div class="logo-text"><i class="fas fa-hammer" style="color:var(--c-yellow)"></i> QOTIA</div>
+            <button class="header-btn" onclick="App.toggleMenu()"><i class="fas fa-bars"></i></button>
         </header>
+
         <div style="padding:25px 20px 0 20px;">
-            <div style="font-size:1.5rem; font-weight:800; color:var(--c-dark);">Bonjour, Jean</div>
+            <div style="font-size:1.5rem; font-weight:800; color:var(--c-dark);">Bonjour,</div>
+            <div style="font-size:1.1rem; color:#666;">Jean (Collaborateur)</div>
         </div>
-        <div class="top-actions-row">
-            <div class="action-box-client" onclick="App.nav('clients')"><i class="fas fa-users"></i>CLIENTS</div>
-            <div class="action-box-project" onclick="App.openProjectWizard()"><i class="fas fa-hard-hat"></i>NOUVEAU CHANTIER</div>
+
+        <div class="dashboard-grid">
+            <div class="dash-btn btn-home-clients" onclick="App.nav('clients')">
+                <i class="fas fa-users"></i> CLIENTS
+            </div>
+            <div class="dash-btn btn-home-new" onclick="App.openProjectWizard()">
+                <i class="fas fa-hard-hat"></i> NOUVEAU<br>CHANTIER
+            </div>
+            <div class="dash-btn btn-home-docs" onclick="App.nav('documents')">
+                <i class="fas fa-folder-open"></i> DOCUMENTS
+            </div>
+            <div class="dash-btn btn-home-agenda" onclick="alert('Fonctionnalité à venir')">
+                <i class="fas fa-calendar-alt"></i> AGENDA
+            </div>
         </div>
+
         <div class="section-title">Chantiers en cours</div>
         <div id="home-recent-list"></div>
+
         <div class="home-kpi-fixed">
             <div class="kpi-split-card">
                 <div class="kpi-half kpi-bg-red" onclick="App.nav('factures-global')">
-                    <div class="kpi-label kpi-red">À ENCAISSER</div><div class="kpi-val kpi-red" id="home-unpaid">0 €</div>
+                    <div style="font-size:0.6rem; font-weight:800; color:var(--c-danger);">À ENCAISSER</div>
+                    <div class="kpi-val kpi-red" id="home-unpaid">0 €</div>
                 </div>
                 <div class="kpi-half kpi-bg-green" onclick="App.nav('projets')">
-                    <div class="kpi-label kpi-green">TOTALE AFFARI</div><div class="kpi-val kpi-green" id="home-revenue">0 €</div>
+                    <div style="font-size:0.6rem; font-weight:800; color:var(--c-success);">TOTALE AFFARI</div>
+                    <div class="kpi-val kpi-green" id="home-revenue">0 €</div>
                 </div>
             </div>
         </div>
     </main>
 
     <main id="view-clients" class="view-section">
-        <header class="mobile-header"><div class="logo-text">CLIENTS</div><button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button></header>
+        <header class="mobile-header">
+            <div class="logo-text">CLIENTS</div>
+            <button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
+        </header>
         <div style="padding:15px;"><input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)"></div>
         <div id="clients-list"></div>
+    </main>
+
+    <main id="view-documents" class="view-section">
+        <header class="mobile-header"><div class="logo-text">DOCUMENTS</div></header>
+        <div style="padding:15px;">
+            <div style="display:flex; gap:10px; margin-bottom:15px; overflow-x:auto;">
+                <button class="badge bg-draft" onclick="App.renderDocuments('all')">Tous</button>
+                <button class="badge bg-ok" onclick="App.renderDocuments('Devis')">Devis</button>
+                <button class="badge bg-pay" onclick="App.renderDocuments('Facture')">Factures</button>
+            </div>
+            <div id="documents-list"></div>
+        </div>
     </main>
 
     <main id="view-projets" class="view-section">
@@ -171,31 +245,31 @@
         <div style="padding:20px; background:white; border-bottom:1px solid #eee;">
             <div style="color:#666;" id="hub-client">Client</div>
             <div style="font-weight:800; font-size:1.4rem; color:var(--c-navy);" id="hub-name">Projet</div>
-            <div style="margin-top:5px;"><span class="badge bg-draft" id="hub-status">En Cours</span></div>
+            <div style="margin-top:5px;"><span class="badge bg-draft" id="hub-status">Statut</span></div>
         </div>
-        
         <div style="padding:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <div class="section-title" style="margin:0;">MES DEVIS</div>
-                <button class="btn-primary" style="width:auto; height:40px; font-size:0.8rem; padding:0 15px;" onclick="App.createNewDevis()">+ DEVIS</button>
+                <div class="section-title" style="margin:0;">DEVIS / ETUDES</div>
+                <button class="badge bg-ok" style="border:none; padding:10px;" onclick="App.createNewDevis()">+ NOUVEAU</button>
             </div>
+            <div id="hub-devis-list"></div>
             
-            <div id="hub-devis-list">
-                </div>
-
             <div style="margin-top:30px;">
-                <button class="btn-yellow" onclick="App.openProjectInvoices()"><i class="fas fa-file-invoice"></i> VOIR FACTURES</button>
+                <div class="hub-btn" onclick="App.openProjectInvoices()">
+                    <div class="hub-icon" style="background:#FEE2E2; color:var(--c-danger);"><i class="fas fa-file-invoice"></i></div>
+                    <div class="hub-info"><div class="hub-title" style="color:var(--c-danger);">FACTURES</div><div style="font-size:0.8rem; color:#666;">Gestion Acomptes & Soldes</div></div>
+                    <i class="fas fa-chevron-right" style="color:#ccc;"></i>
+                </div>
             </div>
         </div>
     </main>
 
     <main id="view-editor" class="view-section">
         <div class="editor-header">
-            <div class="mode-banner" id="editor-banner">MODE DEVIS</div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <button class="header-btn" onclick="App.nav('hub')"><i class="fas fa-arrow-left"></i></button>
                 <div style="text-align:right;">
-                    <div style="font-size:0.7rem; color:#666;" id="ed-ref">Ref</div>
+                    <div style="font-size:0.7rem; color:#666;" id="ed-ref">REF</div>
                     <div style="font-weight:900; font-size:1.3rem; color:var(--c-navy);" id="ed-total">0 €</div>
                 </div>
             </div>
@@ -206,19 +280,13 @@
         </div>
         <div class="room-scroll-nav" id="room-tabs"></div>
         <div id="editor-list" style="padding:10px 0;"></div>
-        <div class="measures-footer">
-            <div class="m-box"><label>L</label><input type="number" class="m-inp" id="m-L" onchange="App.calcMetrics()"></div>
-            <div class="m-box"><label>l</label><input type="number" class="m-inp" id="m-l" onchange="App.calcMetrics()"></div>
-            <div class="m-box"><label>H</label><input type="number" class="m-inp" id="m-h" value="2.70" onchange="App.calcMetrics()"></div>
-            <div class="m-box" style="flex:0.8"><label>M²</label><div class="m-res" id="m-surf">0</div></div>
-        </div>
-        <button class="fab-add" onclick="App.openLibrary()"><i class="fas fa-plus"></i></button>
+        <button onclick="App.openLibrary()" style="position:fixed; bottom:160px; right:20px; width:60px; height:60px; background:var(--c-navy); color:white; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.3); font-size:1.8rem; z-index:950; border:2px solid white;">+</button>
     </main>
 
     <main id="view-project-invoices" class="view-section">
         <header class="mobile-header">
             <button class="header-btn" onclick="App.nav('hub')"><i class="fas fa-arrow-left"></i></button>
-            <div class="logo-text">FACTURES CHANTIER</div><div style="width:20px;"></div>
+            <div class="logo-text">FACTURES</div><div style="width:20px;"></div>
         </header>
         <div style="padding:20px;">
             <button class="btn-primary" onclick="App.openCreateInvoiceModal()">+ Créer Facture</button>
@@ -233,24 +301,48 @@
     </main>
 
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i>HOME</button>
-        <button class="nav-item" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i>CLIENTS</button>
-        <div class="ai-circle-big" onclick="alert('IA')">IA</div>
-        <button class="nav-item" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i>PROJETS</button>
-        <button class="nav-item" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice"></i>FACTURES</button>
+        <div class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i><span>HOME</span></div>
+        <div class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i><span>CLIENTS</span></div>
+        <div class="nav-ai-container"><div class="ai-circle-big" onclick="alert('IA')">IA</div></div>
+        <div class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i><span>CHANTIERS</span></div>
+        <div class="nav-btn" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice-dollar"></i><span>FACTURES</span></div>
     </nav>
+
+    <div class="side-overlay" id="side-overlay" onclick="App.toggleMenu()"></div>
+    <div class="side-menu" id="side-menu">
+        <div style="padding:30px 20px; background:var(--c-navy); color:white;">
+            <div style="font-weight:800; font-size:1.4rem;">Menu</div>
+            <div style="opacity:0.8;">Collaborateur</div>
+        </div>
+        <div style="padding:20px;">
+            <div class="list-item" style="border:none;">Mon Profil</div>
+            <div class="list-item" style="border:none;">Mes Collègues</div>
+            <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+            <button class="btn-primary" style="background:var(--c-danger);" onclick="localStorage.clear(); location.reload();">RESET APP</button>
+        </div>
+    </div>
+
+    <div id="modal-share" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;">
+        <div style="background:white; border-radius:20px 20px 0 0; padding:25px;">
+            <div style="text-align:center; font-weight:800; font-size:1.2rem; margin-bottom:20px;">Partager le Document</div>
+            <div class="share-grid">
+                <div class="share-btn" onclick="alert('Ouverture PDF...')"><i class="fas fa-file-pdf" style="color:var(--c-danger);"></i><div>Voir PDF</div></div>
+                <div class="share-btn" onclick="alert('Envoi WhatsApp...')"><i class="fab fa-whatsapp" style="color:#25D366;"></i><div>WhatsApp</div></div>
+                <div class="share-btn" onclick="alert('Envoi Email...')"><i class="fas fa-envelope" style="color:var(--c-navy);"></i><div>Email</div></div>
+            </div>
+            <button class="btn-primary" style="margin-top:20px; background:#eee; color:#333;" onclick="App.closeModal('modal-share')">Annuler</button>
+        </div>
+    </div>
 
     <div id="modal-invoice" class="full-modal">
         <div class="modal-header"><h3>Nouvelle Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')"><i class="fas fa-times"></i></button></div>
         <div class="modal-body">
-            <label class="form-label">Sélectionner Devis</label>
+            <label class="form-label">Sur quel Devis ?</label>
             <select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select>
-            
             <div style="background:#EFF6FF; padding:15px; border-radius:8px; margin-bottom:20px;">
                 <div style="font-weight:900; font-size:1.5rem; color:var(--c-navy);" id="inv-total-quote">0 €</div>
                 <div style="font-size:0.8rem; color:var(--c-danger);">Déjà Facturé: <span id="inv-already">0 €</span></div>
             </div>
-            
             <label class="form-label">Type</label>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <button class="room-pill active" onclick="App.setInvType('acompte')" id="btn-acompte" style="flex:1;">Acompte %</button>
@@ -326,15 +418,9 @@
     </div>
 
     <script>
-        // STORE (Data Structure: Chantier -> devisList -> items)
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null },
-            init() { 
-                try {
-                    const s = localStorage.getItem('qotia_v11_final'); 
-                    if(s) this.data = JSON.parse(s); else this.seed();
-                } catch(e) { this.seed(); }
-            },
+            init() { try { const s = localStorage.getItem('qotia_v12_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [{id:101, type:'physique', nom:'Jean Dupont', addr:'Nice', tel:'0600000000'}, {id:102, type:'morale', nom:'SCI Immo', addr:'Cannes'}];
                 this.data.chantiers = [{
@@ -346,7 +432,7 @@
                     factures: []
                 }];
             },
-            save() { localStorage.setItem('qotia_v11_final', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v12_final', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -358,7 +444,7 @@
             
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
-                document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+                document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
                 
                 let target = view;
                 if(view==='editor') target='editor';
@@ -370,31 +456,93 @@
                 if(view==='clients') this.renderClients();
                 if(view==='projets') this.renderProjects();
                 if(view==='factures-global') this.renderFacturesGlobal();
+                if(view==='documents') this.renderDocuments('all');
             },
 
-            // --- HUB LOGIC (Multi-Devis) ---
+            toggleMenu() { 
+                const m = document.getElementById('side-menu'); const o = document.getElementById('side-overlay');
+                if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); }
+                else { m.classList.add('open'); o.classList.add('open'); }
+            },
+
+            // --- DOCUMENTS SYSTEM ---
+            renderDocuments(filter) {
+                const l = document.getElementById('documents-list'); l.innerHTML='';
+                let docs = [];
+                
+                Store.data.chantiers.forEach(c => {
+                    const cli = Store.data.clients.find(x=>x.id==c.clientId);
+                    const cliName = cli ? cli.nom : 'Inconnu';
+                    
+                    if(c.devisList) c.devisList.forEach(d => docs.push({ type:'Devis', ref:d.ref, client:cliName, amount:d.total, date:'-', raw:d }));
+                    if(c.factures) c.factures.forEach(f => docs.push({ type:'Facture', ref:f.ref, client:cliName, amount:f.amount, date:f.date, raw:f }));
+                });
+
+                if(filter !== 'all') docs = docs.filter(d => d.type === filter);
+
+                docs.forEach(d => {
+                    let dClass = d.type==='Devis' ? 'doc-devis' : 'doc-facture';
+                    let div = document.createElement('div'); div.className = `doc-item ${dClass}`;
+                    div.innerHTML = `
+                        <div>
+                            <div class="doc-type">${d.type}</div>
+                            <div style="font-weight:700;">${d.ref}</div>
+                            <div style="font-size:0.8rem; color:#666;">${d.client}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-weight:900;">${d.amount.toFixed(0)}€</div>
+                            <i class="fas fa-ellipsis-v" style="color:#ccc; margin-top:5px;"></i>
+                        </div>
+                    `;
+                    div.onclick = () => document.getElementById('modal-share').style.display='flex';
+                    l.appendChild(div);
+                });
+            },
+
+            // --- CLIENTS ---
+            renderClients(q='') {
+                const l=document.getElementById('clients-list'); l.innerHTML='';
+                Store.data.clients.forEach(c=>{
+                    if(c.nom.toLowerCase().includes(q.toLowerCase())) {
+                        let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
+                        let call = c.tel ? `<a href="tel:${c.tel}" class="btn-icon-circle btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : '';
+                        
+                        let d=document.createElement('div'); d.className='list-item'; 
+                        d.innerHTML=`
+                            <div class="list-content" onclick="App.editClient(${c.id})">
+                                ${tag}
+                                <div class="list-title">${c.nom}</div>
+                                <div class="list-sub">${c.addr||'-'}</div>
+                            </div>
+                            <div class="list-actions">
+                                ${call}
+                                <button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button>
+                            </div>
+                        `;
+                        l.appendChild(d);
+                    }
+                });
+            },
+
+            // --- HUB & EDITOR ---
             openHub(id) {
                 Store.data.activeChantierId = id; Store.save();
                 const c = Store.data.chantiers.find(x=>x.id==id);
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 document.getElementById('hub-name').innerText = c.name;
-                document.getElementById('hub-client').innerText = cli ? cli.nom : 'Client Inconnu';
+                document.getElementById('hub-client').innerText = cli ? cli.nom : 'Inconnu';
                 this.renderHubDevisList(c);
                 this.nav('hub');
             },
             renderHubDevisList(c) {
                 const l = document.getElementById('hub-devis-list'); l.innerHTML='';
                 if(!c.devisList) c.devisList=[];
-                
                 c.devisList.forEach(d => {
-                    let stClass = d.status=='Accepte' ? 'ok' : '';
-                    let div = document.createElement('div'); div.className = `devis-item ${stClass}`;
+                    let div = document.createElement('div'); div.className = `list-item`;
+                    div.style.borderLeft = d.status=='Accepte' ? '5px solid #10B981' : '5px solid #1E3A8A';
                     div.innerHTML = `
-                        <div class="devis-info">
-                            <div class="devis-title">${d.name} (${d.ref})</div>
-                            <div class="devis-meta">${d.status} • ${d.total.toFixed(0)}€</div>
-                        </div>
-                        <i class="fas fa-chevron-right" style="color:#ccc"></i>
+                        <div><div style="font-weight:700;">${d.name}</div><div style="font-size:0.8rem;">${d.ref}</div></div>
+                        <div style="font-weight:900;">${d.total.toFixed(0)}€</div>
                     `;
                     div.onclick = () => App.openEditor(d.id, 'devis');
                     l.appendChild(div);
@@ -403,27 +551,17 @@
             createNewDevis() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const newId = Date.now();
-                const newDevis = {
-                    id: newId, ref: `D-${new Date().getFullYear()}-${Math.floor(Math.random()*1000)}`,
-                    name: `Devis #${c.devisList.length+1}`, status: 'Brouillon', items: [], total: 0
-                };
-                c.devisList.push(newDevis);
-                Store.save();
-                App.openEditor(newId, 'devis');
+                const newDevis = { id: newId, ref: `D-${Math.floor(Math.random()*1000)}`, name: `Devis #${c.devisList.length+1}`, status: 'Brouillon', items: [], total: 0 };
+                c.devisList.push(newDevis); Store.save(); App.openEditor(newId, 'devis');
             },
-
-            // --- EDITOR LOGIC ---
             openEditor(devisId, mode) {
                 Store.data.activeDevisId = devisId; Store.save();
                 this.state.editorMode = mode;
-                
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d = c.devisList.find(x=>x.id==devisId);
-                
                 document.getElementById('ed-ref').innerText = d.ref;
                 document.getElementById('ed-total').innerText = d.total.toFixed(0)+' €';
-                
-                this.switchEditorMode(mode); // Set UI
+                this.switchEditorMode(mode);
                 this.renderRooms();
                 this.nav('editor');
             },
@@ -432,25 +570,7 @@
                 document.body.className = m==='etude'?'mode-etude':'mode-devis';
                 document.getElementById('btn-mode-devis').className = m=='devis'?'room-pill active':'room-pill';
                 document.getElementById('btn-mode-etude').className = m=='etude'?'room-pill active':'room-pill';
-                document.getElementById('editor-banner').innerText = m=='devis' ? "MODE PRIX" : "MODE TECHNIQUE";
                 this.renderItems();
-            },
-            renderRooms() {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const t = document.getElementById('room-tabs'); t.innerHTML='';
-                c.rooms.forEach(r => {
-                    let p = document.createElement('div'); p.className=`room-pill ${c.activeRoom==r?'active':''}`; p.innerText=r;
-                    p.onclick = () => { c.activeRoom=r; Store.save(); App.renderRooms(); }; t.appendChild(p);
-                });
-                let add = document.createElement('div'); add.className='room-pill'; add.innerText='+';
-                add.onclick=()=>{ let n=prompt('Nom pièce?'); if(n){c.rooms.push(n); c.metrics[n]={L:0,l:0,h:2.5}; c.activeRoom=n; Store.save(); App.renderRooms();} };
-                t.appendChild(add);
-                
-                // Metrics (Chantier Level)
-                const m = c.metrics[c.activeRoom] || {L:0,l:0,h:2.5};
-                document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h;
-                App.calcMetrics(false);
-                App.renderItems();
             },
             renderItems() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
@@ -460,7 +580,7 @@
                 d.items.filter(i=>i.room==c.activeRoom).forEach(i => {
                     let div = document.createElement('div'); div.className='item-card';
                     div.innerHTML = `
-                        <div class="item-desc">${i.desc}</div>
+                        <div style="font-weight:700;">${i.desc}</div>
                         <div style="display:flex; justify-content:space-between; margin-top:5px; color:#666; font-size:0.9rem;">
                             <span>${i.qty} ${i.unit}</span>
                             <span class="view-price">${(i.qty*i.price).toFixed(0)} €</span>
@@ -470,77 +590,35 @@
                     l.appendChild(div);
                 });
                 
-                // Update Total
                 d.total = d.items.reduce((a,b)=>a+(b.qty*b.price),0);
                 document.getElementById('ed-total').innerText = d.total.toFixed(0)+' €';
                 Store.save();
             },
-            calcMetrics(save=true) {
-                const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; 
-                document.getElementById('m-surf').innerText = (L*l).toFixed(2);
-                if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); }
-            },
-
-            // --- INVOICE SYSTEM ---
-            openProjectInvoices() {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const l = document.getElementById('proj-invoice-list'); l.innerHTML='';
-                if(!c.factures) c.factures = [];
-                c.factures.forEach(f => {
-                    let st = f.paid ? '<span style="color:#10B981">PAGATA</span>' : '<span style="color:#EF4444">DA PAGARE</span>';
-                    let btn = !f.paid ? `<div class="btn-pay" onclick="App.payInvoice(${f.id})">INCASSA</div>` : '';
-                    let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
-                    d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${f.devisRef||'Global'}</div>${st}</div><div style="text-align:right"><div class="inv-amt">${f.amount.toFixed(2)}€</div>${btn}</div>`;
-                    l.appendChild(d);
-                });
-                this.nav('project-invoices');
-            },
-            payInvoice(id) {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const f = c.factures.find(f=>f.id==id);
-                if(f) { f.paid = true; Store.save(); App.openInvoices(); } // openInvoices works as generic reload
-            },
+            
+            // --- INVOICES ---
             openCreateInvoiceModal() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const sel = document.getElementById('inv-devis-select'); sel.innerHTML='';
-                
-                // Populate Devis Dropdown
-                c.devisList.forEach(d => {
-                    let opt = document.createElement('option'); opt.value = d.id; opt.text = `${d.ref} - ${d.name} (${d.total}€)`;
-                    sel.appendChild(opt);
-                });
-                
-                this.onInvoiceDevisChange(); // Init numbers
-                this.setInvType('acompte');
+                c.devisList.forEach(d => { let opt = document.createElement('option'); opt.value = d.id; opt.text = `${d.ref} - ${d.total}€`; sel.appendChild(opt); });
+                this.onInvoiceDevisChange();
                 document.getElementById('modal-invoice').classList.add('open');
             },
             onInvoiceDevisChange() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const did = document.getElementById('inv-devis-select').value;
                 const d = c.devisList.find(x=>x.id==did);
-                
                 if(d) {
                     document.getElementById('inv-total-quote').innerText = d.total.toFixed(2) + " €";
-                    // Calc paid for THIS devis
                     const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0);
                     document.getElementById('inv-already').innerText = paid.toFixed(2) + " €";
                     this.calcInvPreview();
                 }
             },
-            setInvType(t) {
-                this.state.invType = t;
-                document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill';
-                document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill';
-                document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none';
-                this.calcInvPreview();
-            },
             calcInvPreview() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const did = document.getElementById('inv-devis-select').value;
                 const d = c.devisList.find(x=>x.id==did);
-                
                 if(!d) return;
-
                 const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0);
                 let amt = 0;
                 
@@ -556,36 +634,112 @@
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const did = document.getElementById('inv-devis-select').value;
                 const d = c.devisList.find(x=>x.id==did);
-                
                 let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€',''));
                 
-                // Check Overpayment
-                const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0);
-                if(paid + amt > d.total + 1) { alert("Erreur: Total dépasse le devis!"); return; }
-
-                const inv = {
-                    id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*1000),
-                    type: this.state.invType, amount: amt, paid: false,
-                    linkedDevisId: did, devisRef: d.ref
-                };
+                const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*1000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() };
                 if(!c.factures) c.factures=[]; c.factures.push(inv);
                 Store.save(); App.closeModal('modal-invoice'); App.openProjectInvoices();
+            },
+            openProjectInvoices() {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const l = document.getElementById('proj-invoice-list'); l.innerHTML='';
+                if(c.factures) c.factures.forEach(f => {
+                    let d = document.createElement('div'); d.className=`list-item`;
+                    d.innerHTML = `<div><div style="font-weight:700;">${f.ref}</div><div>${f.type}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
+                    l.appendChild(d);
+                });
+                this.nav('project-invoices');
+            },
+
+            // --- SHARED ---
+            renderHome() {
+                const l=document.getElementById('home-recent-list'); l.innerHTML='';
+                let tot=0, unpaid=0;
+                Store.data.chantiers.slice(0,5).forEach(c=>{
+                    if(c.devisList) c.devisList.forEach(d => { if(d.status=='Accepte') tot += d.total; });
+                    if(c.factures) c.factures.forEach(f => { if(!f.paid) unpaid += f.amount; });
+                    const cli=Store.data.clients.find(x=>x.id==c.clientId);
+                    let d=document.createElement('div'); d.className='card';
+                    d.innerHTML=`<div style="font-weight:700;">${c.name}</div><div style="color:#666">${cli?cli.nom:''}</div>`;
+                    d.onclick=()=>App.openHub(c.id); l.appendChild(d);
+                });
+                document.getElementById('home-revenue').innerText = tot.toFixed(0)+" €";
+                document.getElementById('home-unpaid').innerText = unpaid.toFixed(0)+" €";
+            },
+            renderProjets() { /* ... similar logic ... */ },
+            cliType(t) {
+                document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`;
+                document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
+                document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
+            },
+            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
+            saveClient() {
+                const n = document.getElementById('cli-nom').value;
+                const id = document.getElementById('cli-id').value;
+                const c = { id: id ? parseInt(id) : Date.now(), nom:n, tel:document.getElementById('cli-tel').value, addr:document.getElementById('cli-addr').value, type: document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique' };
+                if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); }
+                Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
+            },
+            editClient(id) {
+                const c = Store.data.clients.find(x=>x.id==id);
+                document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom;
+                document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel;
+                App.cliType(c.type); document.getElementById('modal-client').classList.add('open');
+            },
+            openProjectWizard(pid) {
+                const s = document.getElementById('prj-cli'); s.innerHTML='<option value="">Sélectionner</option>';
+                Store.data.clients.forEach(c=>{let o=document.createElement('option');o.value=c.id;o.innerText=c.nom;s.appendChild(o)});
+                if(pid) s.value=pid;
+                document.getElementById('modal-projet').classList.add('open');
+            },
+            createProject() {
+                const cid=document.getElementById('prj-cli').value; const nom=document.getElementById('prj-nom').value;
+                if(cid&&nom) {
+                    const ch={
+                        id:Date.now(), clientId:cid, name:nom, ref:"C-"+new Date().getFullYear(),
+                        activeRoom:'Cuisine', rooms:['Cuisine'], metrics:{'Cuisine':{L:0,l:0,h:2.7}}, 
+                        devisList: [], factures:[]
+                    };
+                    const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 };
+                    ch.devisList.push(defDevis);
+                    
+                    Store.data.chantiers.unshift(ch); Store.save();
+                    App.closeModal('modal-projet');
+                    
+                    Store.data.activeChantierId = ch.id;
+                    App.openEditor(defDevis.id, 'devis'); 
+                }
+            },
+            closeModal(id) { document.getElementById(id).classList.remove('open'); },
+            setInvType(t) {
+                this.state.invType = t;
+                document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill';
+                document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill';
+                document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none';
+                this.calcInvPreview();
+            },
+            calcMetrics(save=true) {
+                const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; 
+                document.getElementById('m-surf').innerText = (L*l).toFixed(2);
+                if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); }
+            },
+            renderProjects() {
+                const l=document.getElementById('projects-list-full'); l.innerHTML='';
+                Store.data.chantiers.forEach(c=>{
+                    let d=document.createElement('div'); d.className='card'; d.innerHTML=`<b>${c.name}</b>`;
+                    d.onclick=()=>App.openHub(c.id); l.appendChild(d);
+                });
             },
             renderFacturesGlobal() {
                 const l = document.getElementById('global-invoice-list'); l.innerHTML='';
                 Store.data.chantiers.forEach(c => {
                     if(c.factures) c.factures.forEach(f => {
-                         let st = f.paid ? '<span style="color:#10B981">PAGATA</span>' : '<span style="color:#EF4444">DA PAGARE</span>';
-                         let btn = !f.paid ? `<div class="btn-pay" onclick="App.payInvoiceGlobal(${c.id}, ${f.id})">INCASSA</div>` : '';
-                         let d = document.createElement('div'); d.className=`inv-card ${f.paid?'paid':''}`;
-                         d.innerHTML = `<div><div class="inv-ref">${f.ref}</div><div class="inv-proj">${c.name}</div>${st}</div><div style="text-align:right"><div class="inv-amt">${f.amount.toFixed(2)}€</div>${btn}</div>`;
+                         let d = document.createElement('div'); d.className=`list-item`;
+                         d.innerHTML = `<div><div style="font-weight:700;">${f.ref}</div><div>${c.name}</div></div><div style="font-weight:900;">${f.amount.toFixed(2)}€</div>`;
                          l.appendChild(d);
                     });
                 });
             },
-            payInvoiceGlobal(cid, fid) { Store.data.activeChantierId = cid; App.payInvoice(fid); App.renderFacturesGlobal(); },
-
-            // --- ITEMS CRUD ---
             editItem(id) {
                 const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d=c.devisList.find(x=>x.id==Store.data.activeDevisId);
@@ -626,88 +780,22 @@
                 }
                 document.getElementById('modal-library').classList.add('open');
             },
-
-            // --- LISTS & CREATION ---
-            renderHome() {
-                const l=document.getElementById('home-recent-list'); l.innerHTML='';
-                let tot=0, unpaid=0;
-                Store.data.chantiers.slice(0,5).forEach(c=>{
-                    // Calc revenue from Accepted Devis
-                    if(c.devisList) c.devisList.forEach(d => { if(d.status=='Accepte') tot += d.total; });
-                    if(c.factures) c.factures.forEach(f => { if(!f.paid) unpaid += f.amount; });
-
-                    const cli=Store.data.clients.find(x=>x.id==c.clientId);
-                    let d=document.createElement('div'); d.className='card';
-                    d.innerHTML=`<div style="font-weight:700; font-size:1.1rem;">${c.name}</div><div style="color:#666">${cli?cli.nom:''}</div>`;
-                    d.onclick=()=>App.openHub(c.id); l.appendChild(d);
+            renderRooms() {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const t = document.getElementById('room-tabs'); t.innerHTML='';
+                c.rooms.forEach(r => {
+                    let p = document.createElement('div'); p.className=`room-pill ${c.activeRoom==r?'active':''}`; p.innerText=r;
+                    p.onclick = () => { c.activeRoom=r; Store.save(); App.renderRooms(); }; t.appendChild(p);
                 });
-                document.getElementById('home-revenue').innerText = tot.toFixed(2)+" €";
-                document.getElementById('home-unpaid').innerText = unpaid.toFixed(2)+" €";
-            },
-            renderClients(q='') {
-                const l=document.getElementById('clients-list'); l.innerHTML='';
-                Store.data.clients.forEach(c=>{
-                    if(c.nom.toLowerCase().includes(q.toLowerCase())) {
-                        let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
-                        let call = c.tel ? `<a href="tel:${c.tel}" class="btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : '';
-                        let d=document.createElement('div'); d.className='list-item'; 
-                        d.innerHTML=`<div style="flex:1" onclick="App.editClient(${c.id})"><div>${tag}</div><div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions">${call}<button class="btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`;
-                        l.appendChild(d);
-                    }
-                });
-            },
-            renderProjects() {
-                const l=document.getElementById('projects-list-full'); l.innerHTML='';
-                Store.data.chantiers.forEach(c=>{
-                    let d=document.createElement('div'); d.className='card'; d.innerHTML=`<b>${c.name}</b>`;
-                    d.onclick=()=>App.openHub(c.id); l.appendChild(d);
-                });
-            },
-            cliType(t) {
-                document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`;
-                document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
-                document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
-            },
-            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
-            editClient(id) {
-                const c = Store.data.clients.find(x=>x.id==id);
-                document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom;
-                document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel;
-                App.cliType(c.type); document.getElementById('modal-client').classList.add('open');
-            },
-            saveClient() {
-                const n = document.getElementById('cli-nom').value;
-                const id = document.getElementById('cli-id').value;
-                const c = { id: id ? parseInt(id) : Date.now(), nom:n, tel:document.getElementById('cli-tel').value, addr:document.getElementById('cli-addr').value, type: document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique' };
-                if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); }
-                Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
-            },
-            openProjectWizard(pid) {
-                const s = document.getElementById('prj-cli'); s.innerHTML='<option value="">Sélectionner</option>';
-                Store.data.clients.forEach(c=>{let o=document.createElement('option');o.value=c.id;o.innerText=c.nom;s.appendChild(o)});
-                if(pid) s.value=pid;
-                document.getElementById('modal-projet').classList.add('open');
-            },
-            createProject() {
-                const cid=document.getElementById('prj-cli').value; const nom=document.getElementById('prj-nom').value;
-                if(cid&&nom) {
-                    const ch={
-                        id:Date.now(), clientId:cid, name:nom, ref:"C-"+new Date().getFullYear(),
-                        activeRoom:'Cuisine', rooms:['Cuisine'], metrics:{'Cuisine':{L:0,l:0,h:2.7}}, 
-                        devisList: [], factures:[]
-                    };
-                    // Create Default Devis
-                    const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 };
-                    ch.devisList.push(defDevis);
-                    
-                    Store.data.chantiers.unshift(ch); Store.save();
-                    App.closeModal('modal-projet');
-                    
-                    Store.data.activeChantierId = ch.id;
-                    App.openEditor(defDevis.id, 'devis'); // Direct to Editor
-                }
-            },
-            closeModal(id) { document.getElementById(id).classList.remove('open'); }
+                let add = document.createElement('div'); add.className='room-pill'; add.innerText='+';
+                add.onclick=()=>{ let n=prompt('Nom pièce?'); if(n){c.rooms.push(n); c.metrics[n]={L:0,l:0,h:2.5}; c.activeRoom=n; Store.save(); App.renderRooms();} };
+                t.appendChild(add);
+                
+                const m = c.metrics[c.activeRoom] || {L:0,l:0,h:2.5};
+                document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h;
+                App.calcMetrics(false);
+                App.renderItems();
+            }
         };
 
         window.onload = () => App.init();
