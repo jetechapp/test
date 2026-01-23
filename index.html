@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile Demo Data</title>
+    <title>QOTIA Mobile V10</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -31,12 +31,11 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--c-grey-bg); color: var(--c-dark); font-size: 14px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* LAYOUT */
+        /* LAYOUT MANAGER */
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
         
         #view-editor { padding-bottom: 160px; background: white; }
-        #view-project-invoices { background: white; }
         #view-home { padding-bottom: 120px; }
 
         /* HEADER */
@@ -61,6 +60,20 @@
         .action-box-project { border: 2px solid var(--c-yellow-dark); border-radius: var(--radius); height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 0.95rem; background: var(--c-yellow); cursor: pointer; color: var(--c-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s; }
         .action-box-project:active { background: var(--c-yellow-dark); transform: scale(0.98); }
         .action-box-project i { font-size: 2rem; margin-bottom: 8px; color: var(--c-dark); }
+
+        /* LIST ACTION BUTTONS (Phone/Edit) */
+        .list-actions { display: flex; gap: 10px; align-items: center; }
+        .btn-call { 
+            width: 45px; height: 45px; border-radius: 50%; 
+            background: #ECFDF5; color: var(--c-success); border: 1px solid var(--c-success);
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+            text-decoration: none;
+        }
+        .btn-edit {
+            width: 45px; height: 45px; border-radius: 50%;
+            background: #F3F4F6; color: #666; border: none;
+            display: flex; align-items: center; justify-content: center; font-size: 1rem;
+        }
 
         /* KPI FIXED BOTTOM */
         .home-kpi-fixed {
@@ -174,13 +187,12 @@
         </div>
 
         <div class="top-actions-row">
-            <div class="action-box-client" onclick="App.openClientModal()">
-                <i class="fas fa-user-plus" style="font-size:2rem; color:var(--c-navy); margin-bottom:10px;"></i>
-                Nouveau Client
+            <div class="action-box-client" onclick="App.nav('clients')"> <i class="fas fa-users"></i>
+                CLIENTS
             </div>
             <div class="action-box-project" onclick="App.openProjectWizard()">
-                <i class="fas fa-folder-plus" style="font-size:2rem; color:var(--c-dark); margin-bottom:10px;"></i>
-                Nouveau Chantier
+                <i class="fas fa-folder-plus"></i>
+                NOUVEAU CHANTIER
             </div>
         </div>
 
@@ -189,7 +201,7 @@
 
         <div class="home-kpi-fixed">
             <div class="kpi-split-card">
-                <div class="kpi-half kpi-bg-red" onclick="App.nav('factures-global')">
+                <div class="kpi-half kpi-bg-red" onclick="App.nav('factures')">
                     <div class="kpi-label kpi-red">À ENCAISSER</div>
                     <div class="kpi-val kpi-red" id="home-unpaid">0 €</div>
                 </div>
@@ -202,7 +214,10 @@
     </main>
 
     <main id="view-clients" class="view-section">
-        <header class="mobile-header"><div class="logo-text">CLIENTS</div><button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button></header>
+        <header class="mobile-header">
+            <div class="logo-text">CLIENTS</div>
+            <button class="header-btn" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
+        </header>
         <div style="padding:15px;"><input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)"></div>
         <div id="clients-list"></div>
     </main>
@@ -214,7 +229,7 @@
 
     <main id="view-hub" class="view-section">
         <header class="mobile-header">
-            <button class="header-btn" onclick="App.nav('home')"><i class="fas fa-arrow-left"></i></button>
+            <button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button>
             <div class="logo-text" style="font-size:1rem;">Tableau de Bord</div><div style="width:20px;"></div>
         </header>
         <div style="padding:20px; background:white; border-bottom:1px solid #eee;">
@@ -294,7 +309,7 @@
         <button class="nav-item" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i>CLIENTS</button>
         <div class="nav-ai-wrapper"><div class="ai-circle-big" onclick="alert('IA Assistant')">IA</div></div>
         <button class="nav-item" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i>PROJETS</button>
-        <button class="nav-item" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice"></i>FACTURES</button>
+        <button class="nav-item" onclick="App.nav('factures')" id="nav-factures"><i class="fas fa-file-invoice"></i>FACTURES</button>
     </nav>
 
     <div id="modal-invoice" class="full-modal">
@@ -403,12 +418,12 @@
             data: { clients: [], chantiers: [], activeChantierId: null },
             init() { 
                 try {
-                    const s = localStorage.getItem('qotia_final_v10'); 
+                    const s = localStorage.getItem('qotia_v10_final'); 
                     if(s) this.data = JSON.parse(s); else this.seed();
                 } catch(e) { this.seed(); }
             },
             seed() {
-                // DATI DEMO POPOLATI
+                // DATI DEMO POPOLATI PER VEDERE L'APP FUNZIONANTE
                 this.data.clients = [
                     {id:101, type:'physique', nom:'Jean Dupont', addr:'12 Av. Jean Médecin, Nice', tel:'0611223344', email:'jean@email.com'},
                     {id:102, type:'morale', nom:'SCI Les Palmiers', addr:'45 Promenade des Anglais', tel:'0493000000'}
@@ -437,7 +452,7 @@
                     }
                 ];
             },
-            save() { localStorage.setItem('qotia_final_v10', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v10_final', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -460,7 +475,7 @@
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
                 if(view==='projets') this.renderProjects();
-                if(view==='factures-global') this.renderFacturesGlobal();
+                if(view==='factures') this.renderFacturesGlobal();
             },
 
             toggleMenu() { 
@@ -477,7 +492,7 @@
                 const c = Store.data.chantiers.find(x=>x.id==id);
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 document.getElementById('hub-name').innerText = c.name;
-                document.getElementById('hub-client').innerText = cli ? cli.nom : 'Client Inconnu';
+                document.getElementById('hub-cli').innerText = cli ? cli.nom : 'Client Inconnu';
                 this.nav('hub');
             },
 
@@ -487,7 +502,6 @@
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 document.getElementById('ed-total').innerText = c.total.toFixed(0)+' €';
                 
-                // Set UI Mode
                 document.body.className = mode === 'etude' ? 'mode-etude' : 'mode-devis';
                 const banner = document.getElementById('editor-banner');
                 banner.innerText = mode==='devis' ? "MODE DEVIS (PRIX)" : "MODE CAHIER CHARGES (TECH)";
@@ -573,23 +587,24 @@
                 document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill';
                 document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill';
                 document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none';
-                this.calcInv();
+                this.calcInvPreview();
             },
-            calcInv() {
+            calcInvPreview() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
                 let amt = 0;
                 if(this.state.invType === 'acompte') {
-                    const p = parseFloat(document.getElementById('inv-percent').value) || 0;
-                    amt = c.total * (p/100);
+                    const perc = parseFloat(document.getElementById('inv-percent').value) || 0;
+                    amt = c.total * (perc/100);
                 } else {
-                    const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
                     amt = c.total - paid;
                 }
-                document.getElementById('inv-amount').innerText = amt.toFixed(2)+" €";
+                document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €";
+                document.getElementById('inv-reste').innerText = (c.total - paid - amt).toFixed(2) + " €";
             },
-            saveInvoice() {
+            generateInvoice() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                let amt = parseFloat(document.getElementById('inv-amount').innerText.replace('€',''));
+                let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€',''));
                 const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
                 if(paid + amt > c.total + 1) { alert("Erreur: Le total dépasse le devis !"); return; }
                 const inv = { id:Date.now(), ref:"FAC-"+Math.floor(Math.random()*1000), type:this.state.invType, amount:amt, devisRef:c.ref, paid:false };
@@ -669,9 +684,10 @@
                 const l=document.getElementById('clients-list'); l.innerHTML='';
                 Store.data.clients.forEach(c=>{
                     if(c.nom.toLowerCase().includes(q.toLowerCase())) {
-                        let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PART</span>';
+                        let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
+                        let call = c.tel ? `<a href="tel:${c.tel}" class="btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : '';
                         let d=document.createElement('div'); d.className='list-item'; 
-                        d.innerHTML=`<div>${tag}<div class="list-main">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div>`;
+                        d.innerHTML=`<div style="flex:1" onclick="App.editClient(${c.id})"><div>${tag}</div><div class="list-main">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions">${call}<button class="btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`;
                         l.appendChild(d);
                     }
                 });
@@ -691,12 +707,30 @@
                 document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
             },
             openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
+            editClient(id) {
+                const c = Store.data.clients.find(x=>x.id==id);
+                document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom;
+                document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel;
+                App.cliType(c.type);
+                document.getElementById('modal-client').classList.add('open');
+            },
             saveClient() {
                 const n = document.getElementById('cli-nom').value;
-                if(n) {
-                    const c = { id:Date.now(), nom:n, tel:document.getElementById('cli-tel').value, addr:document.getElementById('cli-addr').value, type: 'physique' };
-                    Store.data.clients.push(c); Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
+                const id = document.getElementById('cli-id').value;
+                const c = { 
+                    id: id ? parseInt(id) : Date.now(), 
+                    nom:n, tel:document.getElementById('cli-tel').value, 
+                    addr:document.getElementById('cli-addr').value, 
+                    type: document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique' 
+                };
+                
+                if(id) {
+                    const idx = Store.data.clients.findIndex(x=>x.id==id);
+                    Store.data.clients[idx] = c;
+                } else {
+                    Store.data.clients.push(c); 
                 }
+                Store.save(); App.closeModal('modal-client'); App.renderClients(); return c.id;
             },
             createChantierFromClient() { const id=App.saveClient(); App.openProjectWizard(id); },
             openProjectWizard(pid) {
