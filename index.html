@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA Mobile Final V8</title>
+    <title>QOTIA Mobile Demo Data</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -35,9 +35,9 @@
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; overflow-y: auto; padding-bottom: calc(var(--h-nav) + 20px); background: var(--c-grey-bg); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
         
-        /* PADDING SPECIALI PER VISTE CON FOOTER FISSI */
         #view-editor { padding-bottom: 160px; background: white; }
-        #view-home { padding-bottom: 190px; /* Spazio extra per il KPI fisso */ }
+        #view-project-invoices { background: white; }
+        #view-home { padding-bottom: 120px; }
 
         /* HEADER */
         .mobile-header { flex: 0 0 var(--h-header); background: var(--c-surface); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 30; }
@@ -53,31 +53,6 @@
         .bg-ok { background: #ECFDF5; color: #065F46; }
         .bg-pay { background: #FEF2F2; color: #991B1B; }
 
-        /* HOME KPI FIXED FOOTER */
-        .home-kpi-fixed {
-            position: fixed; bottom: var(--h-nav); left: 0; width: 100%;
-            background: rgba(243, 244, 246, 0.95); /* Leggera trasparenza */
-            backdrop-filter: blur(5px);
-            padding: 10px 15px; z-index: 90;
-            border-top: 1px solid var(--c-border);
-        }
-        .kpi-split-card {
-            display: flex; background: white; border-radius: var(--radius); overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--c-border); height: 80px;
-        }
-        .kpi-half {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; padding: 5px; transition: background 0.2s;
-        }
-        .kpi-half:active { background: #f9f9f9; }
-        .kpi-half:first-child { border-right: 1px solid var(--c-border); }
-        .kpi-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
-        .kpi-val { font-size: 1.1rem; font-weight: 900; }
-        .kpi-red { color: #DC2626; }
-        .kpi-green { color: #059669; }
-        .kpi-bg-red { background: #FEF2F2; }
-        .kpi-bg-green { background: #ECFDF5; }
-
         /* HOME ACTION BUTTONS */
         .top-actions-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px 15px; }
         .action-box-client { border: 2px solid var(--c-navy); border-radius: var(--radius); height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 0.95rem; background: white; cursor: pointer; color: var(--c-navy); box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s; }
@@ -86,6 +61,29 @@
         .action-box-project { border: 2px solid var(--c-yellow-dark); border-radius: var(--radius); height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 700; font-size: 0.95rem; background: var(--c-yellow); cursor: pointer; color: var(--c-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.1s; }
         .action-box-project:active { background: var(--c-yellow-dark); transform: scale(0.98); }
         .action-box-project i { font-size: 2rem; margin-bottom: 8px; color: var(--c-dark); }
+
+        /* KPI FIXED BOTTOM */
+        .home-kpi-fixed {
+            position: fixed; bottom: var(--h-nav); left: 0; width: 100%;
+            background: rgba(243, 244, 246, 0.95); backdrop-filter: blur(5px);
+            padding: 10px 15px; z-index: 90; border-top: 1px solid var(--c-border);
+        }
+        .kpi-split-card {
+            display: flex; background: white; border-radius: var(--radius); overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--c-border); height: 70px;
+        }
+        .kpi-half {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; padding: 5px;
+        }
+        .kpi-half:active { background: #f9f9f9; }
+        .kpi-half:first-child { border-right: 1px solid var(--c-border); }
+        .kpi-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
+        .kpi-val { font-size: 1rem; font-weight: 900; }
+        .kpi-red { color: #DC2626; }
+        .kpi-green { color: #059669; }
+        .kpi-bg-red { background: #FEF2F2; }
+        .kpi-bg-green { background: #ECFDF5; }
 
         /* CLIENT TAGS */
         .tag-cli { font-size: 0.65rem; font-weight: 800; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; display: inline-block; margin-bottom: 5px; }
@@ -177,11 +175,11 @@
 
         <div class="top-actions-row">
             <div class="action-box-client" onclick="App.openClientModal()">
-                <i class="fas fa-user-plus"></i>
+                <i class="fas fa-user-plus" style="font-size:2rem; color:var(--c-navy); margin-bottom:10px;"></i>
                 Nouveau Client
             </div>
             <div class="action-box-project" onclick="App.openProjectWizard()">
-                <i class="fas fa-hard-hat"></i>
+                <i class="fas fa-folder-plus" style="font-size:2rem; color:var(--c-dark); margin-bottom:10px;"></i>
                 Nouveau Chantier
             </div>
         </div>
@@ -191,12 +189,12 @@
 
         <div class="home-kpi-fixed">
             <div class="kpi-split-card">
-                <div class="kpi-half kpi-bg-red" onclick="App.nav('factures')">
+                <div class="kpi-half kpi-bg-red" onclick="App.nav('factures-global')">
                     <div class="kpi-label kpi-red">À ENCAISSER</div>
                     <div class="kpi-val kpi-red" id="home-unpaid">0 €</div>
                 </div>
                 <div class="kpi-half kpi-bg-green" onclick="App.nav('projets')">
-                    <div class="kpi-label kpi-green">VOLUME AFFAIRES</div>
+                    <div class="kpi-label kpi-green">TOTALE AFFARI</div>
                     <div class="kpi-val kpi-green" id="home-revenue">0 €</div>
                 </div>
             </div>
@@ -216,7 +214,7 @@
 
     <main id="view-hub" class="view-section">
         <header class="mobile-header">
-            <button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button>
+            <button class="header-btn" onclick="App.nav('home')"><i class="fas fa-arrow-left"></i></button>
             <div class="logo-text" style="font-size:1rem;">Tableau de Bord</div><div style="width:20px;"></div>
         </header>
         <div style="padding:20px; background:white; border-bottom:1px solid #eee;">
@@ -296,7 +294,7 @@
         <button class="nav-item" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i>CLIENTS</button>
         <div class="nav-ai-wrapper"><div class="ai-circle-big" onclick="alert('IA Assistant')">IA</div></div>
         <button class="nav-item" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i>PROJETS</button>
-        <button class="nav-item" onclick="App.nav('factures')" id="nav-factures"><i class="fas fa-file-invoice"></i>FACTURES</button>
+        <button class="nav-item" onclick="App.nav('factures-global')" id="nav-factures-global"><i class="fas fa-file-invoice"></i>FACTURES</button>
     </nav>
 
     <div id="modal-invoice" class="full-modal">
@@ -403,9 +401,43 @@
     <script>
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null },
-            init() { try { const s = localStorage.getItem('qotia_v8'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
-            seed() { this.data.clients = [{id:1, type:'physique', nom:'Durant Bernard', addr:'Paris'}]; this.data.chantiers = [{id:101, clientId:1, ref:'D-2025-001', name:'Rénovation SDB', status:'Accepte', activeRoom:'SDB', rooms:['SDB'], metrics:{'SDB':{L:3,l:2,h:2.5}}, items:[], details:{}, total:0, factures:[]}]; },
-            save() { localStorage.setItem('qotia_v8', JSON.stringify(this.data)); }
+            init() { 
+                try {
+                    const s = localStorage.getItem('qotia_final_v10'); 
+                    if(s) this.data = JSON.parse(s); else this.seed();
+                } catch(e) { this.seed(); }
+            },
+            seed() {
+                // DATI DEMO POPOLATI
+                this.data.clients = [
+                    {id:101, type:'physique', nom:'Jean Dupont', addr:'12 Av. Jean Médecin, Nice', tel:'0611223344', email:'jean@email.com'},
+                    {id:102, type:'morale', nom:'SCI Les Palmiers', addr:'45 Promenade des Anglais', tel:'0493000000'}
+                ];
+                
+                this.data.chantiers = [
+                    {
+                        id:201, clientId:102, ref:'D-2024-045', name:'Rénovation Totale Appt 4', status:'Accepte',
+                        activeRoom:'Salon', rooms:['Salon','Cuisine','SDB'], metrics:{'Salon':{L:5,l:4,h:2.8}},
+                        items:[
+                            {id:1, room:'Salon', desc:'Peinture Murs', qty:45, unit:'m²', price:40, mat:5, time:0.5},
+                            {id:2, room:'Salon', desc:'Pose Parquet', qty:20, unit:'m²', price:65, mat:20, time:1},
+                            {id:3, room:'Cuisine', desc:'Plomberie Evier', qty:1, unit:'Ens', price:450, mat:100, time:4}
+                        ],
+                        details:{}, total:15450,
+                        factures:[
+                            {id:301, ref:'FAC-2024-089', type:'Acompte', amount:4635, paid:true},
+                            {id:302, ref:'FAC-2024-092', type:'Avancement', amount:5000, paid:false}
+                        ]
+                    },
+                    {
+                        id:202, clientId:101, ref:'D-2025-002', name:'Peinture Chambre', status:'Brouillon',
+                        activeRoom:'Chambre', rooms:['Chambre'], metrics:{'Chambre':{L:3,l:3,h:2.5}},
+                        items:[{id:4, room:'Chambre', desc:'Peinture', qty:30, unit:'m²', price:35}],
+                        details:{}, total:1050, factures:[]
+                    }
+                ];
+            },
+            save() { localStorage.setItem('qotia_final_v10', JSON.stringify(this.data)); }
         };
 
         const Config = { LIB: { 'Démolition':['Dépose sol','Evacuation'], 'Peinture':['Murs','Plafonds'], 'Plomberie':['WC','Douche'] } };
@@ -428,7 +460,7 @@
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
                 if(view==='projets') this.renderProjects();
-                if(view==='factures') this.renderFacturesGlobal();
+                if(view==='factures-global') this.renderFacturesGlobal();
             },
 
             toggleMenu() { 
@@ -455,6 +487,7 @@
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 document.getElementById('ed-total').innerText = c.total.toFixed(0)+' €';
                 
+                // Set UI Mode
                 document.body.className = mode === 'etude' ? 'mode-etude' : 'mode-devis';
                 const banner = document.getElementById('editor-banner');
                 banner.innerText = mode==='devis' ? "MODE DEVIS (PRIX)" : "MODE CAHIER CHARGES (TECH)";
@@ -552,12 +585,11 @@
                     const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
                     amt = c.total - paid;
                 }
-                document.getElementById('inv-preview-amount').innerText = amt.toFixed(2)+" €";
-                document.getElementById('inv-reste').innerText = (c.total - ((c.factures||[]).reduce((a,b)=>a+b.amount,0)) - amt).toFixed(2) + " €";
+                document.getElementById('inv-amount').innerText = amt.toFixed(2)+" €";
             },
             saveInvoice() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€',''));
+                let amt = parseFloat(document.getElementById('inv-amount').innerText.replace('€',''));
                 const paid = (c.factures||[]).reduce((a,b)=>a+b.amount,0);
                 if(paid + amt > c.total + 1) { alert("Erreur: Le total dépasse le devis !"); return; }
                 const inv = { id:Date.now(), ref:"FAC-"+Math.floor(Math.random()*1000), type:this.state.invType, amount:amt, devisRef:c.ref, paid:false };
@@ -637,7 +669,7 @@
                 const l=document.getElementById('clients-list'); l.innerHTML='';
                 Store.data.clients.forEach(c=>{
                     if(c.nom.toLowerCase().includes(q.toLowerCase())) {
-                        let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
+                        let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PART</span>';
                         let d=document.createElement('div'); d.className='list-item'; 
                         d.innerHTML=`<div>${tag}<div class="list-main">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div>`;
                         l.appendChild(d);
@@ -645,9 +677,9 @@
                 });
             },
             renderProjects() {
-                const l=document.getElementById('projects-list'); l.innerHTML='';
+                const l=document.getElementById('projects-list-full'); l.innerHTML='';
                 Store.data.chantiers.forEach(c=>{
-                    let d=document.createElement('div'); d.className='card'; d.innerHTML=`<b>${c.name}</b><br>${c.total}€`;
+                    let d=document.createElement('div'); d.className='card'; d.innerHTML=`<b>${c.name}</b><br>${c.total.toFixed(0)}€`;
                     d.onclick=()=>App.openHub(c.id); l.appendChild(d);
                 });
             },
@@ -683,8 +715,9 @@
                     };
                     Store.data.chantiers.unshift(ch); Store.save();
                     App.closeModal('modal-projet');
+                    
                     Store.data.activeChantierId = ch.id;
-                    App.openEditor('devis');
+                    App.openEditor('devis'); // Direct to Editor
                 }
             },
             closeModal(id) { document.getElementById(id).classList.remove('open'); }
