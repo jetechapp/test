@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA V37 Agenda Final</title>
+    <title>QOTIA V38 Final Merge</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -124,6 +124,10 @@
         /* MODALS */
         .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
         .full-modal.open { display: flex; }
+        
+        /* FIX Z-INDEX FOR CLIENT OVER PROJECT */
+        #modal-client { z-index: 6000; }
+        
         .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .modal-body { flex: 1; overflow-y: auto; padding: 20px; }
         .app-input { width: 100%; height: 50px; border: 1px solid var(--c-border); padding: 0 15px; font-size: 1rem; border-radius: 8px; background: white; margin-bottom: 15px; }
@@ -154,7 +158,7 @@
         .lib-sub { font-weight: 700; font-size: 0.9rem; color: #4B5563; margin: 10px 0 5px 15px; text-transform: uppercase; letter-spacing: 1px; }
         .lib-item { padding: 12px 15px; border-bottom: 1px solid #eee; background: white; display: flex; justify-content: space-between; cursor: pointer; }
 
-        /* AGENDA LIST */
+        /* AGENDA LIST (ADDED V37) */
         .agenda-event { padding: 15px; border-bottom: 1px solid #eee; background: white; display: flex; justify-content: space-between; align-items: center; }
         .agenda-date { font-weight: 800; color: var(--c-navy); font-size: 0.9rem; }
         .agenda-title { font-weight: 600; color: #333; margin-top: 2px; }
@@ -248,50 +252,29 @@
     <div class="side-overlay" id="side-overlay" onclick="App.toggleMenu()"></div>
     <div class="side-menu" id="side-menu"><div class="menu-header"><div style="font-size:1.5rem; font-weight:900;">MENU</div><div>Collaborateur</div></div><div class="menu-item">Mon Profil</div><div class="menu-item">Mes Collègues</div><div style="padding:20px;"><button class="btn-primary" style="background:var(--c-danger);" onclick="App.hardReset()">RÉINITIALISER / REFRESH</button></div></div>
 
-    <div id="modal-client" class="full-modal"><div class="modal-header"><h3>Client</h3><button class="header-btn" onclick="App.closeModal('modal-client')">×</button></div><div class="modal-body">
-        <input type="hidden" id="cli-id">
-        <div style="display:flex; gap:10px; margin-bottom:15px;"><button class="room-pill active" id="sw-phys" onclick="App.cliType('phys')" style="flex:1">Physique</button><button class="room-pill" id="sw-mor" onclick="App.cliType('mor')" style="flex:1">Société</button></div>
-        <label class="form-label">Identité</label><div style="display:flex; gap:10px;"><select id="cli-civ" class="app-input" style="flex:0 0 90px;"><option>M.</option><option>Mme</option></select><input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet"></div>
-        <div id="grp-mor" style="display:none; margin-top:10px; padding:15px; background:#F9FAFB; border-radius:8px;"><label class="form-label">Infos Société</label><input type="text" id="cli-soc" class="app-input" placeholder="Raison Sociale"><input type="text" id="cli-siret" class="app-input" placeholder="SIRET"><input type="text" id="cli-tva" class="app-input" placeholder="TVA Intracom."></div>
-        <label class="form-label" style="margin-top:15px;">Coordonnées</label><input type="text" id="cli-addr" class="app-input" placeholder="Adresse complète"><input type="email" id="cli-email" class="app-input" placeholder="Email"><input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone">
-        <label class="form-label">Notes</label><textarea id="cli-note" class="app-input" style="height:80px;"></textarea>
-    </div><div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">Enregistrer</button></div></div>
-
-    <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body">
-        <div style="display:flex; align-items:flex-end; gap:10px;"><div style="flex:1;"><label class="form-label">Client</label><select id="prj-cli" class="app-input"></select></div><button class="btn-primary" style="width:50px; margin-bottom:15px;" onclick="App.openClientModal()">+</button></div>
-        <label class="form-label">Info Chantier</label><input type="text" id="prj-nom" class="app-input" placeholder="Nom du chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Adresse complète">
-        <label class="form-label">Détails Techniques</label>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" id="prj-code" class="app-input" placeholder="Digicode"><input type="text" id="prj-etage" class="app-input" placeholder="Etage"></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" id="prj-asc" class="app-input" placeholder="Ascenseur"><input type="text" id="prj-keys" class="app-input" placeholder="Clés"></div>
-        <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien">
-        <input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble">
-        <input type="text" id="prj-compteur" class="app-input" placeholder="Emplacement Compteurs">
-    </div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER & OUVRIR</button></div></div>
-    
-    <div id="modal-item" class="full-modal"><div class="modal-header"><h3>Ouvrage</h3><button class="header-btn" onclick="App.closeModal('modal-item')">×</button></div><div class="modal-body">
-        <input type="hidden" id="it-id"><textarea id="it-desc" class="app-input" style="height:70px;"></textarea>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-qty" class="app-input" placeholder="Qté"><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div>
-        <label class="form-label">TVA (%)</label><select id="it-tva" class="app-input"><option value="10">10%</option><option value="20">20%</option><option value="5.5">5.5%</option></select>
-        <div style="background:#FFF7ED; padding:10px; border-radius:8px; margin:15px 0;"><label style="color:#C2410C; font-size:0.7rem; font-weight:700;">TECHNIQUE (UNITAIRE)</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-mat" class="app-input" placeholder="Mat €"><input type="number" id="it-time" class="app-input" placeholder="Temps h"></div></div>
-        <label class="form-label">Prix Vente HT (€/u)</label><input type="number" id="it-price" class="app-input" style="font-weight:900; color:var(--c-navy);">
-    </div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItem()">Valider</button><button style="width:100%; margin-top:10px; border:1px solid red; background:white; color:red; height:50px; border-radius:8px;" onclick="App.deleteItem()">Supprimer</button></div></div>
-
+    <div id="modal-client" class="full-modal"><div class="modal-header"><h3>Client</h3><button class="header-btn" onclick="App.closeModal('modal-client')">×</button></div><div class="modal-body"><input type="hidden" id="cli-id"><div style="display:flex; gap:10px; margin-bottom:15px;"><button class="room-pill active" id="sw-phys" onclick="App.cliType('phys')" style="flex:1">Physique</button><button class="room-pill" id="sw-mor" onclick="App.cliType('mor')" style="flex:1">Société</button></div><label class="form-label">Identité</label><div style="display:flex; gap:10px;"><select id="cli-civ" class="app-input" style="flex:0 0 90px;"><option>M.</option><option>Mme</option></select><input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet"></div><div id="grp-mor" style="display:none; margin-top:10px; padding:15px; background:#F9FAFB; border-radius:8px;"><label class="form-label">Infos Société</label><input type="text" id="cli-soc" class="app-input" placeholder="Raison Sociale"><input type="text" id="cli-siret" class="app-input" placeholder="SIRET"><input type="text" id="cli-tva" class="app-input" placeholder="TVA Intracom."></div><label class="form-label" style="margin-top:15px;">Coordonnées</label><input type="text" id="cli-addr" class="app-input" placeholder="Adresse complète"><input type="email" id="cli-email" class="app-input" placeholder="Email"><input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone"><label class="form-label">Notes</label><textarea id="cli-note" class="app-input" style="height:80px;"></textarea></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">Enregistrer</button></div></div>
+    <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body"><div style="display:flex; align-items:flex-end; gap:10px;"><div style="flex:1;"><label class="form-label">Client</label><select id="prj-cli" class="app-input"></select></div><button class="btn-primary" style="width:50px; margin-bottom:15px;" onclick="App.openClientModal()">+</button></div><label class="form-label">Info Chantier</label><input type="text" id="prj-nom" class="app-input" placeholder="Nom du chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Adresse complète"><label class="form-label">Détails Techniques</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" id="prj-code" class="app-input" placeholder="Digicode"><input type="text" id="prj-etage" class="app-input" placeholder="Etage"></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" id="prj-asc" class="app-input" placeholder="Ascenseur"><input type="text" id="prj-keys" class="app-input" placeholder="Clés"></div><input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien"><input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble"><input type="text" id="prj-compteur" class="app-input" placeholder="Emplacement Compteurs"></div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER & OUVRIR</button></div></div>
+    <div id="modal-item" class="full-modal"><div class="modal-header"><h3>Ouvrage</h3><button class="header-btn" onclick="App.closeModal('modal-item')">×</button></div><div class="modal-body"><input type="hidden" id="it-id"><textarea id="it-desc" class="app-input" style="height:70px;"></textarea><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-qty" class="app-input" placeholder="Qté"><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div><label class="form-label">TVA (%)</label><select id="it-tva" class="app-input"><option value="10">10%</option><option value="20">20%</option><option value="5.5">5.5%</option></select><div style="background:#FFF7ED; padding:10px; border-radius:8px; margin:15px 0;"><label style="color:#C2410C; font-size:0.7rem; font-weight:700;">TECHNIQUE (UNITAIRE)</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-mat" class="app-input" placeholder="Mat €"><input type="number" id="it-time" class="app-input" placeholder="Temps h"></div></div><label class="form-label">Prix Vente HT (€/u)</label><input type="number" id="it-price" class="app-input" style="font-weight:900; color:var(--c-navy);"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItem()">Valider</button><button style="width:100%; margin-top:10px; border:1px solid red; background:white; color:red; height:50px; border-radius:8px;" onclick="App.deleteItem()">Supprimer</button></div></div>
     <div id="modal-library" class="full-modal"><div class="modal-header"><h3>Bibliothèque</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div><div class="modal-body" id="lib-container"></div></div>
     <div id="modal-extract" class="full-modal"><div class="modal-header"><h3>Extraire</h3><button class="header-btn" onclick="App.closeModal('modal-extract')">×</button></div><div class="modal-body"><input type="text" id="extract-name" class="app-input" placeholder="Nom Cahier"></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateTaskSheet()">Confirmer</button></div></div>
-    
-    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body">
-        <label class="form-label">Sélectionner Chantier</label><select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select>
-        <label class="form-label">Sélectionner Devis</label><select id="agd-devis" class="app-input"></select>
-        <label class="form-label">Date</label><input type="datetime-local" id="agd-date" class="app-input">
-        <div class="section-title" style="margin-top:20px;">Prochains RDV</div>
-        <div id="agenda-list-view" style="max-height:200px; overflow-y:auto;"></div>
-    </div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter</button></div></div>
-    
-    <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label class="form-label">Devis de référence</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="text-align:center; padding:10px;"><div style="font-weight:900;" id="inv-total-quote">0 €</div><div style="font-size:0.8rem; color:red;" id="inv-already"></div></div><div style="display:flex;gap:10px;margin-bottom:10px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; font-size:1.5rem; font-weight:900;" id="inv-preview-amount">0€</div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer</button></div></div>
-    
+    <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="text-align:center; padding:10px;"><div style="font-weight:900;" id="inv-total-quote">0 €</div><div style="font-size:0.8rem; color:red;" id="inv-already"></div></div><div style="display:flex;gap:10px;margin-bottom:10px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; font-size:1.5rem; font-weight:900;" id="inv-preview-amount">0€</div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer</button></div></div>
     <div id="modal-doc-options" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;"><div style="background:white; border-radius:20px 20px 0 0; padding:25px;"><h3 id="doc-opt-title" style="text-align:center;"></h3><p id="doc-opt-sub" style="text-align:center; color:#666;"></p><div style="display:flex; flex-direction:column; gap:10px;"><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('view')">Voir / Modifier</button><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('pdf')">Générer PDF</button><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('share')">Partager</button></div><button class="btn-primary" style="margin-top:20px;" onclick="App.closeModal('modal-doc-options')">Fermer</button></div></div>
-
     <div id="modal-view-cahier" class="full-modal"><div class="modal-header"><h3>Cahier des Charges</h3><button class="header-btn" onclick="App.closeModal('modal-view-cahier')">×</button></div><div class="modal-body" style="padding:0;"><div style="padding:15px; background:#F9FAFB; border-bottom:1px solid #eee;"><h4 style="margin:0;" id="vc-title">...</h4></div><table class="tech-table" id="vc-table"></table></div></div>
+
+    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div>
+        <div class="modal-body">
+            <label class="form-label">Chantier</label>
+            <select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select>
+            <label class="form-label">Devis (Optionnel)</label>
+            <select id="agd-devis" class="app-input"></select>
+            <label class="form-label">Date et Heure</label>
+            <input type="datetime-local" id="agd-date" class="app-input">
+            
+            <div class="section-title" style="margin-top:20px; border-bottom:1px solid #eee; padding-bottom:5px;">Prochains RDV</div>
+            <div id="agenda-list-view" style="max-height:250px; overflow-y:auto; margin-top:10px;"></div>
+        </div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter RDV</button></div>
+    </div>
 
     <script>
         const Config = {
@@ -316,7 +299,7 @@
                     devisList: [{id:501, ref:'D-001', name:'Devis Initial', status:'Accepte', items:[{id:1, room:'Salon', desc:'Peinture', qty:20, unit:'m²', price:40, mat:5, time:0.5, tva:10}], total:800}],
                     factures: [{id:901, ref:'F-001', type:'Acompte', amount:240, paid:true, devisRef:'D-001'}]
                 }];
-                // SEED AGENDA
+                // SEED AGENDA with correct date format ISO
                 this.data.appointments = [
                     { id: 1, date: '2026-02-10T09:00', title: 'RDV: Rénovation Salon', sub: 'Devis: D-001' },
                     { id: 2, date: '2026-02-12T14:30', title: 'RDV: Visite Chantier', sub: 'Chantier: C-001' },
@@ -345,15 +328,21 @@
                 if(view==='factures-global') this.renderFacturesGlobal();
             },
 
-            // --- AGENDA FIX ---
+            toggleMenu() { const m = document.getElementById('side-menu'); const o = document.getElementById('side-overlay'); if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); } else { m.classList.add('open'); o.classList.add('open'); } },
+            hardReset() { if(confirm("Effacer tout ?")) { localStorage.clear(); location.reload(); } },
+
+            // --- AGENDA LOGIC (FIXED) ---
             openAgenda() {
+                // Populate Projects
                 const sC = document.getElementById('agd-chantier'); 
                 sC.innerHTML='<option value="">Sélectionner Chantier...</option>';
                 Store.data.chantiers.forEach(c => { 
                     let o = document.createElement('option'); o.value=c.id; o.text=c.name; sC.appendChild(o); 
                 });
+                
+                // Clear Devis & Date
+                document.getElementById('agd-devis').innerHTML='<option value="">Sélectionner Devis (Optionnel)</option>';
                 document.getElementById('agd-date').value = '';
-                document.getElementById('agd-devis').innerHTML='<option value="">Sélectionner Devis...</option>';
                 
                 document.getElementById('modal-agenda').classList.add('open');
                 App.renderAgendaList();
@@ -361,8 +350,10 @@
             loadDevisForAgenda() {
                 const cid = document.getElementById('agd-chantier').value;
                 const sD = document.getElementById('agd-devis'); 
-                sD.innerHTML='<option value="">Sélectionner Devis...</option>';
+                sD.innerHTML='<option value="">Sélectionner Devis (Optionnel)</option>';
+                
                 if(!cid) return;
+                
                 const c = Store.data.chantiers.find(x=>x.id==cid);
                 if(c && c.devisList) {
                     c.devisList.forEach(d => { 
@@ -375,12 +366,13 @@
                 const did = document.getElementById('agd-devis').value;
                 const date = document.getElementById('agd-date').value;
                 
-                if(!cid || !date) return alert("Chantier et Date requis");
+                if(!cid || !date) return alert("Chantier et Date requis !");
                 
                 const c = Store.data.chantiers.find(x=>x.id==cid);
                 const d = c.devisList ? c.devisList.find(x=>x.id==did) : null;
                 
                 if(!Store.data.appointments) Store.data.appointments = [];
+                
                 Store.data.appointments.push({
                     id: Date.now(),
                     date: date,
@@ -388,6 +380,8 @@
                     sub: d ? `Devis: ${d.ref}` : `Chantier: ${c.ref}`
                 });
                 Store.save();
+                
+                // Refresh list immediately
                 App.renderAgendaList();
                 document.getElementById('agd-date').value = ''; 
                 alert("Rendez-vous ajouté !");
@@ -396,14 +390,19 @@
                 const l = document.getElementById('agenda-list-view');
                 if(!l) return;
                 l.innerHTML = '';
+                
                 if(!Store.data.appointments || Store.data.appointments.length === 0) {
-                    l.innerHTML = '<div style="padding:10px; color:#999; text-align:center;">Aucun rendez-vous</div>';
+                    l.innerHTML = '<div style="padding:15px; color:#999; text-align:center;">Aucun rendez-vous</div>';
                     return;
                 }
+
+                // Sort by date asc
                 const sorted = [...Store.data.appointments].sort((a,b) => new Date(a.date) - new Date(b.date));
+                
                 sorted.forEach(ev => {
                     let div = document.createElement('div'); div.className='agenda-event';
                     let dObj = new Date(ev.date);
+                    
                     div.innerHTML = `
                         <div>
                             <div class="agenda-date">${dObj.toLocaleString([], {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})}</div>
@@ -431,181 +430,22 @@
                 document.getElementById('modal-view-cahier').classList.add('open');
             },
 
-            // --- CLIENTS ---
-            renderClients(q='') {
-                const l=document.getElementById('clients-list'); l.innerHTML='';
-                Store.data.clients.forEach(c=>{
-                    if(!c.nom) return;
-                    if(c.nom.toLowerCase().includes(q.toLowerCase())) {
-                        let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
-                        let call = c.tel ? `<a href="tel:${c.tel}" class="btn-icon-circle btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : '';
-                        let map = c.addr ? `<a href="https://maps.google.com/?q=${encodeURIComponent(c.addr)}" target="_blank" class="btn-icon-circle btn-map" onclick="event.stopPropagation()"><i class="fas fa-map-marker-alt"></i></a>` : '';
-                        let d=document.createElement('div'); d.className='list-item'; 
-                        d.innerHTML=`<div class="list-content" onclick="App.editClient(${c.id})">${tag}<div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions">${map}${call}<button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`;
-                        l.appendChild(d);
-                    }
-                });
-            },
+            // --- STANDARD FUNCTIONS (Identical to V36) ---
+            renderClients(q='') { const l=document.getElementById('clients-list'); l.innerHTML=''; Store.data.clients.forEach(c=>{ if(c.nom.toLowerCase().includes(q.toLowerCase())) { let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>'; let call = c.tel ? `<a href="tel:${c.tel}" class="btn-icon-circle btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : ''; let map = c.addr ? `<a href="https://maps.google.com/?q=${encodeURIComponent(c.addr)}" target="_blank" class="btn-icon-circle btn-map" onclick="event.stopPropagation()"><i class="fas fa-map-marker-alt"></i></a>` : ''; let d=document.createElement('div'); d.className='list-item'; d.innerHTML=`<div class="list-content" onclick="App.editClient(${c.id})">${tag}<div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions">${map}${call}<button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`; l.appendChild(d); } }); },
             openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel','cli-siret','cli-tva','cli-note','cli-soc'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
-            cliType(t) {
-                document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`;
-                document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
-                document.getElementById('grp-mor').style.display = t=='mor'?'block':'none';
-            },
-            editClient(id) {
-                const c = Store.data.clients.find(x=>x.id==id);
-                document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom;
-                document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel;
-                document.getElementById('cli-email').value=c.email||''; document.getElementById('cli-note').value=c.note||''; document.getElementById('cli-civ').value=c.civ||'M.';
-                document.getElementById('cli-soc').value=c.soc||''; document.getElementById('cli-siret').value=c.siret||''; document.getElementById('cli-tva').value=c.tva||'';
-                App.cliType(c.type); document.getElementById('modal-client').classList.add('open');
-            },
-            saveClient() {
-                const n = document.getElementById('cli-nom').value;
-                const id = document.getElementById('cli-id').value;
-                const type = document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique';
-                const c = { 
-                    id: id ? parseInt(id) : Date.now(), nom:n, type:type, civ: document.getElementById('cli-civ').value, addr:document.getElementById('cli-addr').value, tel:document.getElementById('cli-tel').value, email:document.getElementById('cli-email').value, note:document.getElementById('cli-note').value, soc:document.getElementById('cli-soc').value, siret:document.getElementById('cli-siret').value, tva:document.getElementById('cli-tva').value
-                };
-                if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); }
-                Store.save(); 
-                App.closeModal('modal-client'); 
-                App.renderClients(); 
-                if(document.getElementById('modal-projet').classList.contains('open')) {
-                    App.updateProjectClientSelect(c.id);
-                }
-            },
-
-            // --- HUB COMPLETE ---
-            openHub(id) {
-                Store.data.activeChantierId = id; Store.save();
-                const c = Store.data.chantiers.find(x=>x.id==id);
-                const cli = Store.data.clients.find(x=>x.id==c.clientId);
-                document.getElementById('hub-name').innerText = c.name;
-                document.getElementById('hub-client').innerText = cli ? cli.nom : 'Inconnu';
-                document.getElementById('hub-addr').innerText = c.addr || '-';
-                document.getElementById('hub-code').innerText = c.details?.code || '-';
-                document.getElementById('hub-syndic').innerText = c.details?.syndic || '-';
-                document.getElementById('hub-etage').innerText = c.details?.etage || '-';
-                App.renderHubData(c);
-                this.nav('hub');
-            },
-            renderHubData(c) {
-                const ld = document.getElementById('hub-devis-list'); ld.innerHTML='';
-                if(c.devisList) c.devisList.forEach(d => {
-                    let div = document.createElement('div'); div.className = `project-item ${d.status=='Accepte'?'proj-active':''}`;
-                    div.innerHTML = `<div><div class="doc-type">${d.ref}</div><div style="font-weight:700;">${d.name}</div><div style="font-size:0.7rem; color:${d.status=='Accepte'?'var(--c-success)':'#666'}">${d.status}</div></div><div style="font-weight:900;">${d.total.toFixed(0)}€</div>`;
-                    div.onclick = () => App.openEditor(d.id, 'devis');
-                    ld.appendChild(div);
-                });
-                const lf = document.getElementById('hub-factures-list'); lf.innerHTML='';
-                if(c.factures) c.factures.forEach(f => {
-                    let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)';
-                    let div = document.createElement('div'); div.className = `doc-item doc-facture`;
-                    div.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${f.type}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div></div>`;
-                    div.onclick = () => alert("Détail facture"); 
-                    lf.appendChild(div);
-                });
-                const ldoc = document.getElementById('hub-docs-list'); ldoc.innerHTML='';
-                if(c.extraDocs) c.extraDocs.forEach(e => {
-                    let div = document.createElement('div'); div.className = `doc-item doc-etude`;
-                    div.innerHTML = `<div><div class="doc-type">TECH</div><div style="font-weight:700;">${e.name}</div></div><i class="fas fa-file-alt" style="color:#666"></i>`;
-                    div.onclick = () => App.openDocOptions({type:'Etude', ref:e.ref, name:e.name, obj:e, cid:c.id});
-                    ldoc.appendChild(div);
-                });
-            },
-
-            // --- EDITOR ---
-            createNewDevis() {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const newId = Date.now();
-                const newDevis = { id: newId, ref: `D-${Math.floor(Math.random()*1000)}`, name: `Devis #${c.devisList.length+1}`, status: 'Brouillon', items: [], total: 0 };
-                c.devisList.push(newDevis); Store.save(); App.openEditor(newId, 'devis');
-            },
-            openEditor(devisId, mode) {
-                Store.data.activeDevisId = devisId; Store.save();
-                this.state.editorMode = mode;
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const d = c.devisList.find(x=>x.id==devisId);
-                document.getElementById('ed-ref').innerText = d.ref;
-                if(!c.rooms || c.rooms.length===0) { c.rooms=['Salon']; c.activeRoom='Salon'; c.metrics={'Salon':{L:0,l:0,h:2.5}}; Store.save(); }
-                const btnAccept = document.getElementById('accept-container');
-                if(d.status === 'Brouillon') btnAccept.style.display = 'block'; else btnAccept.style.display = 'none';
-                this.switchEditorMode(mode);
-                this.renderRooms();
-                this.nav('editor');
-            },
-            switchEditorMode(m) {
-                this.state.editorMode = m; this.state.selectMode = false;
-                document.body.className = m==='etude'?'mode-etude':'mode-devis';
-                document.getElementById('btn-mode-devis').className = m=='devis'?'room-pill active':'room-pill';
-                document.getElementById('btn-mode-etude').className = m=='etude'?'room-pill active':'room-pill';
-                this.renderItems();
-            },
-            renderItems() {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
-                const l = document.getElementById('editor-list'); l.innerHTML='';
-                let totHT=0; let totTVA=0;
-                const isLocked = d.status === 'Accepte';
-                const items = d.items.filter(i=>i.room==c.activeRoom);
-                if(items.length===0) l.innerHTML='<div style="text-align:center; padding:30px; color:#ccc;">Liste vide</div>';
-                items.forEach((i, idx) => {
-                    const rowHT = i.qty * i.price; const rowTVA = rowHT * (i.tva / 100);
-                    let div = document.createElement('div'); 
-                    div.id = `card-${i.id}`; div.className = `item-card ${this.state.selectedItems.has(i.id)?'selected':''}`;
-                    let check = `<div class="select-check"><i class="fas fa-check-circle" style="color:#10B981"></i></div>`;
-                    div.innerHTML = `
-                        ${this.state.selectMode ? check : ''}
-                        <div style="flex:1;">
-                            <div class="item-head"><span class="item-idx">#${idx+1}</span><span class="item-desc">${i.desc}</span></div>
-                            <div class="item-body view-price-mode"><div class="item-cell"><label>QTÉ</label>${i.qty} ${i.unit}</div><div class="item-cell"><label>P.U HT</label>${i.price} €</div><div class="item-total-cell"><label>TOTAL HT</label><span class="item-price-val">${rowHT.toFixed(0)}€</span><span class="item-tva-tag">${i.tva}%</span></div></div>
-                            <div class="view-tech-mode" style="padding:10px 12px; background:#F0FDF4; font-size:0.85rem; color:#065F46;"><i class="fas fa-clock"></i> ${i.time}h  |  <i class="fas fa-box"></i> ${i.mat}€</div>
-                        </div>`;
-                    div.onclick = () => { if(this.state.selectMode) App.toggleItemSelection(i.id); else if(!isLocked) App.editItem(i.id); };
-                    l.appendChild(div);
-                });
-                d.items.forEach(i => { const rHT = i.qty*i.price; totHT += rHT; totTVA += rHT * (i.tva/100); });
-                d.total = totHT; 
-                document.getElementById('ed-total-header').innerText = totHT.toFixed(0)+' €';
-                document.getElementById('sum-ht').innerText = totHT.toFixed(0)+'€';
-                document.getElementById('sum-tva').innerText = totTVA.toFixed(0)+'€';
-                document.getElementById('sum-ttc').innerText = (totHT+totTVA).toFixed(0)+'€';
-                document.querySelector('.fab-add').style.display = isLocked ? 'none' : 'flex';
-                Store.save();
-            },
-            acceptDevis() {
-                if(!confirm("Valider ce devis ? Il ne sera plus modifiable.")) return;
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
-                d.status = 'Accepte';
-                Store.save(); App.openEditor(d.id, 'devis'); alert("Devis Validé !");
-            },
-
-            // --- STANDARD ---
+            cliType(t) { document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`; document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`; document.getElementById('grp-mor').style.display = t=='mor'?'block':'none'; },
+            editClient(id) { const c = Store.data.clients.find(x=>x.id==id); document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom; document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel; document.getElementById('cli-email').value=c.email||''; document.getElementById('cli-note').value=c.note||''; document.getElementById('cli-civ').value=c.civ||'M.'; document.getElementById('cli-soc').value=c.soc||''; document.getElementById('cli-siret').value=c.siret||''; document.getElementById('cli-tva').value=c.tva||''; App.cliType(c.type); document.getElementById('modal-client').classList.add('open'); },
+            saveClient() { const n = document.getElementById('cli-nom').value; const id = document.getElementById('cli-id').value; const type = document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique'; const c = { id: id ? parseInt(id) : Date.now(), nom:n, type:type, civ: document.getElementById('cli-civ').value, addr:document.getElementById('cli-addr').value, tel:document.getElementById('cli-tel').value, email:document.getElementById('cli-email').value, note:document.getElementById('cli-note').value, soc:document.getElementById('cli-soc').value, siret:document.getElementById('cli-siret').value, tva:document.getElementById('cli-tva').value }; if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); } Store.save(); App.closeModal('modal-client'); App.renderClients(); if(document.getElementById('modal-projet').classList.contains('open')) { App.updateProjectClientSelect(c.id); } },
+            openHub(id) { Store.data.activeChantierId = id; Store.save(); const c = Store.data.chantiers.find(x=>x.id==id); const cli = Store.data.clients.find(x=>x.id==c.clientId); document.getElementById('hub-name').innerText = c.name; document.getElementById('hub-client').innerText = cli ? cli.nom : 'Inconnu'; document.getElementById('hub-addr').innerText = c.addr || '-'; document.getElementById('hub-code').innerText = c.details?.code || '-'; document.getElementById('hub-syndic').innerText = c.details?.syndic || '-'; document.getElementById('hub-etage').innerText = c.details?.etage || '-'; App.renderHubData(c); this.nav('hub'); },
+            renderHubData(c) { const ld = document.getElementById('hub-devis-list'); ld.innerHTML=''; if(c.devisList) c.devisList.forEach(d => { let div = document.createElement('div'); div.className = `project-item ${d.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${d.ref}</div><div style="font-weight:700;">${d.name}</div><div style="font-size:0.7rem; color:${d.status=='Accepte'?'var(--c-success)':'#666'}">${d.status}</div></div><div style="font-weight:900;">${d.total.toFixed(0)}€</div>`; div.onclick = () => App.openEditor(d.id, 'devis'); ld.appendChild(div); }); const lf = document.getElementById('hub-factures-list'); lf.innerHTML=''; if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let div = document.createElement('div'); div.className = `doc-item doc-facture`; div.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${f.type}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div></div>`; div.onclick = () => alert("Détail facture"); lf.appendChild(div); }); const ldoc = document.getElementById('hub-docs-list'); ldoc.innerHTML=''; if(c.extraDocs) c.extraDocs.forEach(e => { let div = document.createElement('div'); div.className = `doc-item doc-etude`; div.innerHTML = `<div><div class="doc-type">TECH</div><div style="font-weight:700;">${e.name}</div></div><i class="fas fa-file-alt" style="color:#666"></i>`; div.onclick = () => App.openDocOptions({type:'Etude', ref:e.ref, name:e.name, obj:e, cid:c.id}); ldoc.appendChild(div); }); },
+            createNewDevis() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const newId = Date.now(); const newDevis = { id: newId, ref: `D-${Math.floor(Math.random()*1000)}`, name: `Devis #${c.devisList.length+1}`, status: 'Brouillon', items: [], total: 0 }; c.devisList.push(newDevis); Store.save(); App.openEditor(newId, 'devis'); },
+            openEditor(devisId, mode) { Store.data.activeDevisId = devisId; Store.save(); this.state.editorMode = mode; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==devisId); document.getElementById('ed-ref').innerText = d.ref; if(!c.rooms || c.rooms.length===0) { c.rooms=['Salon']; c.activeRoom='Salon'; c.metrics={'Salon':{L:0,l:0,h:2.5}}; Store.save(); } const btnAccept = document.getElementById('accept-container'); if(d.status === 'Brouillon') btnAccept.style.display = 'block'; else btnAccept.style.display = 'none'; this.switchEditorMode(mode); this.renderRooms(); this.nav('editor'); },
+            switchEditorMode(m) { this.state.editorMode = m; this.state.selectMode = false; document.body.className = m==='etude'?'mode-etude':'mode-devis'; document.getElementById('btn-mode-devis').className = m=='devis'?'room-pill active':'room-pill'; document.getElementById('btn-mode-etude').className = m=='etude'?'room-pill active':'room-pill'; this.renderItems(); },
+            renderItems() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); const l = document.getElementById('editor-list'); l.innerHTML=''; let totHT=0; let totTVA=0; const isLocked = d.status === 'Accepte'; const items = d.items.filter(i=>i.room==c.activeRoom); if(items.length===0) l.innerHTML='<div style="text-align:center; padding:30px; color:#ccc;">Liste vide</div>'; items.forEach((i, idx) => { const rowHT = i.qty * i.price; const rowTVA = rowHT * (i.tva / 100); let div = document.createElement('div'); div.id = `card-${i.id}`; div.className = `item-card ${this.state.selectedItems.has(i.id)?'selected':''}`; let check = `<div class="select-check"><i class="fas fa-check-circle" style="color:#10B981"></i></div>`; div.innerHTML = `${this.state.selectMode ? check : ''}<div style="flex:1;"><div class="item-head"><span class="item-idx">#${idx+1}</span><span class="item-desc">${i.desc}</span></div><div class="item-body view-price-mode"><div class="item-cell"><label>QTÉ</label>${i.qty} ${i.unit}</div><div class="item-cell"><label>P.U HT</label>${i.price} €</div><div class="item-total-cell"><label>TOTAL HT</label><span class="item-price-val">${rowHT.toFixed(0)}€</span><span class="item-tva-tag">${i.tva}%</span></div></div><div class="view-tech-mode" style="padding:10px 12px; background:#F0FDF4; font-size:0.85rem; color:#065F46;"><i class="fas fa-clock"></i> ${i.time}h  |  <i class="fas fa-box"></i> ${i.mat}€</div></div>`; div.onclick = () => { if(this.state.selectMode) App.toggleItemSelection(i.id); else if(!isLocked) App.editItem(i.id); }; l.appendChild(div); }); d.items.forEach(i => { const rHT = i.qty*i.price; totHT += rHT; totTVA += rHT * (i.tva/100); }); d.total = totHT; document.getElementById('ed-total-header').innerText = totHT.toFixed(0)+' €'; document.getElementById('sum-ht').innerText = totHT.toFixed(0)+'€'; document.getElementById('sum-tva').innerText = totTVA.toFixed(0)+'€'; document.getElementById('sum-ttc').innerText = (totHT+totTVA).toFixed(0)+'€'; document.querySelector('.fab-add').style.display = isLocked ? 'none' : 'flex'; Store.save(); },
+            acceptDevis() { if(!confirm("Valider ce devis ? Il ne sera plus modifiable.")) return; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); d.status = 'Accepte'; Store.save(); App.openEditor(d.id, 'devis'); alert("Devis Validé !"); },
             openProjectWizard() { App.updateProjectClientSelect(); ['prj-nom','prj-addr','prj-code','prj-etage','prj-asc','prj-keys','prj-syndic','prj-plomb','prj-compteur'].forEach(i=>document.getElementById(i).value=''); document.getElementById('modal-projet').classList.add('open'); },
             updateProjectClientSelect(sid) { const s = document.getElementById('prj-cli'); s.innerHTML='<option value="">Sélectionner</option>'; Store.data.clients.forEach(c=>{let o=document.createElement('option');o.value=c.id;o.innerText=c.nom;s.appendChild(o)}); if(sid) s.value=sid; },
-            createProject() { 
-                const cid=document.getElementById('prj-cli').value; const nom=document.getElementById('prj-nom').value; 
-                if(cid && nom) { 
-                    const ch={ 
-                        id:Date.now(), clientId:cid, name:nom, ref:"C-"+new Date().getFullYear(), 
-                        activeRoom:'Salon', rooms:['Salon'], metrics:{'Salon':{L:0,l:0,h:2.5}}, devisList: [], factures: [], 
-                        details: {
-                            code: document.getElementById('prj-code').value,
-                            etage: document.getElementById('prj-etage').value,
-                            asc: document.getElementById('prj-asc').value,
-                            keys: document.getElementById('prj-keys').value,
-                            syndic: document.getElementById('prj-syndic').value,
-                            plomb: document.getElementById('prj-plomb').value,
-                            compteur: document.getElementById('prj-compteur').value
-                        },
-                        addr: document.getElementById('prj-addr').value
-                    }; 
-                    const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 }; 
-                    ch.devisList.push(defDevis); Store.data.chantiers.unshift(ch); Store.save(); App.closeModal('modal-projet'); Store.data.activeChantierId = ch.id; App.openEditor(defDevis.id, 'devis'); 
-                } 
-            },
+            createProject() { const cid=document.getElementById('prj-cli').value; const nom=document.getElementById('prj-nom').value; if(cid && nom) { const ch={ id:Date.now(), clientId:cid, name:nom, ref:"C-"+new Date().getFullYear(), activeRoom:'Salon', rooms:['Salon'], metrics:{'Salon':{L:0,l:0,h:2.5}}, devisList: [], factures: [], details: { code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value, asc: document.getElementById('prj-asc').value, keys: document.getElementById('prj-keys').value, syndic: document.getElementById('prj-syndic').value, plomb: document.getElementById('prj-plomb').value, compteur: document.getElementById('prj-compteur').value }, addr: document.getElementById('prj-addr').value }; const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 }; ch.devisList.push(defDevis); Store.data.chantiers.unshift(ch); Store.save(); App.closeModal('modal-projet'); Store.data.activeChantierId = ch.id; App.openEditor(defDevis.id, 'devis'); } },
             renderHome() { const l=document.getElementById('home-recent-list'); l.innerHTML=''; let tot=0, unpaid=0; Store.data.chantiers.slice(0,5).forEach(c=>{ if(c.devisList) c.devisList.forEach(d => { if(d.status=='Accepte') tot += d.total; }); if(c.factures) c.factures.forEach(f => { if(!f.paid) unpaid += f.amount; }); const cli=Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = `project-item ${c.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${c.ref}</div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem;">${cli?cli.nom:''}</div></div><i class="fas fa-chevron-right" style="color:#ccc"></i>`; div.onclick=()=>App.openHub(c.id); l.appendChild(div); }); document.getElementById('home-revenue').innerText = tot.toFixed(0)+" €"; document.getElementById('home-unpaid').innerText = unpaid.toFixed(0)+" €"; },
             renderProjets() { const l=document.getElementById('projects-list-full'); l.innerHTML=''; Store.data.chantiers.forEach(c=>{ const cli=Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = `project-item ${c.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${c.ref}</div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem;">${cli?cli.nom:''}</div></div><i class="fas fa-chevron-right" style="color:#ccc"></i>`; div.onclick=()=>App.openHub(c.id); l.appendChild(div); }); },
             editItem(id) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const i=d.items.find(x=>x.id==id); document.getElementById('it-id').value=id; document.getElementById('it-desc').value=i.desc; document.getElementById('it-qty').value=i.qty; document.getElementById('it-unit').value=i.unit; document.getElementById('it-price').value=i.price; document.getElementById('it-tva').value=i.tva||10; document.getElementById('it-mat').value=i.mat||0; document.getElementById('it-time').value=i.time||0; document.getElementById('modal-item').classList.add('open'); },
@@ -630,6 +470,7 @@
             setInvType(t) { this.state.invType = t; document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill'; document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill'; document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none'; this.calcInvPreview(); },
             payInvoice(id) { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const f = c.factures.find(f=>f.id==id); if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); } },
             renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); },
+            renderDocuments(filter) { const l = document.getElementById('documents-list'); l.innerHTML=''; let docs = []; Store.data.chantiers.forEach(c => { const cli = Store.data.clients.find(x=>x.id==c.clientId); const cn = cli ? cli.nom : 'Inconnu'; if(c.devisList) c.devisList.forEach(d => docs.push({type:'Devis', ref:d.ref, name:d.name, client:cn, amount:d.total, obj:d, cid:c.id})); if(c.factures) c.factures.forEach(f => docs.push({type:'Facture', ref:f.ref, name:'Facture', client:cn, amount:f.amount, obj:f, cid:c.id})); if(c.extraDocs) c.extraDocs.forEach(e => docs.push({type:'Etude', ref:e.ref, name:e.name, client:cn, amount:0, obj:e, cid:c.id})); }); if(filter!='all') docs=docs.filter(d=>d.type===filter); docs.sort((a,b) => (b.obj.id||0) - (a.obj.id||0)); docs.forEach(d => { let cls = d.type=='Devis'?'doc-devis':(d.type=='Facture'?'doc-facture':'doc-etude'); let div = document.createElement('div'); div.className=`doc-item ${cls}`; div.innerHTML=`<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount>0?d.amount.toFixed(0)+'€':''}</div><i class="fas fa-ellipsis-v" style="color:#ccc;"></i></div>`; div.onclick = () => App.openDocOptions(d); l.appendChild(div); }); }
         };
 
         window.onload = () => App.init();
