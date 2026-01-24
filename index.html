@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA V27 Perfect</title>
+    <title>QOTIA V28 Hub Complete</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +17,6 @@
             --c-navy: #1E3A8A; --c-dark: #111827;
             --c-grey-bg: #F3F4F6; --c-surface: #FFFFFF;
             --c-border: #E5E7EB; --c-danger: #EF4444; --c-success: #10B981;
-            
             --h-nav: 80px; --h-header: 65px; --radius: 12px;
         }
 
@@ -54,10 +53,7 @@
         .dash-btn i { font-size: 2rem; margin-bottom: 10px; }
         .btn-home-clients { color: var(--c-navy); border: 2px solid var(--c-navy); }
         .btn-home-new { background: var(--c-yellow); color: var(--c-dark); border: 2px solid var(--c-yellow-dark); }
-        
-        /* MODIFICA COLORE TASTO DOCUMENTI */
         .btn-home-docs { background: #6366F1; color: white; border: 2px solid #4F46E5; }
-        
         .btn-home-agenda { color: #666; border: 2px solid #ccc; }
 
         /* --- LISTS --- */
@@ -72,7 +68,7 @@
         .btn-map { background: #EFF6FF; color: var(--c-navy); border: 1px solid var(--c-navy); }
         .btn-edit { background: #F3F4F6; color: #4B5563; border: 1px solid #D1D5DB; }
 
-        .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 15px 20px 10px 20px; color: #6B7280; letter-spacing: 1px; }
+        .section-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin: 25px 20px 10px 20px; color: #6B7280; letter-spacing: 1px; border-bottom: 2px solid #eee; padding-bottom: 5px; }
         .doc-type { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; opacity: 0.7; }
 
         /* --- EDITOR STYLES --- */
@@ -192,9 +188,15 @@
                 <div class="info-row"><span>Etage</span><span style="font-weight:600" id="hub-etage">-</span></div>
                 <div class="info-row"><span>Syndic</span><span style="font-weight:600" id="hub-syndic">-</span></div>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><div class="section-title" style="margin:0;">MES DEVIS</div><button class="btn-primary" style="width:auto; padding:0 15px; height:40px; font-size:0.8rem;" onclick="App.createNewDevis()">+ NOUVEAU</button></div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><div class="section-title" style="margin:0;">DEVIS</div><button class="badge bg-ok" style="border:none; padding:10px;" onclick="App.createNewDevis()">+ NOUVEAU</button></div>
             <div id="hub-devis-list"></div>
-            <button class="btn-primary" style="margin-top:30px; background:#FEE2E2; color:var(--c-danger); width:100%; border:1px solid #FCA5A5;" onclick="App.openProjectInvoices()">VOIR FACTURES</button>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:25px 0 15px 0;"><div class="section-title" style="margin:0;">FACTURES</div><button class="badge bg-pay" style="border:none; padding:10px;" onclick="App.openCreateInvoiceModal()">+ NOUVELLE</button></div>
+            <div id="hub-factures-list"></div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin:25px 0 15px 0;"><div class="section-title" style="margin:0;">DOCS TECHNIQUES</div></div>
+            <div id="hub-docs-list"></div>
         </div>
     </main>
 
@@ -225,8 +227,6 @@
         <button class="fab-add" onclick="App.openLibrary()"><i class="fas fa-plus"></i></button>
     </main>
 
-    <main id="view-project-invoices" class="view-section"><header class="mobile-header"><button class="header-btn" onclick="App.nav('hub')"><i class="fas fa-arrow-left"></i></button><div class="logo-text">FACTURES</div><div style="width:20px"></div></header><div style="padding:20px;"><button class="btn-primary" onclick="App.openCreateInvoiceModal()">+ Créer Facture</button><div id="proj-invoice-list" style="margin-top:20px;"></div></div></main>
-
     <main id="view-factures-global" class="view-section"><header class="mobile-header"><div class="logo-text">TOUTES FACTURES</div></header><div style="padding:15px;" id="global-invoice-list"></div></main>
 
     <nav class="bottom-nav">
@@ -239,52 +239,35 @@
     <div id="modal-client" class="full-modal"><div class="modal-header"><h3>Client</h3><button class="header-btn" onclick="App.closeModal('modal-client')">×</button></div><div class="modal-body">
         <input type="hidden" id="cli-id">
         <div style="display:flex; gap:10px; margin-bottom:15px;"><button class="room-pill active" id="sw-phys" onclick="App.cliType('phys')" style="flex:1">Physique</button><button class="room-pill" id="sw-mor" onclick="App.cliType('mor')" style="flex:1">Société</button></div>
-        
-        <label class="form-label">Identité</label>
-        <div style="display:flex; gap:10px;">
-            <select id="cli-civ" class="app-input" style="flex:0 0 90px;"><option>M.</option><option>Mme</option></select>
-            <input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet">
-        </div>
-        
-        <div id="grp-mor" style="display:none; margin-top:10px; padding:15px; background:#F9FAFB; border-radius:8px;">
-            <label class="form-label">Infos Société</label>
-            <input type="text" id="cli-soc" class="app-input" placeholder="Raison Sociale">
-            <input type="text" id="cli-siret" class="app-input" placeholder="SIRET">
-            <input type="text" id="cli-tva" class="app-input" placeholder="TVA Intracom.">
-        </div>
-
-        <label class="form-label" style="margin-top:15px;">Coordonnées</label>
-        <input type="text" id="cli-addr" class="app-input" placeholder="Adresse complète">
-        <input type="email" id="cli-email" class="app-input" placeholder="Email">
-        <input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone">
-        
-        <label class="form-label">Notes</label>
-        <textarea id="cli-note" class="app-input" style="height:80px;"></textarea>
-
+        <label class="form-label">Identité</label><div style="display:flex; gap:10px;"><select id="cli-civ" class="app-input" style="flex:0 0 90px;"><option>M.</option><option>Mme</option></select><input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet"></div>
+        <div id="grp-mor" style="display:none; margin-top:10px; padding:15px; background:#F9FAFB; border-radius:8px;"><label class="form-label">Infos Société</label><input type="text" id="cli-soc" class="app-input" placeholder="Raison Sociale"><input type="text" id="cli-siret" class="app-input" placeholder="SIRET"><input type="text" id="cli-tva" class="app-input" placeholder="TVA Intracom."></div>
+        <label class="form-label" style="margin-top:15px;">Coordonnées</label><input type="text" id="cli-addr" class="app-input" placeholder="Adresse complète"><input type="email" id="cli-email" class="app-input" placeholder="Email"><input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone">
+        <label class="form-label">Notes</label><textarea id="cli-note" class="app-input" style="height:80px;"></textarea>
     </div><div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">Enregistrer</button></div></div>
 
-    <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body"><label class="form-label">Client</label><select id="prj-cli" class="app-input"></select><label class="form-label">Nom</label><input type="text" id="prj-nom" class="app-input"><label class="form-label">Adresse</label><input type="text" id="prj-addr" class="app-input"><label class="form-label">Code / Info</label><input type="text" id="prj-code" class="app-input"><input type="text" id="prj-syndic" class="app-input" placeholder="Syndic"><input type="text" id="prj-plomb" class="app-input" placeholder="Plombier"><input type="text" id="prj-compteur" class="app-input" placeholder="Compteur"><input type="text" id="prj-keys" class="app-input" placeholder="Clés"><input type="text" id="prj-etage" class="app-input" placeholder="Etage"><input type="text" id="prj-asc" class="app-input" placeholder="Ascenseur"></div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER & OUVRIR</button></div></div>
+    <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body">
+        <div style="display:flex; align-items:flex-end; gap:10px;"><div style="flex:1;"><label class="form-label">Client</label><select id="prj-cli" class="app-input"></select></div><button class="btn-primary" style="width:50px; margin-bottom:15px;" onclick="App.openClientModal()">+</button></div>
+        <label class="form-label">Info Chantier</label><input type="text" id="prj-nom" class="app-input" placeholder="Nom du chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Adresse complète">
+        <label class="form-label">Détails Techniques</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" id="prj-code" class="app-input" placeholder="Digicode"><input type="text" id="prj-etage" class="app-input" placeholder="Etage"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="text" id="prj-asc" class="app-input" placeholder="Ascenseur"><input type="text" id="prj-keys" class="app-input" placeholder="Clés"></div>
+        <input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien">
+        <input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble">
+        <input type="text" id="prj-compteur" class="app-input" placeholder="Emplacement Compteurs">
+    </div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER & OUVRIR</button></div></div>
     
-    <div id="modal-item" class="full-modal"><div class="modal-header"><h3>Ouvrage</h3><button class="header-btn" onclick="App.closeModal('modal-item')">×</button></div><div class="modal-body">
-        <input type="hidden" id="it-id">
-        <textarea id="it-desc" class="app-input" style="height:70px;"></textarea>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-qty" class="app-input" placeholder="Qté"><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div>
-        <label class="form-label">TVA (%)</label><select id="it-tva" class="app-input"><option value="10">10%</option><option value="20">20%</option><option value="5.5">5.5%</option></select>
-        <div style="background:#FFF7ED; padding:10px; border-radius:8px; margin:15px 0;"><label style="color:#C2410C; font-size:0.7rem; font-weight:700;">TECHNIQUE (UNITAIRE)</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-mat" class="app-input" placeholder="Mat €"><input type="number" id="it-time" class="app-input" placeholder="Temps h"></div></div>
-        <label class="form-label">Prix Vente HT (€/u)</label><input type="number" id="it-price" class="app-input" style="font-weight:900; color:var(--c-navy);">
-    </div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItem()">Valider</button><button style="width:100%; margin-top:10px; border:1px solid red; background:white; color:red; height:50px; border-radius:8px;" onclick="App.deleteItem()">Supprimer</button></div></div>
-
+    <div id="modal-item" class="full-modal"><div class="modal-header"><h3>Ouvrage</h3><button class="header-btn" onclick="App.closeModal('modal-item')">×</button></div><div class="modal-body"><input type="hidden" id="it-id"><textarea id="it-desc" class="app-input" style="height:70px;"></textarea><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-qty" class="app-input" placeholder="Qté"><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div><label class="form-label">TVA (%)</label><select id="it-tva" class="app-input"><option value="10">10%</option><option value="20">20%</option><option value="5.5">5.5%</option></select><div style="background:#FFF7ED; padding:10px; border-radius:8px; margin:15px 0;"><label style="color:#C2410C; font-size:0.7rem; font-weight:700;">TECHNIQUE (UNITAIRE)</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"><input type="number" id="it-mat" class="app-input" placeholder="Mat €"><input type="number" id="it-time" class="app-input" placeholder="Temps h"></div></div><label class="form-label">Prix Vente HT (€/u)</label><input type="number" id="it-price" class="app-input" style="font-weight:900; color:var(--c-navy);"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItem()">Valider</button><button style="width:100%; margin-top:10px; border:1px solid red; background:white; color:red; height:50px; border-radius:8px;" onclick="App.deleteItem()">Supprimer</button></div></div>
     <div id="modal-library" class="full-modal"><div class="modal-header"><h3>Bibliothèque</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div><div class="modal-body" id="lib-container"></div></div>
     <div id="modal-extract" class="full-modal"><div class="modal-header"><h3>Extraire</h3><button class="header-btn" onclick="App.closeModal('modal-extract')">×</button></div><div class="modal-body"><input type="text" id="extract-name" class="app-input" placeholder="Nom Cahier"></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateTaskSheet()">Confirmer</button></div></div>
-    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><label class="form-label">Sélectionner Chantier</label><select id="agd-chantier" class="app-input"></select><label class="form-label">Sélectionner Devis</label><select id="agd-devis" class="app-input"></select><label class="form-label">Date</label><input type="datetime-local" id="agd-date" class="app-input"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter</button></div></div>
-    <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="text-align:center; padding:10px;"><div style="font-weight:900;" id="inv-total-quote"></div><div style="font-size:0.8rem; color:red;" id="inv-already"></div></div><div style="display:flex;gap:10px;margin-bottom:10px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; font-size:1.5rem; font-weight:900;" id="inv-preview-amount">0€</div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer</button></div></div>
+    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><label class="form-label">Chantier</label><select id="agd-chantier" class="app-input"></select><label class="form-label">Devis</label><select id="agd-devis" class="app-input"></select><label class="form-label">Date</label><input type="datetime-local" id="agd-date" class="app-input"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter</button></div></div>
+    <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label class="form-label">Devis de référence</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="text-align:center; padding:10px;"><div style="font-weight:900;" id="inv-total-quote">0 €</div><div style="font-size:0.8rem; color:red;" id="inv-already"></div></div><div style="display:flex;gap:10px;margin-bottom:10px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; font-size:1.5rem; font-weight:900;" id="inv-preview-amount">0€</div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer</button></div></div>
     <div id="modal-doc-options" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;"><div style="background:white; border-radius:20px 20px 0 0; padding:25px;"><h3 id="doc-opt-title" style="text-align:center;"></h3><p id="doc-opt-sub" style="text-align:center; color:#666;"></p><div style="display:flex; flex-direction:column; gap:10px;"><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('view')">Voir / Modifier</button><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('pdf')">Générer PDF</button><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('share')">Partager</button></div><button class="btn-primary" style="margin-top:20px;" onclick="App.closeModal('modal-doc-options')">Fermer</button></div></div>
 
     <script>
         const Config = { LIB: { "Démolition": { "Sols": [{desc:"Dépose carrelage", unit:"m²", price:25, time:0.4, mat:0}], "Murs": [{desc:"Dépose faïence", unit:"m²", price:20, time:0.3, mat:0}] }, "Peinture": { "Préparation": [{desc:"Ratissage", unit:"m²", price:25, time:0.6, mat:4}], "Finition": [{desc:"Peinture Mate", unit:"m²", price:18, time:0.4, mat:5}] }, "Plomberie": { "Sanitaire": [{desc:"Pose WC", unit:"U", price:450, time:4, mat:200}] } } };
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null },
-            init() { try { const s = localStorage.getItem('qotia_v27_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            init() { try { const s = localStorage.getItem('qotia_v28_hub'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [{id:101, nom:'M. Dupont', addr:'Nice', type:'physique', tel:'0600000000', email:'', note:'', civ:'M.', siret:'', tva:'', soc:''}];
                 this.data.chantiers = [{
@@ -294,7 +277,7 @@
                 }];
                 this.save();
             },
-            save() { localStorage.setItem('qotia_v27_final', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v28_hub', JSON.stringify(this.data)); }
         };
 
         const App = {
@@ -315,53 +298,10 @@
                 if(view==='factures-global') this.renderFacturesGlobal();
             },
 
-            toggleMenu() { 
-                const m = document.getElementById('side-menu'); const o = document.getElementById('side-overlay');
-                if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); }
-                else { m.classList.add('open'); o.classList.add('open'); }
-            },
-            hardReset() { if(confirm("Effacer tout ?")) { localStorage.clear(); location.reload(); } },
-
-            // --- AGENDA & DOCS ---
-            openAgenda() {
-                const sC = document.getElementById('agd-chantier'); sC.innerHTML='<option value="">Sélectionner Chantier...</option>';
-                Store.data.chantiers.forEach(c => { let o = document.createElement('option'); o.value=c.id; o.text=c.name; sC.appendChild(o); });
-                document.getElementById('modal-agenda').classList.add('open');
-            },
-            loadDevisForAgenda() {
-                const cid = document.getElementById('agd-chantier').value;
-                const sD = document.getElementById('agd-devis'); sD.innerHTML='<option value="">Sélectionner Devis...</option>';
-                if(!cid) return;
-                const c = Store.data.chantiers.find(x=>x.id==cid);
-                if(c && c.devisList) c.devisList.forEach(d => { let o = document.createElement('option'); o.value=d.id; o.text=d.name; sD.appendChild(o); });
-            },
-            saveAgendaEvent() { App.closeModal('modal-agenda'); alert("Événement ajouté"); },
-
-            renderDocuments(filter) {
-                const l = document.getElementById('documents-list'); l.innerHTML='';
-                let docs = [];
-                Store.data.chantiers.forEach(c => {
-                    const cli = Store.data.clients.find(x=>x.id==c.clientId); const cn = cli ? cli.nom : 'Inconnu';
-                    if(c.devisList) c.devisList.forEach(d => docs.push({type:'Devis', ref:d.ref, name:d.name, client:cn, amount:d.total, obj:d, cid:c.id}));
-                    if(c.factures) c.factures.forEach(f => docs.push({type:'Facture', ref:f.ref, name:'Facture', client:cn, amount:f.amount, obj:f, cid:c.id}));
-                    if(c.extraDocs) c.extraDocs.forEach(e => docs.push({type:'Etude', ref:e.ref, name:e.name, client:cn, amount:0, obj:e, cid:c.id}));
-                });
-                if(filter!='all') docs=docs.filter(d=>d.type===filter);
-                docs.sort((a,b) => (b.obj.id||0) - (a.obj.id||0));
-                docs.forEach(d => {
-                    let cls = d.type=='Devis'?'doc-devis':(d.type=='Facture'?'doc-facture':'doc-etude');
-                    let div = document.createElement('div'); div.className=`doc-item ${cls}`;
-                    div.innerHTML=`<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount>0?d.amount.toFixed(0)+'€':''}</div><i class="fas fa-ellipsis-v" style="color:#ccc;"></i></div>`;
-                    div.onclick = () => App.openDocOptions(d);
-                    l.appendChild(div);
-                });
-            },
-
             // --- CLIENTS ---
             renderClients(q='') {
                 const l=document.getElementById('clients-list'); l.innerHTML='';
                 Store.data.clients.forEach(c=>{
-                    if(!c.nom) return;
                     if(c.nom.toLowerCase().includes(q.toLowerCase())) {
                         let tag = c.type === 'morale' ? '<span class="tag-cli tag-pro">PRO</span>' : '<span class="tag-cli tag-priv">PRIV</span>';
                         let call = c.tel ? `<a href="tel:${c.tel}" class="btn-icon-circle btn-call" onclick="event.stopPropagation()"><i class="fas fa-phone"></i></a>` : '';
@@ -372,10 +312,7 @@
                     }
                 });
             },
-            openClientModal() { 
-                ['cli-id','cli-nom','cli-addr','cli-email','cli-tel','cli-siret','cli-tva','cli-note','cli-soc'].forEach(i=>document.getElementById(i).value=''); 
-                App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); 
-            },
+            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel','cli-siret','cli-tva','cli-note','cli-soc'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
             cliType(t) {
                 document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`;
                 document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`;
@@ -393,12 +330,20 @@
                 const n = document.getElementById('cli-nom').value;
                 const id = document.getElementById('cli-id').value;
                 const type = document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique';
-                const c = { id: id ? parseInt(id) : Date.now(), nom:n, type:type, civ: document.getElementById('cli-civ').value, addr:document.getElementById('cli-addr').value, tel:document.getElementById('cli-tel').value, email:document.getElementById('cli-email').value, note:document.getElementById('cli-note').value, soc:document.getElementById('cli-soc').value, siret:document.getElementById('cli-siret').value, tva:document.getElementById('cli-tva').value };
+                const c = { 
+                    id: id ? parseInt(id) : Date.now(), nom:n, type:type, civ: document.getElementById('cli-civ').value, addr:document.getElementById('cli-addr').value, tel:document.getElementById('cli-tel').value, email:document.getElementById('cli-email').value, note:document.getElementById('cli-note').value, soc:document.getElementById('cli-soc').value, siret:document.getElementById('cli-siret').value, tva:document.getElementById('cli-tva').value
+                };
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); }
-                Store.save(); App.closeModal('modal-client'); App.renderClients(); if(document.getElementById('modal-projet').classList.contains('open')) App.updateProjectClientSelect(c.id);
+                Store.save(); 
+                App.closeModal('modal-client'); 
+                App.renderClients(); 
+                // IF OPEN FROM PROJECT, UPDATE SELECT BUT DO NOT CLEAR PROJECT FORM
+                if(document.getElementById('modal-projet').classList.contains('open')) {
+                    App.updateProjectClientSelect(c.id);
+                }
             },
 
-            // --- EDITOR & HUB ---
+            // --- HUB COMPLETE ---
             openHub(id) {
                 Store.data.activeChantierId = id; Store.save();
                 const c = Store.data.chantiers.find(x=>x.id==id);
@@ -409,19 +354,40 @@
                 document.getElementById('hub-code').innerText = c.details?.code || '-';
                 document.getElementById('hub-syndic').innerText = c.details?.syndic || '-';
                 document.getElementById('hub-etage').innerText = c.details?.etage || '-';
-                this.renderHubDevisList(c);
+                App.renderHubData(c);
                 this.nav('hub');
             },
-            renderHubDevisList(c) {
-                const l = document.getElementById('hub-devis-list'); l.innerHTML='';
-                if(!c.devisList || c.devisList.length === 0) { l.innerHTML = '<div style="padding:15px; text-align:center; color:#999;">Aucun devis.</div>'; return; }
-                c.devisList.forEach(d => {
+            renderHubData(c) {
+                // Devis
+                const ld = document.getElementById('hub-devis-list'); ld.innerHTML='';
+                if(c.devisList) c.devisList.forEach(d => {
                     let div = document.createElement('div'); div.className = `project-item ${d.status=='Accepte'?'proj-active':''}`;
                     div.innerHTML = `<div><div class="doc-type">${d.ref}</div><div style="font-weight:700;">${d.name}</div><div style="font-size:0.7rem; color:${d.status=='Accepte'?'var(--c-success)':'#666'}">${d.status}</div></div><div style="font-weight:900;">${d.total.toFixed(0)}€</div>`;
                     div.onclick = () => App.openEditor(d.id, 'devis');
-                    l.appendChild(div);
+                    ld.appendChild(div);
+                });
+
+                // Factures
+                const lf = document.getElementById('hub-factures-list'); lf.innerHTML='';
+                if(c.factures) c.factures.forEach(f => {
+                    let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)';
+                    let div = document.createElement('div'); div.className = `doc-item doc-facture`;
+                    div.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${f.type}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div></div>`;
+                    div.onclick = () => alert("Détail facture"); // O apri pdf se implementato
+                    lf.appendChild(div);
+                });
+
+                // Docs
+                const ldoc = document.getElementById('hub-docs-list'); ldoc.innerHTML='';
+                if(c.extraDocs) c.extraDocs.forEach(e => {
+                    let div = document.createElement('div'); div.className = `doc-item doc-etude`;
+                    div.innerHTML = `<div><div class="doc-type">TECH</div><div style="font-weight:700;">${e.name}</div></div><i class="fas fa-file-alt" style="color:#666"></i>`;
+                    div.onclick = () => App.openDocOptions({type:'Etude', ref:e.ref, name:e.name, obj:e, cid:c.id});
+                    ldoc.appendChild(div);
                 });
             },
+
+            // --- EDITOR ---
             createNewDevis() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const newId = Date.now();
@@ -485,37 +451,7 @@
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
                 d.status = 'Accepte';
-                Store.save(); App.openEditor(d.id, 'devis'); alert("Devis Validé !");
-            },
-
-            // --- DOCS & PROJETS ---
-            renderDocuments(filter) {
-                const l = document.getElementById('documents-list'); l.innerHTML='';
-                let docs = [];
-                Store.data.chantiers.forEach(c => {
-                    const cli = Store.data.clients.find(x=>x.id==c.clientId); const cn = cli ? cli.nom : 'Inconnu';
-                    if(c.devisList) c.devisList.forEach(d => docs.push({type:'Devis', ref:d.ref, name:d.name, client:cn, amount:d.total, obj:d, cid:c.id}));
-                    if(c.factures) c.factures.forEach(f => docs.push({type:'Facture', ref:f.ref, name:'Facture', client:cn, amount:f.amount, obj:f, cid:c.id}));
-                    if(c.extraDocs) c.extraDocs.forEach(e => docs.push({type:'Etude', ref:e.ref, name:e.name, client:cn, amount:0, obj:e, cid:c.id}));
-                });
-                if(filter!='all') docs=docs.filter(d=>d.type===filter);
-                docs.sort((a,b) => (b.obj.id||0) - (a.obj.id||0));
-                docs.forEach(d => {
-                    let cls = d.type=='Devis'?'doc-devis':(d.type=='Facture'?'doc-facture':'doc-etude');
-                    let div = document.createElement('div'); div.className=`doc-item ${cls}`;
-                    div.innerHTML=`<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount>0?d.amount.toFixed(0)+'€':''}</div><i class="fas fa-ellipsis-v" style="color:#ccc;"></i></div>`;
-                    div.onclick = () => App.openDocOptions(d);
-                    l.appendChild(div);
-                });
-            },
-            renderProjets() {
-                const l=document.getElementById('projects-list-full'); l.innerHTML='';
-                Store.data.chantiers.forEach(c=>{
-                    const cli=Store.data.clients.find(x=>x.id==c.clientId);
-                    let div = document.createElement('div'); div.className = `project-item ${c.status=='Accepte'?'proj-active':''}`;
-                    div.innerHTML = `<div><div class="doc-type">${c.ref}</div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem;">${cli?cli.nom:''}</div></div><i class="fas fa-chevron-right" style="color:#ccc"></i>`;
-                    div.onclick=()=>App.openHub(c.id); l.appendChild(div);
-                });
+                Store.save(); App.openEditor(d.id, 'devis');
             },
 
             // --- STANDARD ---
@@ -543,6 +479,7 @@
                 } 
             },
             renderHome() { const l=document.getElementById('home-recent-list'); l.innerHTML=''; let tot=0, unpaid=0; Store.data.chantiers.slice(0,5).forEach(c=>{ if(c.devisList) c.devisList.forEach(d => { if(d.status=='Accepte') tot += d.total; }); if(c.factures) c.factures.forEach(f => { if(!f.paid) unpaid += f.amount; }); const cli=Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = `project-item ${c.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${c.ref}</div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem;">${cli?cli.nom:''}</div></div><i class="fas fa-chevron-right" style="color:#ccc"></i>`; div.onclick=()=>App.openHub(c.id); l.appendChild(div); }); document.getElementById('home-revenue').innerText = tot.toFixed(0)+" €"; document.getElementById('home-unpaid').innerText = unpaid.toFixed(0)+" €"; },
+            renderProjets() { const l=document.getElementById('projects-list-full'); l.innerHTML=''; Store.data.chantiers.forEach(c=>{ const cli=Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = `project-item ${c.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${c.ref}</div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem;">${cli?cli.nom:''}</div></div><i class="fas fa-chevron-right" style="color:#ccc"></i>`; div.onclick=()=>App.openHub(c.id); l.appendChild(div); }); },
             editItem(id) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const i=d.items.find(x=>x.id==id); document.getElementById('it-id').value=id; document.getElementById('it-desc').value=i.desc; document.getElementById('it-qty').value=i.qty; document.getElementById('it-unit').value=i.unit; document.getElementById('it-price').value=i.price; document.getElementById('it-tva').value=i.tva||10; document.getElementById('it-mat').value=i.mat||0; document.getElementById('it-time').value=i.time||0; document.getElementById('modal-item').classList.add('open'); },
             saveItem() { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const id = document.getElementById('it-id').value; const data = { desc: document.getElementById('it-desc').value, qty: parseFloat(document.getElementById('it-qty').value)||0, unit: document.getElementById('it-unit').value, price: parseFloat(document.getElementById('it-price').value)||0, tva: parseFloat(document.getElementById('it-tva').value)||10, mat: parseFloat(document.getElementById('it-mat').value)||0, time: parseFloat(document.getElementById('it-time').value)||0 }; if(id) { const i=d.items.find(x=>x.id==id); Object.assign(i, data); } else { if(!d.items) d.items=[]; d.items.push({id:Date.now(), room:c.activeRoom, ...data}); } Store.save(); App.closeModal('modal-item'); App.renderItems(); },
             deleteItem() { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); d.items = d.items.filter(x=>x.id != document.getElementById('it-id').value); Store.save(); App.closeModal('modal-item'); App.renderItems(); },
@@ -561,7 +498,8 @@
             openCreateInvoiceModal() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const sel = document.getElementById('inv-devis-select'); sel.innerHTML=''; c.devisList.forEach(d => { let opt = document.createElement('option'); opt.value = d.id; opt.text = `${d.ref} - ${d.total}€`; sel.appendChild(opt); }); this.onInvoiceDevisChange(); document.getElementById('modal-invoice').classList.add('open'); },
             onInvoiceDevisChange() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(d) { document.getElementById('inv-total-quote').innerText = d.total.toFixed(2) + " €"; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); document.getElementById('inv-already').innerText = paid.toFixed(2) + " €"; this.calcInvPreview(); } },
             calcInvPreview() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(!d) return; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); let amt = 0; if(this.state.invType === 'acompte') { const perc = parseFloat(document.getElementById('inv-percent').value) || 0; amt = d.total * (perc/100); } else { amt = d.total - paid; } document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €"; },
-            generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€','')); const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*10000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() }; if(!c.factures) c.factures=[]; c.factures.push(inv); Store.save(); App.closeModal('modal-invoice'); App.openProjectInvoices(); },
+            generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€','')); const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*10000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() }; if(!c.factures) c.factures=[]; c.factures.push(inv); Store.save(); App.closeModal('modal-invoice'); App.openHub(c.id); /* Return to Hub to see invoice */ },
+            setInvType(t) { this.state.invType = t; document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill'; document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill'; document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none'; this.calcInvPreview(); },
             payInvoice(id) { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const f = c.factures.find(f=>f.id==id); if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); } },
             renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); },
             openAgenda() { document.getElementById('modal-agenda').classList.add('open'); }, saveAgendaEvent() { App.closeModal('modal-agenda'); }
