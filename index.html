@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA V34 Agenda Fixed</title>
+    <title>QOTIA V35 Agenda Final</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -282,8 +282,17 @@
 
     <div id="modal-library" class="full-modal"><div class="modal-header"><h3>Bibliothèque</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div><div class="modal-body" id="lib-container"></div></div>
     <div id="modal-extract" class="full-modal"><div class="modal-header"><h3>Extraire</h3><button class="header-btn" onclick="App.closeModal('modal-extract')">×</button></div><div class="modal-body"><input type="text" id="extract-name" class="app-input" placeholder="Nom Cahier"></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateTaskSheet()">Confirmer</button></div></div>
-    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><label class="form-label">Chantier</label><select id="agd-chantier" class="app-input"></select><label class="form-label">Devis</label><select id="agd-devis" class="app-input"></select><label class="form-label">Date</label><input type="datetime-local" id="agd-date" class="app-input"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter</button></div></div>
+    
+    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body">
+        <label class="form-label">Sélectionner Chantier</label><select id="agd-chantier" class="app-input"></select>
+        <label class="form-label">Sélectionner Devis</label><select id="agd-devis" class="app-input"></select>
+        <label class="form-label">Date</label><input type="datetime-local" id="agd-date" class="app-input">
+        <div class="section-title" style="margin-top:20px;">Prochains RDV</div>
+        <div id="agenda-list-view" style="max-height:200px; overflow-y:auto;"></div>
+    </div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter</button></div></div>
+    
     <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label class="form-label">Devis de référence</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="text-align:center; padding:10px;"><div style="font-weight:900;" id="inv-total-quote">0 €</div><div style="font-size:0.8rem; color:red;" id="inv-already"></div></div><div style="display:flex;gap:10px;margin-bottom:10px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; font-size:1.5rem; font-weight:900;" id="inv-preview-amount">0€</div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer</button></div></div>
+    
     <div id="modal-doc-options" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;"><div style="background:white; border-radius:20px 20px 0 0; padding:25px;"><h3 id="doc-opt-title" style="text-align:center;"></h3><p id="doc-opt-sub" style="text-align:center; color:#666;"></p><div style="display:flex; flex-direction:column; gap:10px;"><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('view')">Voir / Modifier</button><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('pdf')">Générer PDF</button><button class="btn-primary" style="background:white; color:#333; border:1px solid #ddd;" onclick="App.handleDocAction('share')">Partager</button></div><button class="btn-primary" style="margin-top:20px;" onclick="App.closeModal('modal-doc-options')">Fermer</button></div></div>
 
     <div id="modal-view-cahier" class="full-modal"><div class="modal-header"><h3>Cahier des Charges</h3><button class="header-btn" onclick="App.closeModal('modal-view-cahier')">×</button></div><div class="modal-body" style="padding:0;"><div style="padding:15px; background:#F9FAFB; border-bottom:1px solid #eee;"><h4 style="margin:0;" id="vc-title">...</h4></div><table class="tech-table" id="vc-table"></table></div></div>
@@ -302,8 +311,8 @@
         };
 
         const Store = {
-            data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null },
-            init() { try { const s = localStorage.getItem('qotia_v30_master'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null, appointments: [] },
+            init() { try { const s = localStorage.getItem('qotia_v35_agenda'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [
                     {id:101, nom:'Mme Sophie Martin', addr:'12 Bd Victor Hugo, Nice', type:'physique', tel:'06 12 34 56 78', email:'smartin@email.com'},
@@ -338,9 +347,16 @@
                 for(let i=4; i<=8; i++) {
                     this.data.chantiers.push({id:200+i, clientId:100+i, name:`Chantier ${i}`, status:'Brouillon', ref:`C-24-00${i}`, rooms:['Salon'], devisList:[{id:500+i, ref:`D-24-00${i}`, name:'Devis Base', status:'Brouillon', items:[], total:0}], factures:[]});
                 }
+                // SEED APPOINTMENTS
+                this.data.appointments = [
+                    { id: 1, date: '2026-02-10T09:00', title: 'RDV: Rénovation Complète SDB', sub: 'Devis: D-24-001-A' },
+                    { id: 2, date: '2026-02-12T14:30', title: 'RDV: Remise à neuf T3', sub: 'Chantier: C-24-002' },
+                    { id: 3, date: '2026-02-15T10:00', title: 'RDV: Electricité Bureaux', sub: 'Devis: D-24-003' }
+                ];
+
                 this.save();
             },
-            save() { localStorage.setItem('qotia_v30_master', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v35_agenda', JSON.stringify(this.data)); }
         };
 
         const App = {
@@ -361,7 +377,80 @@
                 if(view==='factures-global') this.renderFacturesGlobal();
             },
 
-            // --- DOC VIEWING (NEW V30) ---
+            // --- AGENDA FIX ---
+            openAgenda() {
+                const sC = document.getElementById('agd-chantier'); 
+                sC.innerHTML='<option value="">Sélectionner Chantier...</option>';
+                Store.data.chantiers.forEach(c => { 
+                    let o = document.createElement('option'); o.value=c.id; o.text=c.name; sC.appendChild(o); 
+                });
+                // Reset date
+                document.getElementById('agd-date').value = '';
+                // Clear Devis
+                document.getElementById('agd-devis').innerHTML='<option value="">Sélectionner Devis...</option>';
+                
+                document.getElementById('modal-agenda').classList.add('open');
+                App.renderAgendaList();
+            },
+            loadDevisForAgenda() {
+                const cid = document.getElementById('agd-chantier').value;
+                const sD = document.getElementById('agd-devis'); 
+                sD.innerHTML='<option value="">Sélectionner Devis...</option>';
+                if(!cid) return;
+                const c = Store.data.chantiers.find(x=>x.id==cid);
+                if(c && c.devisList) {
+                    c.devisList.forEach(d => { 
+                        let o = document.createElement('option'); o.value=d.id; o.text=d.name; sD.appendChild(o); 
+                    });
+                }
+            },
+            saveAgendaEvent() { 
+                const cid = document.getElementById('agd-chantier').value;
+                const did = document.getElementById('agd-devis').value;
+                const date = document.getElementById('agd-date').value;
+                
+                if(!cid || !date) return alert("Chantier et Date requis");
+                
+                const c = Store.data.chantiers.find(x=>x.id==cid);
+                const d = c.devisList ? c.devisList.find(x=>x.id==did) : null;
+                
+                if(!Store.data.appointments) Store.data.appointments = [];
+                Store.data.appointments.push({
+                    id: Date.now(),
+                    date: date,
+                    title: `RDV: ${c.name}`,
+                    sub: d ? `Devis: ${d.ref}` : `Chantier: ${c.ref}`
+                });
+                Store.save();
+                App.renderAgendaList();
+                document.getElementById('agd-date').value = ''; // Reset date for next entry
+                alert("Rendez-vous ajouté !");
+            },
+            renderAgendaList() {
+                const l = document.getElementById('agenda-list-view');
+                if(!l) return;
+                l.innerHTML = '';
+                if(!Store.data.appointments || Store.data.appointments.length === 0) {
+                    l.innerHTML = '<div style="padding:10px; color:#999; text-align:center;">Aucun rendez-vous</div>';
+                    return;
+                }
+                // Sort by date asc
+                const sorted = [...Store.data.appointments].sort((a,b) => new Date(a.date) - new Date(b.date));
+                sorted.forEach(ev => {
+                    let div = document.createElement('div'); div.className='agenda-event';
+                    let dObj = new Date(ev.date);
+                    div.innerHTML = `
+                        <div>
+                            <div class="agenda-date">${dObj.toLocaleString([], {weekday:'short', day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'})}</div>
+                            <div class="agenda-title">${ev.title}</div>
+                            <div class="agenda-sub">${ev.sub}</div>
+                        </div>
+                        <i class="fas fa-calendar-check" style="color:var(--c-success); font-size:1.2rem;"></i>`;
+                    l.appendChild(div);
+                });
+            },
+
+            // --- DOC VIEWING ---
             viewCahierTable(doc) {
                 document.getElementById('vc-title').innerText = doc.name + " (" + doc.ref + ")";
                 const tbl = document.getElementById('vc-table');
@@ -574,9 +663,7 @@
             calcInvPreview() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(!d) return; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); let amt = 0; if(this.state.invType === 'acompte') { const perc = parseFloat(document.getElementById('inv-percent').value) || 0; amt = d.total * (perc/100); } else { amt = d.total - paid; } document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €"; },
             generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€','')); const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*10000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() }; if(!c.factures) c.factures=[]; c.factures.push(inv); Store.save(); App.closeModal('modal-invoice'); App.openProjectInvoices(); },
             payInvoice(id) { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const f = c.factures.find(f=>f.id==id); if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); } },
-            renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); },
-            openAgenda() { document.getElementById('modal-agenda').classList.add('open'); }, saveAgendaEvent() { App.closeModal('modal-agenda'); },
-            renderDocuments(filter) { const l = document.getElementById('documents-list'); l.innerHTML=''; let docs = []; Store.data.chantiers.forEach(c => { const cli = Store.data.clients.find(x=>x.id==c.clientId); const cn = cli ? cli.nom : 'Inconnu'; if(c.devisList) c.devisList.forEach(d => docs.push({type:'Devis', ref:d.ref, name:d.name, client:cn, amount:d.total, obj:d, cid:c.id})); if(c.factures) c.factures.forEach(f => docs.push({type:'Facture', ref:f.ref, name:'Facture', client:cn, amount:f.amount, obj:f, cid:c.id})); if(c.extraDocs) c.extraDocs.forEach(e => docs.push({type:'Etude', ref:e.ref, name:e.name, client:cn, amount:0, obj:e, cid:c.id})); }); if(filter!='all') docs=docs.filter(d=>d.type===filter); docs.sort((a,b) => (b.obj.id||0) - (a.obj.id||0)); docs.forEach(d => { let cls = d.type=='Devis'?'doc-devis':(d.type=='Facture'?'doc-facture':'doc-etude'); let div = document.createElement('div'); div.className=`doc-item ${cls}`; div.innerHTML=`<div><div class="doc-type">${d.type}</div><div style="font-weight:700;">${d.ref}</div><div style="font-size:0.8rem;">${d.client}</div></div><div style="text-align:right;"><div style="font-weight:900;">${d.amount>0?d.amount.toFixed(0)+'€':''}</div><i class="fas fa-ellipsis-v" style="color:#ccc;"></i></div>`; div.onclick = () => App.openDocOptions(d); l.appendChild(div); }); }
+            renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); }
         };
 
         window.onload = () => App.init();
