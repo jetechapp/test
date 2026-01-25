@@ -8,326 +8,699 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
             --primary: #0F172A;       
             --accent: #F59E0B;        
+            --accent-light: #FEF3C7;
+            --blue-soft: #EFF6FF;
             --text-main: #1E293B;     
             --text-sub: #64748B;
             --bg-body: #F8FAFC;       
+            --surface: #FFFFFF;
             --border: #E2E8F0;
-            --radius: 16px;
+            --danger: #EF4444; 
+            --success: #10B981;
             --h-header: 65px;
-            --h-nav: 85px;
-            --color-devis: #2563EB;
-            --color-facture: #D97706;
-            --color-cdc: #059669;
-            --grad-ia: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --h-nav: 80px;
+            --radius: 16px;
+            --shadow: 0 4px 20px -2px rgba(0,0,0,0.05);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { 
-            margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-body); color: var(--text-main); height: 100vh; 
+            margin: 0; padding: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg-body); color: var(--text-main); 
+            font-size: 14px; height: 100vh; 
             display: flex; flex-direction: column; overflow: hidden;
         }
 
         /* LAYOUT */
         .view-section { 
             display: none; flex-direction: column; height: 100%; width: 100%; 
-            position: absolute; top: 0; left: 0; overflow-y: auto; 
-            padding-top: var(--h-header); padding-bottom: calc(var(--h-nav) + 20px); 
+            position: absolute; top: 0; left: 0; 
+            overflow-y: auto; 
+            padding-top: var(--h-header); 
+            padding-bottom: calc(var(--h-nav) + 20px); 
             background: var(--bg-body); z-index: 10;
         }
         .view-section.active { display: block; z-index: 20; animation: fade 0.2s ease-in; }
         @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
+        
         /* HEADER */
         .mobile-header { 
             position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header); 
             background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border); display: flex; 
-            align-items: center; justify-content: space-between; padding: 0 20px; z-index: 500; 
+            border-bottom: 1px solid var(--border); 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 20px; z-index: 500; 
         }
         .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
         .logo-text i { color: var(--accent); }
-        .header-btn { font-size: 1.2rem; background: none; border: none; cursor: pointer; color: var(--primary); padding: 8px; }
+        .header-btn { font-size: 1.4rem; color: var(--primary); background: none; border: none; cursor: pointer; padding: 5px; }
 
-        /* REFRESH ANIMATION */
-        .refreshing { animation: spin 0.8s linear infinite; color: var(--accent) !important; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        /* HOME DESIGN */
+        .home-container { padding: 15px 20px; display: flex; flex-direction: column; gap: 20px; }
+        .welcome-block { margin-top: 20px; }
+        .welcome-sub { font-size: 1.1rem; color: var(--text-sub); }
+        .welcome-name { font-size: 2.2rem; font-weight: 800; color: var(--primary); line-height: 1.1; }
+        .welcome-date { font-size: 1.1rem; font-weight: 600; color: var(--accent); margin-top: 5px; text-transform: capitalize; }
 
-        /* HUB BUTTONS */
-        .btn-hub { width: 100%; height: 55px; color: white; font-weight: 800; border-radius: 12px; border: none; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.9rem; }
-        .bg-devis { background-color: var(--color-devis); }
-        .bg-facture { background-color: var(--color-facture); }
-        .bg-cdc { background-color: var(--color-cdc); }
-
-        /* FOOTER NAV */
-        .bottom-nav { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); 
-            background: white; border-top: 1px solid var(--border); 
-            display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; padding-bottom: 12px;
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .big-btn { 
+            height: 120px; border-radius: var(--radius); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            cursor: pointer; box-shadow: var(--shadow); border: 1px solid transparent;
+            transition: all 0.2s;
         }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: none; border: none; font-size: 0.65rem; font-weight: 700; gap: 4px; }
+        .big-btn:active { transform: scale(0.95); }
+        .big-btn i { font-size: 2.2rem; margin-bottom: 8px; }
+        .big-btn span { font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; }
+        .btn-chantier { background: #FFFBEB; border-color: #FCD34D; color: #D97706; }
+        .btn-client { background: #EFF6FF; border-color: #93C5FD; color: #2563EB; }
+        .btn-agenda-full { grid-column: span 2; height: 80px; flex-direction: row; gap: 15px; background: white; border-color: var(--border); color: var(--text-main); }
+
+        /* CARDS */
+        .card-item { 
+            background: white; padding: 18px; margin-bottom: 12px; 
+            border-radius: var(--radius); border: 1px solid var(--border); 
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: var(--shadow);
+        }
+        .card-title { font-weight: 700; font-size: 1rem; color: var(--primary); }
+        .card-sub { font-size: 0.85rem; color: var(--text-sub); margin-top: 2px; }
+        .card-tag { font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: var(--blue-soft); color: #2563EB; display: inline-block; margin-bottom: 6px; }
+
+        .btn-mini { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; font-size: 1rem; text-decoration: none; transition: 0.2s; }
+        .bm-call { background: #ECFDF5; color: var(--success); }
+        .bm-map { background: #EFF6FF; color: #2563EB; }
+        .bm-edit { background: #F1F5F9; color: var(--primary); }
+
+        /* KPI */
+        .kpi-fixed-container { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; padding: 10px 20px; background: var(--bg-body); border-top: 1px solid var(--border); }
+        .kpi-bar { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 14px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .kpi-title { font-weight: 800; color: #B91C1C; font-size: 0.75rem; letter-spacing: 0.5px; }
+        .kpi-val { font-size: 1.2rem; font-weight: 900; color: #B91C1C; }
+
+        /* EDITOR */
+        .e-card { background: white; margin: 0 15px 12px; padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
+        .e-head { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 700; }
+        .e-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .editable-val { background: #F8FAFC; padding: 8px; border-radius: 8px; text-align: center; font-weight: 800; border: 1px solid #E2E8F0; }
+
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; padding-bottom: 15px; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: none; border: none; font-size: 0.7rem; font-weight: 700; gap: 4px; }
         .nav-btn.active { color: var(--primary); }
         .nav-btn.active i { color: var(--accent); }
 
-        /* IA BUTTON SPECIAL */
-        .ia-btn-container { display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .ia-circle { 
-            width: 52px; height: 52px; background: var(--grad-ia); 
-            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            font-size: 1.3rem; color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); 
-            margin-top: -25px; border: 4px solid white;
-        }
+        /* FAB */
+        .fab { position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4); border: 4px solid white; z-index: 900; }
 
-        /* UI ELEMENTS */
-        .card-item { background: white; padding: 18px; border-radius: var(--radius); border: 1px solid var(--border); margin: 0 20px 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .app-input { width: 100%; height: 50px; background: white; border: 1px solid var(--border); border-radius: 12px; padding: 0 15px; font-size: 1rem; margin-bottom: 15px; }
-        .fab { position: fixed; bottom: 105px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3); border: 4px solid white; z-index: 900; }
-        
-        /* MODAL */
+        /* MODALS */
         .full-modal { position: fixed; inset: 0; background: var(--bg-body); z-index: 5000; display: none; flex-direction: column; }
         .full-modal.open { display: flex; }
         .modal-header { height: 65px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-weight: 800; }
         .modal-body { flex: 1; padding: 20px; overflow-y: auto; }
+        .modal-footer { padding: 20px; background: white; border-top: 1px solid var(--border); }
+        .app-input { width: 100%; height: 50px; background: white; border: 1px solid #CBD5E1; border-radius: 12px; padding: 0 15px; font-size: 1rem; margin-bottom: 15px; }
         .btn-primary { width: 100%; height: 55px; background: var(--primary); color: white; font-weight: 800; border-radius: 12px; border: none; }
+        
+        .type-pill { padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border); background: white; font-weight: 700; flex: 1; text-align: center; }
+        .type-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .tech-table { width: 100%; border-collapse: collapse; }
+        .tech-table th { text-align: left; padding: 10px; background: #F1F5F9; font-size: 0.8rem; }
+        .tech-table td { padding: 10px; border-bottom: 1px solid #E2E8F0; }
     </style>
 </head>
 <body>
 
-    <header class="mobile-header">
-        <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA</div>
-        <div style="display:flex; gap:5px;">
-            <button class="header-btn" onclick="App.refresh()" id="refresh-icon"><i class="fas fa-sync-alt"></i></button>
-            <button class="header-btn" onclick="App.toggleMenu()"><i class="fas fa-bars"></i></button>
-        </div>
-    </header>
-
     <main id="view-home" class="view-section active">
-        <div style="padding: 20px;">
-            <div style="margin-top:10px;">
-                <div style="color:var(--text-sub); font-size:1.1rem;">Bonjour, Jean</div>
-                <div style="font-size: 2.2rem; font-weight: 800; line-height: 1.1;" id="home-date-display">...</div>
+        <header class="mobile-header">
+            <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA</div>
+            <button class="header-btn" onclick="App.toggleMenu()"><i class="fas fa-bars"></i></button>
+        </header>
+
+        <div class="home-container">
+            <div class="welcome-block">
+                <div class="welcome-sub">Bonjour, Jean</div>
+                <div class="welcome-name">Tableau de bord</div>
+                <div class="welcome-date" id="home-date-display">...</div>
             </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px;">
-                <button class="btn-primary" style="height:100px; background:#FFFBEB; color:#D97706; border:1px solid #FCD34D;" onclick="App.nav('projets')">
-                    <i class="fas fa-hard-hat" style="font-size:1.5rem;"></i><br>CHANTIERS
+
+            <div class="action-grid">
+                <button class="big-btn btn-chantier" onclick="App.nav('projets')">
+                    <i class="fas fa-hard-hat"></i>
+                    <span>CHANTIERS</span>
                 </button>
-                <button class="btn-primary" style="height:100px; background:#EFF6FF; color:#2563EB; border:1px solid #93C5FD;" onclick="App.nav('clients')">
-                    <i class="fas fa-users" style="font-size:1.5rem;"></i><br>CLIENTS
+                <button class="big-btn btn-client" onclick="App.nav('clients')">
+                    <i class="fas fa-users"></i>
+                    <span>CLIENTS</span>
                 </button>
+                <button class="big-btn btn-agenda-full" onclick="App.openAgenda()">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>MON AGENDA PRO</span>
+                </button>
+            </div>
+
+            <div class="today-section">
+                <div style="font-weight: 800; color: var(--text-sub); margin-bottom: 10px; font-size: 0.8rem; text-transform: uppercase;">Aujourd'hui</div>
+                <div id="home-today-list"></div>
             </div>
         </div>
-    </main>
 
-    <main id="view-projets" class="view-section">
-        <div style="padding:20px;"><h2 style="margin:0">Mes Chantiers</h2></div>
-        <div id="projects-list"></div>
-        <button class="fab" onclick="App.openProjectWizard()"><i class="fas fa-plus"></i></button>
-    </main>
-
-    <main id="view-hub" class="view-section">
-        <div style="padding:20px;">
-            <button class="header-btn" onclick="App.nav('projets')" style="margin-bottom:15px; font-size:1rem; padding:0;"><i class="fas fa-arrow-left"></i> Retour</button>
-            <h1 id="hub-name" style="margin:0; font-size:1.8rem;">---</h1>
-            <p id="hub-client" style="color:var(--text-sub); margin-bottom:30px;">Client...</p>
-
-            <div style="font-weight:800; margin-bottom:10px; font-size:0.8rem; color:var(--text-sub);">ACTIONS PRINCIPALES</div>
-            <button class="btn-hub bg-devis" onclick="App.createNewDevis()">
-                <i class="fas fa-file-invoice"></i> + NOUVEAU DEVIS
-            </button>
-            <button class="btn-hub bg-facture" onclick="App.openCreateInvoiceModal()">
-                <i class="fas fa-euro-sign"></i> + GÉNÉRER UNE FACTURE
-            </button>
-            <button class="btn-hub bg-cdc" onclick="alert('Cahier des charges en cours...')">
-                <i class="fas fa-clipboard-list"></i> + CAHIER DES CHARGES
-            </button>
+        <div class="kpi-fixed-container">
+            <div class="kpi-bar" onclick="App.nav('documents')">
+                <div>
+                    <div class="kpi-title">TOTAL À ENCAISSER</div>
+                    <div class="kpi-val" id="home-unpaid">0 €</div>
+                </div>
+                <i class="fas fa-arrow-right" style="color:#B91C1C"></i>
+            </div>
         </div>
     </main>
 
     <main id="view-clients" class="view-section">
-        <div style="padding:20px;"><h2 style="margin:0">Mes Clients</h2></div>
-        <div id="clients-list"></div>
+        <header class="mobile-header"><div class="logo-text">MES CLIENTS</div></header>
+        <div style="padding: 20px;">
+            <input type="text" class="app-input" placeholder="Rechercher un client..." onkeyup="App.renderClients(this.value)">
+            <div id="clients-list"></div>
+        </div>
         <button class="fab" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
     </main>
 
-    <nav class="bottom-nav">
-        <button class="nav-btn active" onclick="App.nav('home')" id="nav-home">
-            <i class="fas fa-th-large"></i><span>Accueil</span>
-        </button>
-        <button class="nav-btn" onclick="App.nav('projets')" id="nav-projets">
-            <i class="fas fa-hard-hat"></i><span>Chantiers</span>
-        </button>
-        
-        <div class="ia-btn-container" onclick="App.openIA()">
-            <div class="ia-circle"><i class="fas fa-robot"></i></div>
-            <span style="font-size:0.65rem; font-weight:800; color:var(--primary); margin-top:5px;">QOTIA IA</span>
-        </div>
+    <main id="view-projets" class="view-section">
+        <header class="mobile-header"><div class="logo-text">MES CHANTIERS</div></header>
+        <div style="padding: 20px;" id="projects-list-full"></div>
+        <button class="fab" onclick="App.openProjectWizard()"><i class="fas fa-plus"></i></button>
+    </main>
 
-        <button class="nav-btn" onclick="App.nav('documents')" id="nav-documents">
-            <i class="fas fa-file-invoice"></i><span>Docs</span>
-        </button>
-        <button class="nav-btn" onclick="App.toggleMenu()">
-            <i class="fas fa-cog"></i><span>Menu</span>
-        </button>
+    <main id="view-hub" class="view-section">
+        <header class="mobile-header">
+            <button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button>
+            <div class="logo-text">CHANTIER</div>
+            <div style="width:30px"></div>
+        </header>
+        <div style="padding: 20px; background: white; border-bottom: 1px solid var(--border);">
+            <div id="hub-client" style="font-weight: 700; color: var(--accent); font-size: 0.8rem;">CLIENT</div>
+            <div id="hub-name" style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">NOM CHANTIER</div>
+        </div>
+        <div style="padding: 20px;">
+            <div style="font-weight: 800; margin-bottom: 15px;">DEVIS</div>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 15px;" onclick="App.createNewDevis()">+ NOUVEAU DEVIS</button>
+            <div id="hub-devis-list"></div>
+
+            <div style="font-weight: 800; margin-top: 25px; margin-bottom: 15px;">FACTURES</div>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 15px;" onclick="App.openCreateInvoiceModal()">+ GÉNÉRER UNE FACTURE</button>
+            <div id="hub-factures-list"></div>
+            
+            <div style="font-weight: 800; margin-top: 25px; margin-bottom: 15px;">DOCUMENTS TECHNIQUES</div>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 15px;" onclick="alert('Bientôt disponible')">+ CAHIER DES CHARGES</button>
+            <div id="hub-docs-list"></div>
+        </div>
+    </main>
+
+    <main id="view-editor" class="view-section" style="background: white;">
+        <header class="mobile-header">
+            <button class="header-btn" onclick="App.openHub(Store.data.activeChantierId)"><i class="fas fa-arrow-left"></i></button>
+            <div style="text-align: right;">
+                <div style="font-size: 0.7rem; font-weight: 800;">TOTAL DEVIS</div>
+                <div id="ed-total-header" style="font-size: 1.2rem; font-weight: 900; color: var(--accent);">0 €</div>
+            </div>
+        </header>
+        <div id="editor-list" style="padding-top: 20px;"></div>
+        <button class="fab" onclick="App.openLibrary()"><i class="fas fa-plus"></i></button>
+    </main>
+
+    <main id="view-documents" class="view-section">
+        <header class="mobile-header"><div class="logo-text">DOCUMENTS</div></header>
+        <div style="padding: 20px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px;">
+                <button class="type-pill active" onclick="App.renderDocuments('all')">Tous</button>
+                <button class="type-pill" onclick="App.renderDocuments('Devis')">Devis</button>
+                <button class="type-pill" onclick="App.renderDocuments('Facture')">Factures</button>
+            </div>
+            <div id="documents-list"></div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-th-large"></i><span>Accueil</span></button>
+        <button class="nav-btn" onclick="App.nav('projets')" id="nav-projets"><i class="fas fa-hard-hat"></i><span>Chantiers</span></button>
+        <button class="nav-btn" onclick="App.nav('documents')" id="nav-documents"><i class="fas fa-file-invoice"></i><span>Docs</span></button>
+        <button class="nav-btn" onclick="App.nav('clients')" id="nav-clients"><i class="fas fa-users"></i><span>Clients</span></button>
+        <button class="nav-btn" onclick="App.toggleMenu()"><i class="fas fa-cog"></i><span>Plus</span></button>
     </nav>
 
     <div id="modal-client" class="full-modal">
         <div class="modal-header"><h3>NOUVEAU CLIENT</h3><button class="header-btn" onclick="App.closeModal('modal-client')">×</button></div>
         <div class="modal-body">
-            <label>Nom du client</label>
+            <input type="hidden" id="cli-id">
+            <label>Nom complet</label>
             <input type="text" id="cli-nom" class="app-input" placeholder="ex: Jean Dupont">
-            <label>Adresse</label>
-            <input type="text" id="cli-addr" class="app-input" placeholder="ex: Paris, France">
-            <button class="btn-primary" onclick="App.saveClient()">ENREGISTRER</button>
+            <label>Adresse de facturation</label>
+            <input type="text" id="cli-addr" class="app-input" placeholder="ex: 12 rue des Fleurs, Nice">
+            <label>Téléphone</label>
+            <input type="tel" id="cli-tel" class="app-input" placeholder="06 00 00 00 00">
+            <label>Email</label>
+            <input type="email" id="cli-email" class="app-input" placeholder="jean@email.com">
         </div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">ENREGISTRER LE CLIENT</button></div>
+    </div>
+
+    <div id="modal-invoice" class="full-modal">
+        <div class="modal-header"><h3>CRÉER UNE FACTURE</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div>
+        <div class="modal-body">
+            <label>Choisir le devis source</label>
+            <select id="inv-devis-select" class="app-input" onchange="App.calcInvPreview()"></select>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <button id="btn-type-acompte" class="type-pill active" onclick="App.setInvType('acompte')">Acompte</button>
+                <button id="btn-type-solde" class="type-pill" onclick="App.setInvType('solde')">Solde</button>
+            </div>
+
+            <div id="box-acompte">
+                <label>Pourcentage (%)</label>
+                <input type="number" id="inv-percent" class="app-input" value="30" oninput="App.calcInvPreview()">
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; border: 2px dashed var(--accent);">
+                <div style="font-size: 0.8rem; font-weight: 800;">MONTANT DE LA FACTURE</div>
+                <div id="inv-preview-amount" style="font-size: 2.2rem; font-weight: 900; color: var(--primary);">0 €</div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">VALIDER ET GÉNÉRER</button></div>
     </div>
 
     <div id="modal-project" class="full-modal">
         <div class="modal-header"><h3>NOUVEAU CHANTIER</h3><button class="header-btn" onclick="App.closeModal('modal-project')">×</button></div>
         <div class="modal-body">
-            <label>Nom du chantier</label>
-            <input type="text" id="proj-name" class="app-input" placeholder="ex: Rénovation Salon">
-            <label>Client associé</label>
+            <label>Nom du projet</label>
+            <input type="text" id="proj-name" class="app-input" placeholder="ex: Rénovation salle de bain">
+            <label>Sélectionner le client</label>
             <select id="proj-client-select" class="app-input"></select>
-            <button class="btn-primary" onclick="App.saveProject()">CRÉER LE PROJET</button>
+        </div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.saveProject()">LANCER LE CHANTIER</button></div>
+    </div>
+
+    <div id="modal-library" class="full-modal">
+        <div class="modal-header"><h3>BIBLIOTHÈQUE</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div>
+        <div class="modal-body" id="lib-container"></div>
+    </div>
+
+    <div id="side-menu" class="full-modal" style="background: white; width: 80%; left: -80%; transition: left 0.3s ease;">
+        <div class="modal-header"><h3>QOTIA V55</h3><button class="header-btn" onclick="App.toggleMenu()">×</button></div>
+        <div class="modal-body">
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 10px;" onclick="App.hardReset()">RÉINITIALISER L'APP</button>
+            <div style="font-size: 0.8rem; color: #94A3B8; text-align: center; margin-top: 20px;">Version 5.5.0 Final Edition</div>
         </div>
     </div>
 
     <script>
+        const Config = {
+            LIB: {
+                "DEMOLITION": [
+                    {desc:"Dépose carrelage mural", unit:"m²", price:22},
+                    {desc:"Dépose cloisons sèches", unit:"m²", price:18},
+                    {desc:"Evacuation gravats", unit:"forfait", price:250}
+                ],
+                "ELECTRICITE": [
+                    {desc:"Tableau électrique 2 rangées", unit:"U", price:850},
+                    {desc:"Prise de courant 16A", unit:"U", price:65},
+                    {desc:"Point lumineux DCL", unit:"U", price:85}
+                ],
+                "PLOMBERIE": [
+                    {desc:"Pose WC Suspendu", unit:"U", price:450},
+                    {desc:"Réseau alimentation (cuivre)", unit:"ml", price:45},
+                    {desc:"Pose meuble vasque", unit:"U", price:180}
+                ]
+            }
+        };
+
         const Store = {
-            data: { clients: [], chantiers: [], appointments: [] },
+            data: { clients: [], chantiers: [], appointments: [], activeChantierId: null, activeDevisId: null },
             init() {
                 const s = localStorage.getItem('qotia_v55_final');
-                if(s) {
-                    this.data = JSON.parse(s);
-                } else {
-                    this.data.clients = [{id: 1, nom: "Client Démo", addr: "Nice"}];
-                    this.save();
-                }
+                if(s) this.data = JSON.parse(s);
+                else this.seed();
+            },
+            seed() {
+                this.data.clients = [{id:1, nom:'Dupont Immobilier', addr:'12 Rue de la Paix, Paris', tel:'0140203040', email:'contact@dupont.fr'}];
+                this.data.chantiers = [{id:1, clientId:1, name:'Rénovation Cuisine', ref:'CH-2024-01', devisList:[], factures:[], extraDocs:[]}];
+                this.data.appointments = [{id:1, date: new Date().toISOString(), title:'Visite technique', sub:'Dupont Immobilier'}];
+                this.save();
             },
             save() { localStorage.setItem('qotia_v55_final', JSON.stringify(this.data)); }
         };
 
         const App = {
+            state: { invType: 'acompte' },
+
             init() {
                 Store.init();
                 this.renderHome();
-                this.renderProjets();
-                this.renderClients();
-            },
-
-            // FONCTION REFRESH
-            refresh() {
-                const icon = document.getElementById('refresh-icon').querySelector('i');
-                icon.classList.add('refreshing');
-                setTimeout(() => {
-                    Store.init();
-                    this.renderHome();
-                    this.renderProjets();
-                    this.renderClients();
-                    icon.classList.remove('refreshing');
-                }, 700);
             },
 
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-                const target = document.getElementById('view-' + view);
-                if(target) target.classList.add('active');
-                
+                document.getElementById('view-' + view).classList.add('active');
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                const btn = document.getElementById('nav-' + view);
-                if(btn) btn.classList.add('active');
+                if(document.getElementById('nav-' + view)) document.getElementById('nav-' + view).classList.add('active');
+                
+                if(view === 'home') this.renderHome();
+                if(view === 'clients') this.renderClients();
+                if(view === 'projets') this.renderProjets();
+                if(view === 'documents') this.renderDocuments('all');
             },
 
             renderHome() {
+                const d = new Date();
                 const options = { weekday: 'long', day: 'numeric', month: 'long' };
-                document.getElementById('home-date-display').innerText = new Date().toLocaleDateString('fr-FR', options);
+                document.getElementById('home-date-display').innerText = d.toLocaleDateString('fr-FR', options);
+
+                const list = document.getElementById('home-today-list');
+                list.innerHTML = '';
+                const today = (Store.data.appointments || []).slice(0, 3);
+                if(today.length === 0) list.innerHTML = '<div style="padding:20px; text-align:center; color:#94A3B8;">Rien de prévu aujourd\'hui</div>';
+                today.forEach(a => {
+                    list.innerHTML += `
+                        <div class="card-item">
+                            <div>
+                                <div class="card-title">${a.title}</div>
+                                <div class="card-sub">${a.sub}</div>
+                            </div>
+                            <div style="font-weight:800; color:var(--accent);">${new Date(a.date).getHours()}:00</div>
+                        </div>
+                    `;
+                });
+
+                let unpaid = 0;
+                Store.data.chantiers.forEach(c => {
+                    (c.factures || []).forEach(f => { if(!f.paid) unpaid += f.amount; });
+                });
+                document.getElementById('home-unpaid').innerText = unpaid.toLocaleString() + " €";
+            },
+
+            /* AGENDA */
+            openAgenda() {
+                alert("Mon Agenda Pro : Vous avez " + Store.data.appointments.length + " rendez-vous à venir.");
             },
 
             /* CLIENTS */
-            renderClients() {
+            renderClients(q = '') {
                 const list = document.getElementById('clients-list');
-                list.innerHTML = Store.data.clients.map(c => `
-                    <div class="card-item">
-                        <div>
-                            <div style="font-weight:800">${c.nom}</div>
-                            <div style="font-size:0.8rem; color:var(--text-sub)">${c.addr}</div>
+                list.innerHTML = '';
+                Store.data.clients.filter(c => c.nom.toLowerCase().includes(q.toLowerCase())).forEach(c => {
+                    list.innerHTML += `
+                        <div class="card-item">
+                            <div onclick="App.editClient(${c.id})">
+                                <div class="card-title">${c.nom}</div>
+                                <div class="card-sub">${c.addr}</div>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <a href="tel:${c.tel}" class="btn-mini bm-call"><i class="fas fa-phone"></i></a>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.addr)}" target="_blank" class="btn-mini bm-map"><i class="fas fa-map-marker-alt"></i></a>
+                            </div>
                         </div>
-                        <i class="fas fa-user-edit" style="color:var(--border)"></i>
-                    </div>
-                `).join('') || '<p style="text-align:center; color:var(--text-sub)">Aucun client</p>';
+                    `;
+                });
             },
 
-            openClientModal() { document.getElementById('modal-client').classList.add('open'); },
-            
+            openClientModal() {
+                ['cli-id','cli-nom','cli-addr','cli-tel','cli-email'].forEach(id => document.getElementById(id).value = '');
+                document.getElementById('modal-client').classList.add('open');
+            },
+
             saveClient() {
-                const nom = document.getElementById('cli-nom').value;
-                const addr = document.getElementById('cli-addr').value;
-                if(!nom) return alert("Nom obligatoire");
-                Store.data.clients.push({ id: Date.now(), nom, addr });
+                const id = document.getElementById('cli-id').value || Date.now();
+                const client = {
+                    id: parseInt(id),
+                    nom: document.getElementById('cli-nom').value,
+                    addr: document.getElementById('cli-addr').value,
+                    tel: document.getElementById('cli-tel').value,
+                    email: document.getElementById('cli-email').value
+                };
+                if(!client.nom) return alert("Nom requis");
+                const idx = Store.data.clients.findIndex(x => x.id == id);
+                if(idx > -1) Store.data.clients[idx] = client;
+                else Store.data.clients.push(client);
                 Store.save();
                 this.closeModal('modal-client');
                 this.renderClients();
             },
 
-            /* PROJETS */
+            /* PROJETS & WIZARD */
             renderProjets() {
-                const list = document.getElementById('projects-list');
-                list.innerHTML = Store.data.chantiers.map(c => {
-                    const client = Store.data.clients.find(cl => cl.id == c.clientId);
-                    return `
+                const list = document.getElementById('projects-list-full');
+                list.innerHTML = '';
+                if(Store.data.chantiers.length === 0) list.innerHTML = '<div style="text-align:center; color:#94A3B8; padding:40px;">Aucun chantier en cours</div>';
+                Store.data.chantiers.forEach(c => {
+                    const client = Store.data.clients.find(x => x.id == c.clientId);
+                    list.innerHTML += `
                         <div class="card-item" onclick="App.openHub(${c.id})">
                             <div>
-                                <div style="font-weight:800">${c.name}</div>
-                                <div style="font-size:0.8rem; color:var(--text-sub)">${client ? client.nom : 'Sans client'}</div>
+                                <div class="card-tag">${c.ref}</div>
+                                <div class="card-title">${c.name}</div>
+                                <div class="card-sub">${client ? client.nom : 'Client inconnu'}</div>
                             </div>
-                            <i class="fas fa-chevron-right" style="color:var(--accent)"></i>
+                            <i class="fas fa-chevron-right" style="color:#CBD5E1"></i>
                         </div>
                     `;
-                }).join('') || '<p style="text-align:center; color:var(--text-sub)">Aucun chantier en cours</p>';
+                });
             },
 
             openProjectWizard() {
-                if(Store.data.clients.length === 0) return alert("Créez d'abord un client !");
+                if(Store.data.clients.length === 0) {
+                    alert("Veuillez d'abord créer un client.");
+                    this.nav('clients');
+                    return;
+                }
                 const sel = document.getElementById('proj-client-select');
-                sel.innerHTML = Store.data.clients.map(c => `<option value="${c.id}">${c.nom}</option>`).join('');
+                sel.innerHTML = '';
+                Store.data.clients.forEach(c => {
+                    sel.innerHTML += `<option value="${c.id}">${c.nom}</option>`;
+                });
+                document.getElementById('proj-name').value = '';
                 document.getElementById('modal-project').classList.add('open');
             },
 
             saveProject() {
                 const name = document.getElementById('proj-name').value;
                 const clientId = document.getElementById('proj-client-select').value;
-                if(!name) return alert("Nom obligatoire");
-                Store.data.chantiers.push({ id: Date.now(), name, clientId, devis: [], factures: [] });
+                if(!name) return alert("Le nom est obligatoire");
+                const newC = {
+                    id: Date.now(),
+                    clientId: parseInt(clientId),
+                    name: name,
+                    ref: "CH-" + Date.now().toString().slice(-4),
+                    devisList: [],
+                    factures: []
+                };
+                Store.data.chantiers.push(newC);
                 Store.save();
                 this.closeModal('modal-project');
                 this.renderProjets();
+                this.openHub(newC.id);
             },
 
             openHub(id) {
+                Store.data.activeChantierId = id;
                 const c = Store.data.chantiers.find(x => x.id == id);
-                const cl = Store.data.clients.find(x => x.id == c.clientId);
+                const client = Store.data.clients.find(x => x.id == c.clientId);
                 document.getElementById('hub-name').innerText = c.name;
-                document.getElementById('hub-client').innerText = cl ? "Client : " + cl.nom : "Aucun client";
+                document.getElementById('hub-client').innerText = client ? client.nom.toUpperCase() : 'CLIENT';
+                
+                const dList = document.getElementById('hub-devis-list');
+                dList.innerHTML = '';
+                (c.devisList || []).forEach(d => {
+                    dList.innerHTML += `
+                        <div class="card-item" onclick="App.openEditor(${d.id})">
+                            <div><div class="card-title">${d.name}</div><div class="card-sub">${d.total.toLocaleString()} €</div></div>
+                            <i class="fas fa-edit" style="color:#CBD5E1"></i>
+                        </div>
+                    `;
+                });
+
+                const fList = document.getElementById('hub-factures-list');
+                fList.innerHTML = '';
+                (c.factures || []).forEach(f => {
+                    fList.innerHTML += `
+                        <div class="card-item">
+                            <div><div class="card-title">${f.ref} (${f.type})</div><div class="card-sub">${f.amount.toLocaleString()} € - ${f.paid ? 'PAYÉ' : 'À PAYER'}</div></div>
+                        </div>
+                    `;
+                });
                 this.nav('hub');
             },
 
-            /* IA */
-            openIA() {
-                alert("QOTIA IA : Analyse de vos données...\nSuggestion : Le chantier '" + 
-                (Store.data.chantiers[0]?.name || "Nouveau") + 
-                "' nécessite un devis de plomberie selon vos notes.");
+            /* EDITOR */
+            createNewDevis() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const newDevis = { id: Date.now(), name: "Devis " + (c.devisList.length + 1), total: 0, items: [] };
+                c.devisList.push(newDevis);
+                Store.save();
+                this.openEditor(newDevis.id);
             },
 
-            createNewDevis() { alert("Ouverture de l'éditeur de devis..."); },
-            openCreateInvoiceModal() { alert("Génération de facture..."); },
+            openEditor(did) {
+                Store.data.activeDevisId = did;
+                this.nav('editor');
+                this.renderItems();
+            },
+
+            renderItems() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const d = c.devisList.find(x => x.id == Store.data.activeDevisId);
+                const list = document.getElementById('editor-list');
+                list.innerHTML = '';
+                let total = 0;
+                d.items.forEach((it, idx) => {
+                    const row = it.qty * it.price;
+                    total += row;
+                    list.innerHTML += `
+                        <div class="e-card">
+                            <div class="e-head"><span>${it.desc}</span><button onclick="App.removeItem(${idx})" style="border:none; background:none; color:var(--danger)"><i class="fas fa-trash"></i></button></div>
+                            <div class="e-grid">
+                                <div><div style="font-size:0.7rem;">Qté</div><div class="editable-val" onclick="App.editItemVal(${idx}, 'qty')">${it.qty}</div></div>
+                                <div><div style="font-size:0.7rem;">Prix Un.</div><div class="editable-val" onclick="App.editItemVal(${idx}, 'price')">${it.price}</div></div>
+                                <div><div style="font-size:0.7rem;">Total</div><div style="padding:8px; text-align:center; font-weight:800;">${row} €</div></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                d.total = total;
+                document.getElementById('ed-total-header').innerText = total.toLocaleString() + " €";
+                Store.save();
+            },
+
+            editItemVal(idx, field) {
+                const val = prompt("Nouvelle valeur ?");
+                if(val && !isNaN(val)) {
+                    const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                    const d = c.devisList.find(x => x.id == Store.data.activeDevisId);
+                    d.items[idx][field] = parseFloat(val);
+                    this.renderItems();
+                }
+            },
+
+            removeItem(idx) {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const d = c.devisList.find(x => x.id == Store.data.activeDevisId);
+                d.items.splice(idx, 1);
+                this.renderItems();
+            },
+
+            openLibrary() {
+                const cont = document.getElementById('lib-container');
+                cont.innerHTML = '';
+                for(let cat in Config.LIB) {
+                    cont.innerHTML += `<div style="font-weight:800; margin: 15px 0 10px; color:var(--accent);">${cat}</div>`;
+                    Config.LIB[cat].forEach(it => {
+                        cont.innerHTML += `
+                            <div class="card-item" onclick="App.addToDevis('${it.desc}', ${it.price}, '${it.unit}')">
+                                <div><div class="card-title">${it.desc}</div><div class="card-sub">${it.price}€ / ${it.unit}</div></div>
+                                <i class="fas fa-plus-circle" style="color:var(--success)"></i>
+                            </div>
+                        `;
+                    });
+                }
+                document.getElementById('modal-library').classList.add('open');
+            },
+
+            addToDevis(desc, price, unit) {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const d = c.devisList.find(x => x.id == Store.data.activeDevisId);
+                d.items.push({ desc, price, unit, qty: 1 });
+                Store.save();
+                this.closeModal('modal-library');
+                this.renderItems();
+            },
+
+            /* FACTURES */
+            openCreateInvoiceModal() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                if(c.devisList.length === 0) return alert("Veuillez créer un devis avant.");
+                const sel = document.getElementById('inv-devis-select');
+                sel.innerHTML = '';
+                c.devisList.forEach(d => {
+                    sel.innerHTML += `<option value="${d.id}">${d.name} (${d.total}€)</option>`;
+                });
+                this.calcInvPreview();
+                document.getElementById('modal-invoice').classList.add('open');
+            },
+
+            setInvType(t) {
+                this.state.invType = t;
+                document.getElementById('btn-type-acompte').classList.toggle('active', t === 'acompte');
+                document.getElementById('btn-type-solde').classList.toggle('active', t === 'solde');
+                document.getElementById('box-acompte').style.display = (t === 'acompte') ? 'block' : 'none';
+                this.calcInvPreview();
+            },
+
+            calcInvPreview() {
+                const did = document.getElementById('inv-devis-select').value;
+                if(!did) return;
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const d = c.devisList.find(x => x.id == did);
+                let amt = 0;
+                if(this.state.invType === 'acompte') {
+                    const p = document.getElementById('inv-percent').value || 0;
+                    amt = d.total * (p / 100);
+                } else {
+                    amt = d.total;
+                }
+                document.getElementById('inv-preview-amount').innerText = Math.round(amt).toLocaleString() + " €";
+            },
+
+            generateInvoice() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const amtStr = document.getElementById('inv-preview-amount').innerText.replace(/[^\d]/g, '');
+                const newFacture = {
+                    id: Date.now(),
+                    ref: "FAC-" + Date.now().toString().slice(-4),
+                    type: this.state.invType,
+                    amount: parseInt(amtStr),
+                    paid: false
+                };
+                c.factures.push(newFacture);
+                Store.save();
+                this.closeModal('modal-invoice');
+                this.openHub(c.id);
+            },
+
+            renderDocuments(type) {
+                const list = document.getElementById('documents-list');
+                list.innerHTML = '';
+                Store.data.chantiers.forEach(c => {
+                    if(type === 'all' || type === 'Devis') {
+                        c.devisList.forEach(d => {
+                            list.innerHTML += `<div class="card-item"><div><div class="card-tag">DEVIS</div><div class="card-title">${d.name}</div><div class="card-sub">${c.name}</div></div><div style="font-weight:800">${d.total.toLocaleString()} €</div></div>`;
+                        });
+                    }
+                    if(type === 'all' || type === 'Facture') {
+                        c.factures.forEach(f => {
+                            list.innerHTML += `<div class="card-item"><div><div class="card-tag" style="background:#FEF2F2; color:#EF4444">FACTURE</div><div class="card-title">${f.ref}</div><div class="card-sub">${c.name}</div></div><div style="font-weight:800">${f.amount.toLocaleString()} €</div></div>`;
+                        });
+                    }
+                });
+            },
+
+            /* UTILS */
             closeModal(id) { document.getElementById(id).classList.remove('open'); },
-            toggleMenu() { alert("Paramètres & Export CSV"); }
+            toggleMenu() { 
+                const m = document.getElementById('side-menu');
+                m.style.left = m.style.left === '0px' ? '-80%' : '0px';
+            },
+            hardReset() {
+                if(confirm("Attention : Cela supprimera TOUTES vos données. Continuer ?")) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            }
         };
 
         window.onload = () => App.init();
