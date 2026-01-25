@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA V50 Soft Design</title>
+    <title>QOTIA V51 Final CDC</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -56,7 +56,7 @@
         .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
         .ai-circle-big { position: absolute; bottom: 35px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(252, 211, 77, 0.4); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.5rem; z-index: 1001; }
 
-        /* --- HOME GRID (SOFT COLORS) --- */
+        /* --- HOME GRID --- */
         .home-welcome { padding: 25px 20px 10px 20px; }
         .home-title { font-size: 1.6rem; font-weight: 800; color: var(--c-dark); }
         .home-date { font-size: 0.95rem; color: #64748B; font-weight: 500; text-transform: capitalize; margin-top: 4px; }
@@ -66,7 +66,6 @@
         .dash-btn:active { transform: scale(0.96); }
         .dash-btn i { font-size: 2.2rem; margin-bottom: 12px; }
         
-        /* Soft Palettes */
         .btn-home-chantiers { background: #FFFBEB; color: #92400E; border: 1px solid #FCD34D; }
         .btn-home-clients { background: #EFF6FF; color: #1E3A8A; border: 1px solid #93C5FD; }
         .btn-home-agenda { background: white; color: #475569; border: 1px solid #CBD5E1; grid-column: span 2; height: 100px; flex-direction: row; gap: 15px; }
@@ -103,7 +102,7 @@
         .badge { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
         .bg-draft { background: #F1F5F9; color: #475569; } .bg-ok { background: #ECFDF5; color: #065F46; }
 
-        /* --- HIGH VISIBILITY FAB (Clean) --- */
+        /* --- FAB STICKY --- */
         .fab-sticky { 
             position: fixed; bottom: 110px; right: 25px; 
             width: 70px; height: 70px; 
@@ -138,12 +137,16 @@
         .room-pill { padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid #E2E8F0; background: white; color: #64748B; cursor: pointer; }
         .room-pill.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
 
-        /* KPI FULL RED */
+        /* KPI */
         .home-kpi-fixed { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); padding: 10px 20px; z-index: 900; border-top: 1px solid var(--c-border); }
         .kpi-split-card { display: flex; background: #FEF2F2; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15); border: 1px solid #FECACA; height: 75px; align-items: center; justify-content: center; cursor: pointer; }
         .kpi-val { font-size: 1.3rem; font-weight: 800; color: #B91C1C; margin-left: 15px; }
 
         /* MODALS */
+        .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
+        .full-modal.open { display: flex; }
+        #modal-client { z-index: 6000 !important; }
+        .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
         .modal-body { padding: 25px 20px; flex: 1; overflow-y: auto; background: #F8FAFC; }
         .modal-footer { padding: 20px; background: white; border-top: 1px solid #eee; padding-bottom: 30px; }
 
@@ -200,7 +203,7 @@
         <button class="fab-sticky" onclick="App.openClientModal()">+</button>
     </main>
 
-    <main id="view-documents" class="view-section"><header class="mobile-header"><div class="logo-text">DOCUMENTS</div></header><div style="padding:15px;"><div style="display:flex; gap:10px; margin-bottom:15px; overflow-x:auto;"><button class="badge bg-draft" onclick="App.renderDocuments('all')">Tous</button><button class="badge bg-ok" onclick="App.renderDocuments('Devis')">Devis</button><button class="badge bg-pay" style="background:#FEE2E2; color:#DC2626;" onclick="App.renderDocuments('Facture')">Factures</button><button class="badge" style="background:#ECFDF5; color:#059669;" onclick="App.renderDocuments('Etude')">Etudes</button></div><div id="documents-list"></div></div></main>
+    <main id="view-documents" class="view-section"><header class="mobile-header"><div class="logo-text">DOCUMENTS</div></header><div style="padding:15px;"><div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px;"><button class="badge bg-draft" onclick="App.renderDocuments('all')">Tous</button><button class="badge bg-ok" onclick="App.renderDocuments('Devis')">Devis</button><button class="badge bg-pay" style="background:#FEE2E2; color:#DC2626;" onclick="App.renderDocuments('Facture')">Factures</button><button class="badge" style="background:#ECFDF5; color:#059669;" onclick="App.renderDocuments('Etude')">Etudes</button></div><div id="documents-list"></div></div></main>
 
     <main id="view-projets" class="view-section">
         <header class="mobile-header"><div class="logo-text">CHANTIERS</div></header>
@@ -209,7 +212,7 @@
     </main>
 
     <main id="view-hub" class="view-section">
-        <header class="mobile-header"><button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button><div class="logo-text">PROJET</div><div style="width:20px"></div></header>
+        <header class="mobile-header"><button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button><div class="logo-text">CHANTIER</div><div style="width:20px"></div></header>
         <div style="padding:20px; background:white; border-bottom:1px solid #F1F5F9;"><div style="color:#64748B; font-weight:600; font-size:0.9rem;" id="hub-client">Client</div><div style="font-weight:800; font-size:1.5rem; color:var(--c-navy); line-height:1.2; margin-top:5px;" id="hub-name">Nom Chantier</div></div>
         <div style="padding:20px;">
             <div class="info-box">
@@ -224,10 +227,11 @@
             <div id="hub-devis-list"></div>
             
             <div class="section-title" style="margin-top:30px;">FACTURES</div>
-            <button class="btn-big-action" style="background:#1E3A8A;" onclick="App.openCreateInvoiceModal()"><span>NOUVELLE FACTURE</span><i class="fas fa-file-invoice-dollar"></i></button>
+            <button class="btn-big-action" style="background:#2563EB;" onclick="App.openCreateInvoiceModal()"><span>NOUVELLE FACTURE</span><i class="fas fa-file-invoice-dollar"></i></button>
             <div id="hub-factures-list"></div>
 
             <div class="section-title" style="margin-top:30px;">DOCS TECHNIQUES</div>
+            <button class="btn-big-action" style="background:#8B5CF6;" onclick="App.openCreateCDCModal()"><span>CRÉER CAHIER DES CHARGES</span><i class="fas fa-clipboard-list"></i></button>
             <div id="hub-docs-list"></div>
         </div>
     </main>
@@ -284,10 +288,11 @@
     <div id="modal-item" class="full-modal"><div class="modal-header"><h3>Ouvrage</h3><button class="header-btn" onclick="App.closeModal('modal-item')">×</button></div><div class="modal-body"><input type="hidden" id="it-id"><textarea id="it-desc" class="app-input" style="height:100px; font-size:1.05rem;"></textarea><div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><input type="number" id="it-qty" class="app-input" placeholder="Qté"><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div><label class="form-label">TVA (%)</label><select id="it-tva" class="app-input"><option value="10">10%</option><option value="20">20%</option><option value="5.5">5.5%</option></select><div style="background:#FFFbeb; padding:15px; border-radius:12px; margin:20px 0; border:1px solid #fcd34d;"><label style="color:#b45309; font-size:0.75rem; font-weight:700;">TECHNIQUE (UNITAIRE)</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><input type="number" id="it-mat" class="app-input" placeholder="Mat €"><input type="number" id="it-time" class="app-input" placeholder="Temps h"></div></div><label class="form-label">Prix Vente HT (€/u)</label><input type="number" id="it-price" class="app-input" style="font-weight:800; color:var(--c-navy); font-size:1.3rem;"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItem()">Valider</button><button style="width:100%; margin-top:15px; border:2px solid #EF4444; background:white; color:#EF4444; height:55px; border-radius:12px; font-weight:700;" onclick="App.deleteItem()">Supprimer</button></div></div>
     <div id="modal-library" class="full-modal"><div class="modal-header"><h3>Bibliothèque</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div><div class="modal-body" id="lib-container"></div></div>
     <div id="modal-extract" class="full-modal"><div class="modal-header"><h3>Extraire</h3><button class="header-btn" onclick="App.closeModal('modal-extract')">×</button></div><div class="modal-body"><input type="text" id="extract-name" class="app-input" placeholder="Nom Cahier"></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateTaskSheet()">Confirmer</button></div></div>
-    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><div style="padding:15px; background:#EFF6FF; color:var(--c-navy); border-radius:12px; margin-bottom:20px; font-weight:700; text-align:center;" id="agenda-today-label"></div><label class="form-label">Chantier</label><select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select><label class="form-label">Devis (Optionnel)</label><select id="agd-devis" class="app-input"></select><label class="form-label">Date et Heure</label><input type="datetime-local" id="agd-date" class="app-input"><div class="section-title" style="margin-top:30px;">Prochains RDV</div><div id="agenda-list-view" style="max-height:250px; overflow-y:auto; margin-top:10px;"></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter RDV & Calendrier</button></div></div>
+    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><div style="padding:15px; background:#EFF6FF; color:var(--c-blue-accent); border-radius:12px; margin-bottom:20px; font-weight:700; text-align:center;" id="agenda-today-label"></div><label class="form-label">Chantier</label><select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select><label class="form-label">Devis (Optionnel)</label><select id="agd-devis" class="app-input"></select><label class="form-label">Date et Heure</label><input type="datetime-local" id="agd-date" class="app-input"><div class="section-title" style="margin-top:30px;">Prochains RDV</div><div id="agenda-list-view" style="max-height:250px; overflow-y:auto; margin-top:10px;"></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter RDV & Calendrier</button></div></div>
     <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label class="form-label">Devis de référence</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="text-align:center; padding:15px; background:#F3F4F6; border-radius:12px; margin-bottom:15px;"><div style="font-weight:800; font-size:1.2rem;" id="inv-total-quote">0 €</div><div style="font-size:0.85rem; color:red;" id="inv-already"></div></div><div style="display:flex;gap:15px;margin-bottom:15px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')" style="height:45px; flex:1;">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')" style="height:45px; flex:1;">Solde</button></div><div id="grp-acompte"><label class="form-label">Pourcentage</label><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"></div><div style="text-align:center; font-size:1.8rem; font-weight:900; color:var(--c-navy); margin-top:20px;" id="inv-preview-amount">0€</div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer Facture</button></div></div>
     <div id="modal-doc-options" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;"><div style="background:white; border-radius:20px 20px 0 0; padding:30px;"><h3 id="doc-opt-title" style="text-align:center; font-size:1.3rem; margin-bottom:5px;"></h3><p id="doc-opt-sub" style="text-align:center; color:#666; margin-bottom:30px; font-size:0.9rem;"></p><div style="display:flex; flex-direction:column; gap:15px;"><button class="btn-primary" style="background:white; color:#333; border:2px solid #E5E7EB;" onclick="App.handleDocAction('view')">Voir / Modifier</button><button class="btn-primary" style="background:white; color:#333; border:2px solid #E5E7EB;" onclick="App.handleDocAction('pdf')">Générer PDF</button><button class="btn-primary" style="background:white; color:#333; border:2px solid #E5E7EB;" onclick="App.handleDocAction('share')">Partager</button></div><button class="btn-primary" style="margin-top:30px; background:#F3F4F6; color:#333;" onclick="App.closeModal('modal-doc-options')">Fermer</button></div></div>
     <div id="modal-view-cahier" class="full-modal"><div class="modal-header"><h3>Cahier des Charges</h3><button class="header-btn" onclick="App.closeModal('modal-view-cahier')">×</button></div><div class="modal-body" style="padding:0;"><div style="padding:20px; background:#F9FAFB; border-bottom:1px solid #eee;"><h4 style="margin:0; font-size:1.1rem;" id="vc-title">...</h4></div><table class="tech-table" id="vc-table"></table></div></div>
+    <div id="modal-create-cdc" class="full-modal"><div class="modal-header"><h3>Cahier des Charges</h3><button class="header-btn" onclick="App.closeModal('modal-create-cdc')">×</button></div><div class="modal-body"><label class="form-label">Sélectionner Devis</label><select id="cdc-source-devis" class="app-input"></select><label class="form-label">Nom du Document</label><input type="text" id="cdc-name" class="app-input" placeholder="Ex: Etude Technique"></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateCDCFromDevis()">CRÉER</button></div></div>
 
     <main id="view-collabs" class="view-section"><header class="mobile-header"><div class="logo-text">EQUIPE</div></header><div style="padding:15px;" id="collabs-list"></div></main>
     
@@ -295,12 +300,11 @@
         <header class="mobile-header"><div class="logo-text">RÉGLAGES</div></header>
         <div style="padding:20px;">
             <div style="background:white; padding:25px; border-radius:16px; margin-bottom:30px; text-align:center; border:1px solid #E5E7EB; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-                <div style="width:90px; height:90px; background:#EFF6FF; border-radius:50%; margin:0 auto 15px auto; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user" style="font-size:2.5rem; color:var(--c-navy)"></i></div>
+                <div style="width:90px; height:90px; background:#EFF6FF; border-radius:50%; margin:0 auto 15px auto; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user" style="font-size:2.5rem; color:var(--c-blue-accent)"></i></div>
                 <div style="font-weight:800; font-size:1.2rem;">Jean Dupont</div>
-                <div style="color:#64748B;">Collaborateur</div>
             </div>
             <button class="btn-primary" style="background:var(--c-danger); height:60px;" onclick="App.hardReset()">RÉINITIALISER L'APPLICATION</button>
-            <div style="text-align:center; margin-top:20px; color:#9CA3AF; font-size:0.8rem;">QOTIA Mobile v50</div>
+            <div style="text-align:center; margin-top:20px; color:#9CA3AF; font-size:0.8rem;">QOTIA Mobile v51</div>
         </div>
     </main>
 
@@ -308,7 +312,7 @@
         const Config = { LIB: { "Démolition": { "Sols": [{desc:"Dépose carrelage", unit:"m²", price:25, time:0.4, mat:0}], "Murs": [{desc:"Dépose faïence", unit:"m²", price:20, time:0.3, mat:0}] }, "Peinture": { "Préparation": [{desc:"Ratissage", unit:"m²", price:25, time:0.6, mat:4}], "Finition": [{desc:"Peinture Mate", unit:"m²", price:18, time:0.4, mat:5}] }, "Plomberie": { "Sanitaire": [{desc:"Pose WC", unit:"U", price:450, time:4, mat:200}] } } };
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null, appointments: [], collaborators: [] },
-            init() { try { const s = localStorage.getItem('qotia_v50_final'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            init() { try { const s = localStorage.getItem('qotia_v51_cdc'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
                 this.data.clients = [{id:101, nom:'M. Dupont', addr:'Nice', type:'physique', tel:'0600000000', email:'', note:'', civ:'M.', siret:'', tva:'', soc:''}, {id:102, nom:'Agence Immo', addr:'Cannes', type:'morale'}, {id:103, nom:'Mme Blanc', addr:'Antibes', type:'physique'}, {id:104, nom:'M. Verdi', addr:'Monaco', type:'physique'}, {id:105, nom:'SCI Azur', addr:'Nice', type:'morale'}, {id:106, nom:'M. Rossi', addr:'Menton', type:'physique'}, {id:107, nom:'Mme Noire', addr:'Nice', type:'physique'}, {id:108, nom:'Syndic Bleu', addr:'Cannes', type:'morale'}];
                 this.data.collaborators = [{id:1, name:'Jean Pierre', role:'Plombier'}, {id:2, name:'Marc Web', role:'Electricien'}, {id:3, name:'Sophie Design', role:'Architecte'}];
@@ -322,7 +326,7 @@
                 this.data.appointments = [{ id: 1, date: '2026-02-10T09:00', title: 'RDV: Rénovation Salon', sub: 'Devis: D-001' }];
                 this.save();
             },
-            save() { localStorage.setItem('qotia_v50_final', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v51_cdc', JSON.stringify(this.data)); }
         };
 
         const App = {
@@ -347,7 +351,23 @@
 
             toggleMenu() { const m = document.getElementById('side-menu'); const o = document.getElementById('side-overlay'); if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); } else { m.classList.add('open'); o.classList.add('open'); } },
             hardReset() { if(confirm("Effacer tout ?")) { localStorage.clear(); location.reload(); } },
-
+            toggleSelectMode() { this.state.selectMode = !this.state.selectMode; this.state.selectedItems.clear(); document.body.className = this.state.selectMode ? 'mode-select' : (this.state.editorMode=='etude'?'mode-etude':'mode-devis'); this.renderItems(); },
+            toggleItemSelection(id) { if(this.state.selectedItems.has(id)) this.state.selectedItems.delete(id); else this.state.selectedItems.add(id); document.getElementById('sel-count').innerText = this.state.selectedItems.size; this.renderItems(); },
+            openExtractModal() { if(this.state.selectedItems.size>0) document.getElementById('modal-extract').classList.add('open'); },
+            openDocOptions(doc) { App.state.tempDoc = doc; document.getElementById('doc-opt-title').innerText = doc.type; document.getElementById('doc-opt-sub').innerText = `${doc.ref} - ${doc.client}`; document.getElementById('modal-doc-options').classList.add('open'); },
+            handleDocAction(action) { const d = App.state.tempDoc; if(!d) return; if(action === 'view') { Store.data.activeChantierId = d.cid; if(d.type === 'Devis') App.openEditor(d.obj.id, 'devis'); else if(d.type === 'Etude') { if(d.obj.items) App.viewCahierTable(d.obj); } else if(d.type === 'Facture') App.openHub(d.cid); App.closeModal('modal-doc-options'); } else { alert(`Action ${action} simulée`); } },
+            openProjectInvoices() { this.nav('project-invoices'); },
+            openCreateInvoiceModal() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const sel = document.getElementById('inv-devis-select'); sel.innerHTML=''; c.devisList.forEach(d => { let opt = document.createElement('option'); opt.value = d.id; opt.text = `${d.ref} - ${d.total}€`; sel.appendChild(opt); }); this.onInvoiceDevisChange(); document.getElementById('modal-invoice').classList.add('open'); },
+            onInvoiceDevisChange() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(d) { document.getElementById('inv-total-quote').innerText = d.total.toFixed(2) + " €"; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); document.getElementById('inv-already').innerText = paid.toFixed(2) + " €"; this.calcInvPreview(); } },
+            calcInvPreview() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(!d) return; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); let amt = 0; if(this.state.invType === 'acompte') { const perc = parseFloat(document.getElementById('inv-percent').value) || 0; amt = d.total * (perc/100); } else { amt = d.total - paid; } document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €"; },
+            generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€','')); const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*10000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() }; if(!c.factures) c.factures=[]; c.factures.push(inv); Store.save(); App.closeModal('modal-invoice'); App.openHub(c.id); },
+            setInvType(t) { this.state.invType = t; document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill'; document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill'; document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none'; this.calcInvPreview(); },
+            payInvoice(id) { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const f = c.factures.find(f=>f.id==id); if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); } },
+            renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); },
+            viewCahierTable(doc) { document.getElementById('vc-title').innerText = doc.name + " (" + doc.ref + ")"; const tbl = document.getElementById('vc-table'); let html = '<thead><tr><th>Ouvrage</th><th>Qté</th><th>T/u</th><th>Total</th></tr></thead><tbody>'; let totalH = 0; if(doc.items && doc.items.length > 0) { doc.items.forEach(i => { let totTime = i.qty * i.time; totalH += totTime; html += `<tr><td>${i.desc}</td><td>${i.qty} ${i.unit}</td><td>${i.time}h</td><td><strong>${totTime.toFixed(1)}h</strong></td></tr>`; }); } else { html += `<tr><td colspan="4" style="text-align:center;">Aucune tâche sélectionnée</td></tr>`; } html += `</tbody><tfoot><tr><td colspan="3" class="tech-total">TOTAL HEURES</td><td class="tech-total">${totalH.toFixed(1)}h</td></tr></tfoot>`; tbl.innerHTML = html; document.getElementById('modal-view-cahier').classList.add('open'); },
+            renderCollabs() { const l = document.getElementById('collabs-list'); l.innerHTML=''; Store.data.collaborators.forEach(c => { let d = document.createElement('div'); d.className='list-item'; d.innerHTML = `<div style="display:flex; gap:15px; align-items:center;"><div style="width:40px; height:40px; background:#EEF2FF; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--c-navy);">${c.name.charAt(0)}</div><div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem; color:#666;">${c.role}</div></div></div><i class="fas fa-chevron-right" style="color:#ccc;"></i>`; d.onclick = () => { let cahiers = []; Store.data.chantiers.forEach(ch => { if(ch.extraDocs) cahiers = cahiers.concat(ch.extraDocs); }); if(cahiers.length===0) alert("Aucun document attribué."); else { let msg = `Documents attribués à ${c.name}:\n`; cahiers.forEach(doc => msg += `- ${doc.name} (${doc.ref})\n`); alert(msg); } }; l.appendChild(d); }); },
+            generateTaskSheet() { const name = document.getElementById('extract-name').value || "Cahier Tâches"; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); const items = d.items.filter(i=>this.state.selectedItems.has(i.id)); if(items.length === 0) { alert("Aucune tâche sélectionnée !"); return; } if(!c.extraDocs) c.extraDocs = []; c.extraDocs.push({ id:Date.now(), ref:`CDC-${Math.floor(Math.random()*100)}`, name:name, type:'Etude', items:items, date:new Date().toLocaleDateString() }); Store.save(); App.closeModal('modal-extract'); App.toggleSelectMode(); alert("Cahier généré dans DOCUMENTS !"); App.openHub(c.id); },
+            
             // --- AGENDA POWER ---
             openAgenda() {
                 const sC = document.getElementById('agd-chantier'); sC.innerHTML='<option value="">Sélectionner Chantier...</option>';
@@ -448,7 +468,15 @@
             payInvoice(id) { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const f = c.factures.find(f=>f.id==id); if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); } },
             renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); },
             viewCahierTable(doc) { document.getElementById('vc-title').innerText = doc.name + " (" + doc.ref + ")"; const tbl = document.getElementById('vc-table'); let html = '<thead><tr><th>Ouvrage</th><th>Qté</th><th>T/u</th><th>Total</th></tr></thead><tbody>'; let totalH = 0; if(doc.items && doc.items.length > 0) { doc.items.forEach(i => { let totTime = i.qty * i.time; totalH += totTime; html += `<tr><td>${i.desc}</td><td>${i.qty} ${i.unit}</td><td>${i.time}h</td><td><strong>${totTime.toFixed(1)}h</strong></td></tr>`; }); } else { html += `<tr><td colspan="4" style="text-align:center;">Aucune tâche sélectionnée</td></tr>`; } html += `</tbody><tfoot><tr><td colspan="3" class="tech-total">TOTAL HEURES</td><td class="tech-total">${totalH.toFixed(1)}h</td></tr></tfoot>`; tbl.innerHTML = html; document.getElementById('modal-view-cahier').classList.add('open'); },
-            renderCollabs() { const l = document.getElementById('collabs-list'); l.innerHTML=''; Store.data.collaborators.forEach(c => { let d = document.createElement('div'); d.className='list-item'; d.innerHTML = `<div style="display:flex; gap:15px; align-items:center;"><div style="width:40px; height:40px; background:#EEF2FF; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--c-navy);">${c.name.charAt(0)}</div><div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem; color:#666;">${c.role}</div></div></div><i class="fas fa-chevron-right" style="color:#ccc;"></i>`; d.onclick = () => { let cahiers = []; Store.data.chantiers.forEach(ch => { if(ch.extraDocs) cahiers = cahiers.concat(ch.extraDocs); }); if(cahiers.length===0) alert("Aucun document attribué."); else { let msg = `Documents attribués à ${c.name}:\n`; cahiers.forEach(doc => msg += `- ${doc.name} (${doc.ref})\n`); alert(msg); } }; l.appendChild(d); }); },
+            openCreateCDCModal() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const s = document.getElementById('cdc-source-devis'); s.innerHTML=''; c.devisList.forEach(d => { let o = document.createElement('option'); o.value=d.id; o.text=d.name; s.appendChild(o); }); document.getElementById('modal-create-cdc').classList.add('open'); },
+            generateCDCFromDevis() { 
+                const did = document.getElementById('cdc-source-devis').value; const name = document.getElementById('cdc-name').value || "Cahier des Charges"; 
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==did);
+                if(!d) return;
+                if(!c.extraDocs) c.extraDocs = [];
+                c.extraDocs.push({ id:Date.now(), ref:`CDC-${Math.floor(Math.random()*100)}`, name:name, type:'Etude', items:JSON.parse(JSON.stringify(d.items)), date:new Date().toLocaleDateString() });
+                Store.save(); App.closeModal('modal-create-cdc'); App.openHub(c.id); alert("Cahier créé !");
+            },
             generateTaskSheet() { const name = document.getElementById('extract-name').value || "Cahier Tâches"; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); const items = d.items.filter(i=>this.state.selectedItems.has(i.id)); if(items.length === 0) { alert("Aucune tâche sélectionnée !"); return; } if(!c.extraDocs) c.extraDocs = []; c.extraDocs.push({ id:Date.now(), ref:`CDC-${Math.floor(Math.random()*100)}`, name:name, type:'Etude', items:items, date:new Date().toLocaleDateString() }); Store.save(); App.closeModal('modal-extract'); App.toggleSelectMode(); alert("Cahier généré dans DOCUMENTS !"); App.openHub(c.id); }
         };
 
