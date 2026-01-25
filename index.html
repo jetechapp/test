@@ -219,7 +219,7 @@
             <div id="hub-factures-list"></div>
             
             <div style="font-weight: 800; margin-top: 25px; margin-bottom: 15px;">DOCUMENTS TECHNIQUES</div>
-            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 15px;" onclick="App.openCreateCDCModal()">+ CAHIER DES CHARGES</button>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 15px;" onclick="alert('Bientôt disponible')">+ CAHIER DES CHARGES</button>
             <div id="hub-docs-list"></div>
         </div>
     </main>
@@ -296,6 +296,17 @@
         <div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">VALIDER ET GÉNÉRER</button></div>
     </div>
 
+    <div id="modal-project" class="full-modal">
+        <div class="modal-header"><h3>NOUVEAU CHANTIER</h3><button class="header-btn" onclick="App.closeModal('modal-project')">×</button></div>
+        <div class="modal-body">
+            <label>Nom du projet</label>
+            <input type="text" id="proj-name" class="app-input" placeholder="ex: Rénovation salle de bain">
+            <label>Sélectionner le client</label>
+            <select id="proj-client-select" class="app-input"></select>
+        </div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.saveProject()">LANCER LE CHANTIER</button></div>
+    </div>
+
     <div id="modal-library" class="full-modal">
         <div class="modal-header"><h3>BIBLIOTHÈQUE</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div>
         <div class="modal-body" id="lib-container"></div>
@@ -305,7 +316,7 @@
         <div class="modal-header"><h3>QOTIA V55</h3><button class="header-btn" onclick="App.toggleMenu()">×</button></div>
         <div class="modal-body">
             <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 10px;" onclick="App.hardReset()">RÉINITIALISER L'APP</button>
-            <div style="font-size: 0.8rem; color: #94A3B8; text-align: center; margin-top: 20px;">Version 5.5.0 Fixed</div>
+            <div style="font-size: 0.8rem; color: #94A3B8; text-align: center; margin-top: 20px;">Version 5.5.0 Final Edition</div>
         </div>
     </div>
 
@@ -371,7 +382,6 @@
                 const options = { weekday: 'long', day: 'numeric', month: 'long' };
                 document.getElementById('home-date-display').innerText = d.toLocaleDateString('fr-FR', options);
 
-                // Today's list
                 const list = document.getElementById('home-today-list');
                 list.innerHTML = '';
                 const today = (Store.data.appointments || []).slice(0, 3);
@@ -388,12 +398,16 @@
                     `;
                 });
 
-                // Unpaid Calc
                 let unpaid = 0;
                 Store.data.chantiers.forEach(c => {
                     (c.factures || []).forEach(f => { if(!f.paid) unpaid += f.amount; });
                 });
                 document.getElementById('home-unpaid').innerText = unpaid.toLocaleString() + " €";
+            },
+
+            /* AGENDA */
+            openAgenda() {
+                alert("Mon Agenda Pro : Vous avez " + Store.data.appointments.length + " rendez-vous à venir.");
             },
 
             /* CLIENTS */
@@ -431,20 +445,19 @@
                     email: document.getElementById('cli-email').value
                 };
                 if(!client.nom) return alert("Nom requis");
-                
                 const idx = Store.data.clients.findIndex(x => x.id == id);
                 if(idx > -1) Store.data.clients[idx] = client;
                 else Store.data.clients.push(client);
-                
                 Store.save();
                 this.closeModal('modal-client');
                 this.renderClients();
             },
 
-            /* PROJETS */
+            /* PROJETS & WIZARD */
             renderProjets() {
                 const list = document.getElementById('projects-list-full');
                 list.innerHTML = '';
+                if(Store.data.chantiers.length === 0) list.innerHTML = '<div style="text-align:center; color:#94A3B8; padding:40px;">Aucun chantier en cours</div>';
                 Store.data.chantiers.forEach(c => {
                     const client = Store.data.clients.find(x => x.id == c.clientId);
                     list.innerHTML += `
@@ -460,55 +473,74 @@
                 });
             },
 
+            openProjectWizard() {
+                if(Store.data.clients.length === 0) {
+                    alert("Veuillez d'abord créer un client.");
+                    this.nav('clients');
+                    return;
+                }
+                const sel = document.getElementById('proj-client-select');
+                sel.innerHTML = '';
+                Store.data.clients.forEach(c => {
+                    sel.innerHTML += `<option value="${c.id}">${c.nom}</option>`;
+                });
+                document.getElementById('proj-name').value = '';
+                document.getElementById('modal-project').classList.add('open');
+            },
+
+            saveProject() {
+                const name = document.getElementById('proj-name').value;
+                const clientId = document.getElementById('proj-client-select').value;
+                if(!name) return alert("Le nom est obligatoire");
+                const newC = {
+                    id: Date.now(),
+                    clientId: parseInt(clientId),
+                    name: name,
+                    ref: "CH-" + Date.now().toString().slice(-4),
+                    devisList: [],
+                    factures: []
+                };
+                Store.data.chantiers.push(newC);
+                Store.save();
+                this.closeModal('modal-project');
+                this.renderProjets();
+                this.openHub(newC.id);
+            },
+
             openHub(id) {
                 Store.data.activeChantierId = id;
                 const c = Store.data.chantiers.find(x => x.id == id);
                 const client = Store.data.clients.find(x => x.id == c.clientId);
-                
                 document.getElementById('hub-name').innerText = c.name;
                 document.getElementById('hub-client').innerText = client ? client.nom.toUpperCase() : 'CLIENT';
                 
-                // Render Devis
                 const dList = document.getElementById('hub-devis-list');
                 dList.innerHTML = '';
                 (c.devisList || []).forEach(d => {
                     dList.innerHTML += `
                         <div class="card-item" onclick="App.openEditor(${d.id})">
-                            <div>
-                                <div class="card-title">${d.name}</div>
-                                <div class="card-sub">${d.total.toLocaleString()} €</div>
-                            </div>
+                            <div><div class="card-title">${d.name}</div><div class="card-sub">${d.total.toLocaleString()} €</div></div>
                             <i class="fas fa-edit" style="color:#CBD5E1"></i>
                         </div>
                     `;
                 });
 
-                // Render Invoices
                 const fList = document.getElementById('hub-factures-list');
                 fList.innerHTML = '';
                 (c.factures || []).forEach(f => {
                     fList.innerHTML += `
                         <div class="card-item">
-                            <div>
-                                <div class="card-title">${f.ref} (${f.type})</div>
-                                <div class="card-sub">${f.amount.toLocaleString()} € - ${f.paid ? 'PAYÉ' : 'À PAYER'}</div>
-                            </div>
+                            <div><div class="card-title">${f.ref} (${f.type})</div><div class="card-sub">${f.amount.toLocaleString()} € - ${f.paid ? 'PAYÉ' : 'À PAYER'}</div></div>
                         </div>
                     `;
                 });
-
                 this.nav('hub');
             },
 
             /* EDITOR */
             createNewDevis() {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
-                const newDevis = {
-                    id: Date.now(),
-                    name: "Devis " + (c.devisList.length + 1),
-                    total: 0,
-                    items: []
-                };
+                const newDevis = { id: Date.now(), name: "Devis " + (c.devisList.length + 1), total: 0, items: [] };
                 c.devisList.push(newDevis);
                 Store.save();
                 this.openEditor(newDevis.id);
@@ -525,17 +557,13 @@
                 const d = c.devisList.find(x => x.id == Store.data.activeDevisId);
                 const list = document.getElementById('editor-list');
                 list.innerHTML = '';
-                
                 let total = 0;
                 d.items.forEach((it, idx) => {
                     const row = it.qty * it.price;
                     total += row;
                     list.innerHTML += `
                         <div class="e-card">
-                            <div class="e-head">
-                                <span>${it.desc}</span>
-                                <button onclick="App.removeItem(${idx})" style="border:none; background:none; color:var(--danger)"><i class="fas fa-trash"></i></button>
-                            </div>
+                            <div class="e-head"><span>${it.desc}</span><button onclick="App.removeItem(${idx})" style="border:none; background:none; color:var(--danger)"><i class="fas fa-trash"></i></button></div>
                             <div class="e-grid">
                                 <div><div style="font-size:0.7rem;">Qté</div><div class="editable-val" onclick="App.editItemVal(${idx}, 'qty')">${it.qty}</div></div>
                                 <div><div style="font-size:0.7rem;">Prix Un.</div><div class="editable-val" onclick="App.editItemVal(${idx}, 'price')">${it.price}</div></div>
@@ -574,10 +602,7 @@
                     Config.LIB[cat].forEach(it => {
                         cont.innerHTML += `
                             <div class="card-item" onclick="App.addToDevis('${it.desc}', ${it.price}, '${it.unit}')">
-                                <div>
-                                    <div class="card-title">${it.desc}</div>
-                                    <div class="card-sub">${it.price}€ / ${it.unit}</div>
-                                </div>
+                                <div><div class="card-title">${it.desc}</div><div class="card-sub">${it.price}€ / ${it.unit}</div></div>
                                 <i class="fas fa-plus-circle" style="color:var(--success)"></i>
                             </div>
                         `;
@@ -598,6 +623,7 @@
             /* FACTURES */
             openCreateInvoiceModal() {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                if(c.devisList.length === 0) return alert("Veuillez créer un devis avant.");
                 const sel = document.getElementById('inv-devis-select');
                 sel.innerHTML = '';
                 c.devisList.forEach(d => {
@@ -625,25 +651,42 @@
                     const p = document.getElementById('inv-percent').value || 0;
                     amt = d.total * (p / 100);
                 } else {
-                    amt = d.total; // Simplifié pour l'exemple
+                    amt = d.total;
                 }
-                document.getElementById('inv-preview-amount').innerText = amt.toLocaleString() + " €";
+                document.getElementById('inv-preview-amount').innerText = Math.round(amt).toLocaleString() + " €";
             },
 
             generateInvoice() {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
-                const amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace(/\s/g, ''));
+                const amtStr = document.getElementById('inv-preview-amount').innerText.replace(/[^\d]/g, '');
                 const newFacture = {
                     id: Date.now(),
                     ref: "FAC-" + Date.now().toString().slice(-4),
                     type: this.state.invType,
-                    amount: amt,
+                    amount: parseInt(amtStr),
                     paid: false
                 };
                 c.factures.push(newFacture);
                 Store.save();
                 this.closeModal('modal-invoice');
                 this.openHub(c.id);
+            },
+
+            renderDocuments(type) {
+                const list = document.getElementById('documents-list');
+                list.innerHTML = '';
+                Store.data.chantiers.forEach(c => {
+                    if(type === 'all' || type === 'Devis') {
+                        c.devisList.forEach(d => {
+                            list.innerHTML += `<div class="card-item"><div><div class="card-tag">DEVIS</div><div class="card-title">${d.name}</div><div class="card-sub">${c.name}</div></div><div style="font-weight:800">${d.total.toLocaleString()} €</div></div>`;
+                        });
+                    }
+                    if(type === 'all' || type === 'Facture') {
+                        c.factures.forEach(f => {
+                            list.innerHTML += `<div class="card-item"><div><div class="card-tag" style="background:#FEF2F2; color:#EF4444">FACTURE</div><div class="card-title">${f.ref}</div><div class="card-sub">${c.name}</div></div><div style="font-weight:800">${f.amount.toLocaleString()} €</div></div>`;
+                        });
+                    }
+                });
             },
 
             /* UTILS */
