@@ -3,168 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#FFFFFF">
-    <title>QOTIA V51 Final CDC</title>
+    <meta name="theme-color" content="#F8FAFC">
+    <title>QOTIA V52 Masterpiece</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
-            /* Palette V50 Soft */
-            --c-yellow: #FCD34D; 
-            --c-navy: #1E3A8A; 
-            --c-dark: #111827;
-            --c-grey-bg: #F8FAFC; 
-            --c-surface: #FFFFFF;
-            --c-border: #E2E8F0; 
-            --c-danger: #EF4444; 
-            --c-success: #10B981;
+            /* --- MASTERPIECE PALETTE --- */
+            --primary: #0F172A;       /* Midnight Slate - Authoritative, Modern */
+            --accent: #F59E0B;        /* Amber Gold - Energy, Visibility */
+            --secondary: #3B82F6;     /* Electric Blue - Actions */
+            --success: #10B981;       /* Emerald - Positive */
+            --danger: #EF4444;        /* Rose - Urgent */
             
-            --h-nav: 85px; 
-            --h-header: 70px; 
-            --radius: 18px;
+            --bg-body: #F1F5F9;       /* Cool Grey - Soft Background */
+            --surface: #FFFFFF;       /* Pure White */
+            --text-main: #1E293B;     
+            --text-light: #64748B;
+            
+            /* UI VARIABLES */
+            --radius-l: 24px;
+            --radius-m: 16px;
+            --radius-s: 12px;
+            --shadow-float: 0 10px 40px -10px rgba(0,0,0,0.08);
+            --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);
+            --glass: rgba(255, 255, 255, 0.85);
+            --blur: blur(12px);
+            
+            --h-header: 70px;
+            --h-nav: 85px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--c-grey-bg); color: var(--c-dark); font-size: 15px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { 
+            margin: 0; padding: 0; 
+            font-family: 'Plus Jakarta Sans', sans-serif; /* More modern geo-humanist font */
+            background: var(--bg-body); 
+            color: var(--text-main); 
+            font-size: 15px; 
+            height: 100vh; 
+            display: flex; flex-direction: column; overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
 
-        /* --- LAYOUT --- */
+        /* --- STRUCTURE --- */
         .view-section { 
             display: none; flex-direction: column; height: 100%; width: 100%; 
             position: absolute; top: 0; left: 0; 
-            overflow-y: auto; padding-top: var(--h-header); padding-bottom: calc(var(--h-nav) + 30px); 
-            background: var(--c-grey-bg); z-index: 10; 
+            overflow-y: auto; padding-top: var(--h-header); padding-bottom: calc(var(--h-nav) + 20px); 
+            background: var(--bg-body); z-index: 10; scroll-behavior: smooth;
         }
-        .view-section.active { display: block; z-index: 20; }
+        .view-section.active { display: block; z-index: 20; animation: fadeIn 0.3s ease; }
         
-        #view-home { padding-bottom: 140px; }
-        #view-editor { padding-top: 0; padding-bottom: 220px; background: white; } 
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- HEADER --- */
-        .mobile-header { position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header); background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); border-bottom: 1px solid var(--c-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 500; }
-        .logo-text { font-weight: 800; font-size: 1.4rem; color: var(--c-navy); display: flex; align-items: center; gap: 10px; }
-        .header-btn { border: none; background: transparent; font-size: 1.5rem; color: var(--c-dark); cursor: pointer; padding: 10px; }
-        .app-version { font-size: 0.8rem; font-weight: 700; color: #94A3B8; background: #F1F5F9; padding: 5px 10px; border-radius: 20px; }
+        /* --- HEADER (GLASS) --- */
+        .mobile-header { 
+            position: fixed; top: 0; left: 0; width: 100%; height: var(--h-header); 
+            background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 0 24px; z-index: 500; 
+        }
+        .logo-text { font-weight: 800; font-size: 1.4rem; color: var(--primary); letter-spacing: -0.03em; display: flex; align-items: center; gap: 8px; }
+        .logo-text i { color: var(--accent); }
+        .header-btn { border: none; background: transparent; font-size: 1.4rem; color: var(--primary); cursor: pointer; transition: transform 0.2s; }
+        .header-btn:active { transform: scale(0.9); }
 
-        /* --- NAVIGATION --- */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: var(--c-surface); border-top: 1px solid var(--c-border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; align-items: center; padding-bottom: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.03); }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; font-size: 0.7rem; border: none; background: transparent; font-weight: 700; height: 100%; cursor: pointer; text-transform: uppercase; gap: 4px; transition: 0.2s; }
-        .nav-btn i { font-size: 1.3rem; margin-bottom: 2px; }
-        .nav-btn.active { color: var(--c-navy); }
-        .nav-ai-container { position: relative; height: 100%; width: 100%; display: flex; justify-content: center; }
-        .ai-circle-big { position: absolute; bottom: 35px; width: 65px; height: 65px; background: var(--c-yellow); border: 5px solid var(--c-surface); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(252, 211, 77, 0.4); cursor: pointer; font-weight: 900; color: var(--c-navy); font-size: 1.5rem; z-index: 1001; }
+        /* --- HOME DESIGN --- */
+        .hero-section { padding: 25px 24px 10px 24px; }
+        .welcome-label { font-size: 1rem; color: var(--text-light); font-weight: 500; }
+        .user-name { font-size: 2rem; font-weight: 800; color: var(--primary); letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 5px; }
+        .date-pill { display: inline-block; background: #E2E8F0; color: var(--text-light); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-top: 10px; }
 
-        /* --- HOME GRID --- */
-        .home-welcome { padding: 25px 20px 10px 20px; }
-        .home-title { font-size: 1.6rem; font-weight: 800; color: var(--c-dark); }
-        .home-date { font-size: 0.95rem; color: #64748B; font-weight: 500; text-transform: capitalize; margin-top: 4px; }
+        /* NEXT MEETING WIDGET */
+        .rdv-widget { 
+            background: var(--primary); color: white; 
+            margin: 20px 24px; padding: 20px; border-radius: var(--radius-l); 
+            box-shadow: 0 15px 30px -10px rgba(15, 23, 42, 0.4);
+            position: relative; overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .rdv-widget:active { transform: scale(0.98); }
+        .rdv-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.6); font-weight: 700; margin-bottom: 8px; }
+        .rdv-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .rdv-time { font-size: 0.95rem; color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .rdv-icon-bg { position: absolute; right: -10px; bottom: -10px; font-size: 5rem; color: rgba(255,255,255,0.05); transform: rotate(-15deg); }
 
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px; }
-        .dash-btn { height: 130px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; font-weight: 800; font-size: 1rem; cursor: pointer; transition: transform 0.1s; letter-spacing: 0.5px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .dash-btn:active { transform: scale(0.96); }
-        .dash-btn i { font-size: 2.2rem; margin-bottom: 12px; }
+        /* DASHBOARD GRID */
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 24px; }
+        .dash-card { 
+            background: var(--surface); border-radius: var(--radius-l); height: 130px; 
+            display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; 
+            padding: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: var(--shadow-card); transition: all 0.2s;
+        }
+        .dash-card:active { transform: scale(0.96); box-shadow: none; }
+        .dash-icon { 
+            width: 45px; height: 45px; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-size: 1.4rem; margin-bottom: 5px;
+        }
+        .dc-chantier .dash-icon { background: #FFF7ED; color: #D97706; }
+        .dc-client .dash-icon { background: #EFF6FF; color: #2563EB; }
+        .dc-agenda { grid-column: span 2; height: 90px; flex-direction: row; align-items: center; justify-content: flex-start; gap: 20px; }
+        .dc-agenda .dash-icon { background: #F8FAFC; color: #64748B; }
         
-        .btn-home-chantiers { background: #FFFBEB; color: #92400E; border: 1px solid #FCD34D; }
-        .btn-home-clients { background: #EFF6FF; color: #1E3A8A; border: 1px solid #93C5FD; }
-        .btn-home-agenda { background: white; color: #475569; border: 1px solid #CBD5E1; grid-column: span 2; height: 100px; flex-direction: row; gap: 15px; }
-        .btn-home-agenda i { margin-bottom: 0; color: #64748B; }
+        .dash-label { font-weight: 700; font-size: 1rem; color: var(--primary); }
+
+        /* KPI BAR */
+        .kpi-bar { 
+            margin: 24px; background: white; border-radius: var(--radius-m); 
+            padding: 20px; border-left: 6px solid var(--danger); 
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: var(--shadow-card);
+        }
+        .kpi-label { font-size: 0.8rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        .kpi-arrow { width: 35px; height: 35px; background: #FEF2F2; border-radius: 50%; color: var(--danger); display: flex; align-items: center; justify-content: center; }
 
         /* --- LISTS --- */
-        .list-item, .project-item, .doc-item { background: white; padding: 20px; margin: 10px 20px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .list-container { padding: 10px 24px; }
+        .modern-item { 
+            background: var(--surface); padding: 20px; margin-bottom: 12px; 
+            border-radius: var(--radius-m); border: 1px solid rgba(0,0,0,0.03);
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: var(--shadow-card); transition: transform 0.1s;
+        }
+        .modern-item:active { transform: scale(0.99); background: #FAFAFA; }
         
-        .project-item { border-left: 5px solid #CBD5E1; }
-        .proj-active { border-left-color: var(--c-navy); }
-        .doc-devis { border-left: 5px solid var(--c-navy); } 
-        .doc-facture { border-left: 5px solid var(--c-danger); } 
-        .doc-etude { border-left: 5px solid var(--c-success); }
+        .item-main { flex: 1; }
+        .item-title { font-weight: 700; font-size: 1rem; color: var(--primary); margin-bottom: 4px; }
+        .item-sub { font-size: 0.85rem; color: var(--text-light); }
+        .item-meta { display: flex; gap: 8px; margin-top: 8px; }
+        .meta-tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 6px; font-weight: 600; background: #F1F5F9; color: #64748B; }
         
-        .list-actions { display: flex; gap: 10px; align-items: center; }
-        .btn-icon-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; border: none; text-decoration: none; }
-        .btn-call { background: #ECFDF5; color: var(--c-success); }
-        .btn-map { background: #EFF6FF; color: var(--c-navy); }
-        .btn-edit { background: #F1F5F9; color: #475569; }
-
-        .section-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; margin: 25px 20px 10px 20px; color: #94A3B8; letter-spacing: 1px; }
-        .doc-type { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; margin-bottom: 4px; opacity: 0.6; }
-
-        /* --- INPUTS & BUTTONS --- */
-        .app-input { width: 100%; height: 55px; border: 1px solid #E2E8F0; padding: 0 20px; font-size: 1rem; border-radius: 12px; background: #F8FAFC; margin-bottom: 20px; color: #334155; font-weight: 500; transition: border 0.2s; }
-        .app-input:focus { border-color: var(--c-navy); background: white; }
-        
-        .btn-primary { width: 100%; height: 60px; background: var(--c-navy); color: white; font-weight: 700; border: none; font-size: 1rem; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2); text-transform: uppercase; letter-spacing: 0.5px; }
-        .btn-primary:active { transform: scale(0.98); }
-
-        .btn-big-action { width: 100%; height: 65px; border-radius: 14px; font-size: 1rem; font-weight: 800; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; margin-bottom: 15px; border: none; cursor: pointer; color: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-
-        .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: #64748B; margin-bottom: 8px; text-transform: uppercase; }
-        .badge { padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
-        .bg-draft { background: #F1F5F9; color: #475569; } .bg-ok { background: #ECFDF5; color: #065F46; }
-
-        /* --- FAB STICKY --- */
-        .fab-sticky { 
-            position: fixed; bottom: 110px; right: 25px; 
-            width: 70px; height: 70px; 
-            background: var(--c-yellow); color: var(--c-navy); 
-            border-radius: 50%; 
-            box-shadow: 0 8px 25px rgba(252, 211, 77, 0.5); 
-            font-size: 2rem; 
-            z-index: 900; 
-            border: 4px solid white; 
-            cursor: pointer; 
-            display: flex; align-items: center; justify-content: center;
+        .item-action { 
+            width: 40px; height: 40px; border-radius: 12px; background: #F8FAFC; 
+            color: var(--text-light); display: flex; align-items: center; justify-content: center; 
+            margin-left: 15px; 
         }
 
-        /* --- EDITOR --- */
-        .editor-header-wrapper { position: fixed; top: 0; left: 0; width: 100%; z-index: 400; background: white; border-bottom: 1px solid var(--c-border); }
-        .editor-top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; height: var(--h-header); }
-        .editor-tabs { display: flex; gap: 10px; padding: 0 20px 15px 20px; }
-        .editor-summary { background: #F8FAFC; padding: 15px; font-size: 0.9rem; border-bottom: 1px solid #E2E8F0; display: grid; grid-template-columns: 1fr 1fr 1fr; text-align: center; }
-        .sum-label { font-size: 0.65rem; color: #64748B; font-weight: 700; text-transform: uppercase; }
-        .sum-val { display: block; font-size: 1.1rem; font-weight: 800; color: var(--c-navy); margin-top: 4px; }
-        
-        .item-card { background: white; border-radius: 12px; padding: 0; margin: 15px 20px; border: 1px solid var(--c-border); border-left: 4px solid var(--c-navy); box-shadow: 0 2px 8px rgba(0,0,0,0.03); overflow: hidden; }
-        .item-head { padding: 12px 15px; border-bottom: 1px solid #F1F5F9; display: flex; gap: 12px; align-items: flex-start; background: #FAFAFA; }
-        .item-idx { background: #E2E8F0; color: #475569; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; margin-top: 2px; }
-        .item-desc { font-weight: 600; color: var(--c-navy); font-size: 0.95rem; line-height: 1.4; flex: 1; }
-        .item-body { display: grid; grid-template-columns: 1fr 1fr 1.5fr; padding: 12px 15px; align-items: center; }
-        .item-cell { font-size: 0.9rem; color: #475569; }
-        .item-total-cell { text-align: right; }
-        .item-price-val { font-weight: 800; color: var(--c-navy); font-size: 1.1rem; }
+        /* --- FAB --- */
+        .fab-main { 
+            position: fixed; bottom: 110px; right: 24px; 
+            width: 64px; height: 64px; 
+            background: var(--primary); color: var(--accent); 
+            border-radius: 24px; 
+            box-shadow: 0 15px 30px rgba(15, 23, 42, 0.3); 
+            font-size: 2rem; display: flex; align-items: center; justify-content: center; 
+            z-index: 900; border: none; cursor: pointer; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .fab-main:active { transform: scale(0.9) rotate(90deg); }
 
-        .room-scroll-nav { flex: 0 0 55px; background: white; display: flex; overflow-x: auto; align-items: center; padding: 0 20px; gap: 10px; border-bottom: 1px solid #eee; }
-        .room-pill { padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; border: 1px solid #E2E8F0; background: white; color: #64748B; cursor: pointer; }
-        .room-pill.active { background: var(--c-navy); color: white; border-color: var(--c-navy); }
+        /* --- BOTTOM NAV (FLOATING) --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); 
+            background: white; border-top: 1px solid rgba(0,0,0,0.05); 
+            display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; align-items: center; 
+            padding-bottom: 15px; 
+        }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: transparent; border: none; height: 100%; font-size: 0.7rem; font-weight: 700; gap: 5px; cursor: pointer; transition: color 0.3s; }
+        .nav-btn i { font-size: 1.4rem; transition: transform 0.3s; }
+        .nav-btn.active { color: var(--primary); }
+        .nav-btn.active i { transform: translateY(-3px); color: var(--secondary); }
 
-        /* KPI */
-        .home-kpi-fixed { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); padding: 10px 20px; z-index: 900; border-top: 1px solid var(--c-border); }
-        .kpi-split-card { display: flex; background: #FEF2F2; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15); border: 1px solid #FECACA; height: 75px; align-items: center; justify-content: center; cursor: pointer; }
-        .kpi-val { font-size: 1.3rem; font-weight: 800; color: #B91C1C; margin-left: 15px; }
+        .nav-ai-container { position: relative; height: 100%; display: flex; justify-content: center; }
+        .ai-btn { 
+            position: absolute; bottom: 30px; width: 60px; height: 60px; 
+            background: var(--accent); border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4); 
+            color: var(--primary); font-weight: 900; font-size: 1.2rem; border: 4px solid white; z-index: 1001; 
+        }
 
-        /* MODALS */
-        .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--c-grey-bg); z-index: 5000; display: none; flex-direction: column; }
-        .full-modal.open { display: flex; }
+        /* --- FORMS & MODALS --- */
+        .app-input { 
+            width: 100%; height: 60px; background: #F8FAFC; border: 1px solid rgba(0,0,0,0.05); 
+            border-radius: var(--radius-m); padding: 0 20px; font-size: 1.05rem; 
+            color: var(--primary); font-weight: 500; outline: none; transition: all 0.2s; margin-bottom: 20px;
+        }
+        .app-input:focus { background: white; border-color: var(--secondary); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 700; color: #64748B; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .full-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F8FAFC; z-index: 5000; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .full-modal.open { opacity: 1; pointer-events: auto; }
         #modal-client { z-index: 6000 !important; }
-        .modal-header { flex: 0 0 60px; background: white; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-        .modal-body { padding: 25px 20px; flex: 1; overflow-y: auto; background: #F8FAFC; }
-        .modal-footer { padding: 20px; background: white; border-top: 1px solid #eee; padding-bottom: 30px; }
+        .modal-header { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; background: white; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .modal-title { font-weight: 800; font-size: 1.2rem; }
+        .modal-body { flex: 1; overflow-y: auto; padding: 24px; }
+        .modal-footer { padding: 24px; background: white; border-top: 1px solid rgba(0,0,0,0.05); padding-bottom: 40px; }
+        
+        .btn-block { width: 100%; height: 60px; background: var(--primary); color: white; border: none; border-radius: var(--radius-m); font-weight: 700; font-size: 1rem; cursor: pointer; letter-spacing: 0.5px; }
+        .btn-ghost { width: 100%; height: 60px; background: transparent; color: var(--danger); border: 2px solid rgba(239, 68, 68, 0.1); border-radius: var(--radius-m); font-weight: 700; margin-top: 10px; }
 
-        /* AGENDA & TABLES */
-        .agenda-event { padding: 20px; border-bottom: 1px solid #eee; background: white; display: flex; justify-content: space-between; align-items: center; }
-        .agenda-date { font-weight: 700; color: var(--c-navy); font-size: 0.95rem; }
-        .tech-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .tech-table th { text-align: left; background: #F1F5F9; padding: 12px; border-bottom: 2px solid #E2E8F0; color: #475569; font-weight: 700; }
-        .tech-table td { padding: 12px; border-bottom: 1px solid #eee; }
-        .tech-total { font-weight: 800; background: #F8FAFC; }
+        /* --- HUB & EDITOR SPECIFICS --- */
+        .hub-header { padding: 30px 24px 20px 24px; background: white; border-bottom: 1px solid #eee; }
+        .hub-client { font-size: 0.9rem; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px; }
+        .hub-title { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin: 5px 0 10px 0; line-height: 1.2; }
+        .status-badge { display: inline-block; padding: 6px 12px; background: #F1F5F9; color: var(--primary); border-radius: 8px; font-weight: 700; font-size: 0.8rem; }
+        
+        .action-card-row { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 30px; }
+        .btn-action-card { 
+            height: 70px; background: white; border: 1px solid #E2E8F0; border-radius: var(--radius-m); 
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; 
+            font-weight: 700; color: var(--primary); cursor: pointer; box-shadow: var(--shadow-card);
+        }
+        .btn-action-card i { color: var(--secondary); font-size: 1.2rem; }
 
+        /* --- EDITOR CARDS --- */
+        .editor-top { position: fixed; top: 70px; left: 0; width: 100%; background: white; z-index: 400; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .editor-scroller { padding-top: 220px; }
+        .e-card { background: white; margin: 15px 24px; padding: 20px; border-radius: var(--radius-m); box-shadow: var(--shadow-card); border-left: 4px solid var(--primary); position: relative; }
+        .e-head { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: flex-start; }
+        .e-desc { font-weight: 700; font-size: 1rem; width: 80%; line-height: 1.4; }
+        .e-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center; }
+        .e-val { font-weight: 800; font-size: 1.1rem; color: var(--primary); }
+        .e-lbl { font-size: 0.65rem; color: var(--text-light); font-weight: 700; text-transform: uppercase; }
+        
         /* SIDE MENU */
-        .side-menu { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: white; z-index: 6000; transition: right 0.3s cubic-bezier(0.25, 1, 0.5, 1); display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(0,0,0,0.1); }
+        .side-menu { position: fixed; top: 0; right: -300px; width: 280px; height: 100%; background: white; z-index: 6000; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,0.1); }
         .side-menu.open { right: 0; }
-        .side-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 5500; display: none; }
-        .side-overlay.open { display: block; }
-        .menu-header { padding: 50px 25px; background: var(--c-navy); color: white; }
-        .menu-item { padding: 20px 25px; border-bottom: 1px solid #F1F5F9; font-weight: 600; color: #334155; display: flex; align-items: center; gap: 15px; cursor: pointer; font-size: 1rem; }
+        .side-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 5500; display: none; opacity: 0; transition: opacity 0.3s; }
+        .side-overlay.open { display: block; opacity: 1; }
 
     </style>
 </head>
@@ -172,175 +236,222 @@
 
     <main id="view-home" class="view-section active">
         <header class="mobile-header">
-            <div class="logo-text"><i class="fas fa-hammer" style="color:var(--c-yellow)"></i> QOTIA</div>
-            <div class="app-version">v50</div>
+            <div class="logo-text"><i class="fas fa-layer-group"></i> QOTIA</div>
             <button class="header-btn" onclick="App.toggleMenu()"><i class="fas fa-bars"></i></button>
         </header>
         
-        <div class="home-welcome">
-            <div class="home-title">Bonjour, Jean</div>
-            <div class="home-date" id="home-date-display">...</div>
+        <div class="hero-section">
+            <div class="welcome-label">Bon retour,</div>
+            <div class="user-name">Jean</div>
+            <div class="date-pill" id="home-date-display">Chargement...</div>
         </div>
-        
-        <div class="dashboard-grid">
-            <div class="dash-btn btn-home-chantiers" onclick="App.nav('projets')"><i class="fas fa-hard-hat"></i> CHANTIERS</div>
-            <div class="dash-btn btn-home-clients" onclick="App.nav('clients')"><i class="fas fa-users"></i> CLIENTS</div>
-            <div class="dash-btn btn-home-agenda" onclick="App.openAgenda()"><i class="fas fa-calendar-alt"></i> AGENDA</div>
+
+        <div class="rdv-widget" onclick="App.openAgenda()">
+            <div class="rdv-label">PROCHAIN RENDEZ-VOUS</div>
+            <div class="rdv-title" id="home-next-rdv-title">Aucun rendez-vous</div>
+            <div class="rdv-time" id="home-next-rdv-time">-</div>
+            <i class="fas fa-clock rdv-icon-bg"></i>
         </div>
-        
-        <div class="home-kpi-fixed">
-            <div class="kpi-split-card" onclick="App.nav('factures-global')">
-                <div style="font-weight:700; color:#B91C1C; font-size:0.85rem;">À ENCAISSER</div>
-                <div class="kpi-val" id="home-unpaid">0 €</div>
+
+        <div class="dash-grid">
+            <div class="dash-card dc-chantier" onclick="App.nav('projets')">
+                <div class="dash-icon"><i class="fas fa-hard-hat"></i></div>
+                <div class="dash-label">Chantiers</div>
             </div>
+            <div class="dash-card dc-client" onclick="App.nav('clients')">
+                <div class="dash-icon"><i class="fas fa-users"></i></div>
+                <div class="dash-label">Clients</div>
+            </div>
+            <div class="dash-card dc-agenda" onclick="App.openAgenda()">
+                <div class="dash-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="dash-label">Mon Agenda</div>
+            </div>
+        </div>
+
+        <div class="section-title" style="padding: 20px 24px 0 24px; color: var(--text-light); font-weight:700; font-size:0.85rem; text-transform: uppercase;">Activité</div>
+        <div class="kpi-bar" onclick="App.nav('factures-global')">
+            <div>
+                <div class="kpi-label">À Encasser</div>
+                <div class="kpi-value" id="home-unpaid">0 €</div>
+            </div>
+            <div class="kpi-arrow"><i class="fas fa-arrow-right"></i></div>
         </div>
     </main>
 
     <main id="view-clients" class="view-section">
         <header class="mobile-header"><div class="logo-text">CLIENTS</div></header>
-        <div style="padding:20px;"><input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)"></div>
-        <div id="clients-list"></div>
-        <button class="fab-sticky" onclick="App.openClientModal()">+</button>
+        <div style="padding:20px 24px;"><input type="text" class="app-input" placeholder="Rechercher un client..." onkeyup="App.renderClients(this.value)"></div>
+        <div id="clients-list" class="list-container"></div>
+        <button class="fab-main" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
     </main>
 
-    <main id="view-documents" class="view-section"><header class="mobile-header"><div class="logo-text">DOCUMENTS</div></header><div style="padding:15px;"><div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto; padding-bottom:5px;"><button class="badge bg-draft" onclick="App.renderDocuments('all')">Tous</button><button class="badge bg-ok" onclick="App.renderDocuments('Devis')">Devis</button><button class="badge bg-pay" style="background:#FEE2E2; color:#DC2626;" onclick="App.renderDocuments('Facture')">Factures</button><button class="badge" style="background:#ECFDF5; color:#059669;" onclick="App.renderDocuments('Etude')">Etudes</button></div><div id="documents-list"></div></div></main>
+    <main id="view-documents" class="view-section">
+        <header class="mobile-header"><div class="logo-text">DOCUMENTS</div></header>
+        <div style="padding:15px 24px;">
+            <div style="display:flex; gap:10px; margin-bottom:20px; overflow-x:auto;">
+                <button class="badge bg-draft" onclick="App.renderDocuments('all')">Tous</button>
+                <button class="badge bg-ok" style="background:#DBEAFE; color:#1E3A8A;" onclick="App.renderDocuments('Devis')">Devis</button>
+                <button class="badge bg-pay" style="background:#FEE2E2; color:#B91C1C;" onclick="App.renderDocuments('Facture')">Factures</button>
+                <button class="badge" style="background:#ECFDF5; color:#047857;" onclick="App.renderDocuments('Etude')">Etudes</button>
+            </div>
+            <div id="documents-list"></div>
+        </div>
+    </main>
 
     <main id="view-projets" class="view-section">
         <header class="mobile-header"><div class="logo-text">CHANTIERS</div></header>
-        <div style="padding:15px; padding-bottom:100px;" id="projects-list-full"></div>
-        <button class="fab-sticky" onclick="App.openProjectWizard()">+</button>
+        <div id="projects-list-full" class="list-container" style="padding-top:20px;"></div>
+        <button class="fab-main" onclick="App.openProjectWizard()"><i class="fas fa-plus"></i></button>
     </main>
 
     <main id="view-hub" class="view-section">
-        <header class="mobile-header"><button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button><div class="logo-text">CHANTIER</div><div style="width:20px"></div></header>
-        <div style="padding:20px; background:white; border-bottom:1px solid #F1F5F9;"><div style="color:#64748B; font-weight:600; font-size:0.9rem;" id="hub-client">Client</div><div style="font-weight:800; font-size:1.5rem; color:var(--c-navy); line-height:1.2; margin-top:5px;" id="hub-name">Nom Chantier</div></div>
-        <div style="padding:20px;">
-            <div class="info-box">
-                <div class="info-row"><span>Adresse</span><span style="font-weight:700" id="hub-addr">-</span></div>
-                <div class="info-row"><span>Digicode</span><span style="font-weight:700" id="hub-code">-</span></div>
-                <div class="info-row"><span>Etage</span><span style="font-weight:700" id="hub-etage">-</span></div>
-                <div class="info-row"><span>Syndic</span><span style="font-weight:700" id="hub-syndic">-</span></div>
+        <header class="mobile-header"><button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button><div class="logo-text">PROJET</div><div style="width:30px"></div></header>
+        <div class="hub-header">
+            <div class="hub-client" id="hub-client">Client</div>
+            <div class="hub-title" id="hub-name">Nom Chantier</div>
+            <span class="status-badge" id="hub-status">En cours</span>
+        </div>
+        <div style="padding:24px;">
+            <div class="action-card-row">
+                <button class="btn-action-card" onclick="App.createNewDevis()"><span>+ Nouveau Devis</span><i class="fas fa-file-contract"></i></button>
+                <div id="hub-devis-list"></div>
             </div>
-            
-            <div class="section-title">DEVIS</div>
-            <button class="btn-big-action" style="background:#10B981;" onclick="App.createNewDevis()"><span>CRÉER UN DEVIS</span><i class="fas fa-plus-circle"></i></button>
-            <div id="hub-devis-list"></div>
-            
-            <div class="section-title" style="margin-top:30px;">FACTURES</div>
-            <button class="btn-big-action" style="background:#2563EB;" onclick="App.openCreateInvoiceModal()"><span>NOUVELLE FACTURE</span><i class="fas fa-file-invoice-dollar"></i></button>
-            <div id="hub-factures-list"></div>
-
-            <div class="section-title" style="margin-top:30px;">DOCS TECHNIQUES</div>
-            <button class="btn-big-action" style="background:#8B5CF6;" onclick="App.openCreateCDCModal()"><span>CRÉER CAHIER DES CHARGES</span><i class="fas fa-clipboard-list"></i></button>
-            <div id="hub-docs-list"></div>
+            <div class="action-card-row">
+                <button class="btn-action-card" onclick="App.openCreateInvoiceModal()"><span>+ Nouvelle Facture</span><i class="fas fa-file-invoice-dollar"></i></button>
+                <div id="hub-factures-list"></div>
+            </div>
+             <div class="action-card-row">
+                <button class="btn-action-card" onclick="App.openCreateCDCModal()"><span>+ Cahier Charges</span><i class="fas fa-clipboard-list"></i></button>
+                <div id="hub-docs-list"></div>
+            </div>
         </div>
     </main>
 
     <main id="view-editor" class="view-section">
-        <div class="editor-header-wrapper">
+        <div class="editor-header-wrapper" style="background:white; z-index:400;">
             <div class="editor-top-bar">
                 <button class="header-btn" onclick="App.openHub(Store.data.activeChantierId)"><i class="fas fa-arrow-left"></i></button>
-                <div style="text-align:right;"><div style="font-size:0.75rem; color:#64748B;" id="ed-ref">REF</div><div style="font-weight:800; font-size:1.2rem; color:var(--c-navy);" id="ed-total-header">0 €</div></div>
+                <div style="text-align:right;"><div style="font-size:0.75rem; color:#64748B;" id="ed-ref">REF</div><div style="font-weight:800; font-size:1.2rem; color:var(--primary);" id="ed-total-header">0 €</div></div>
             </div>
             <div class="editor-tabs">
                 <button class="room-pill active" id="btn-mode-devis" onclick="App.switchEditorMode('devis')" style="flex:1;">PRIX</button>
                 <button class="room-pill" id="btn-mode-etude" onclick="App.switchEditorMode('etude')" style="flex:1;">TECH</button>
-                <button class="room-pill" style="background:#64748B; color:white; flex:0.8;" onclick="App.toggleSelectMode()">EXTRAIRE</button>
             </div>
-            <div id="accept-container" style="padding:0 20px 10px 20px; display:none;">
-                <button class="btn-primary" style="background:#10B981; height:50px;" onclick="App.acceptDevis()">VALIDER CE DEVIS (ACCEPTER)</button>
+            <div style="display:flex; gap:10px; padding:10px 24px; background:#F8FAFC; border-bottom:1px solid #E2E8F0;">
+                <div style="flex:1"><label class="e-lbl">L</label><input type="number" id="m-L" class="app-input" style="height:40px; margin:0;" onchange="App.calcMetrics()"></div>
+                <div style="flex:1"><label class="e-lbl">l</label><input type="number" id="m-l" class="app-input" style="height:40px; margin:0;" onchange="App.calcMetrics()"></div>
+                <div style="flex:1"><label class="e-lbl">H</label><input type="number" id="m-h" class="app-input" style="height:40px; margin:0;" value="2.70" onchange="App.calcMetrics()"></div>
             </div>
-            <div class="editor-summary">
-                <div><span class="sum-label">TOTAL HT</span><span class="sum-val" id="sum-ht">0€</span></div>
-                <div><span class="sum-label">TVA</span><span class="sum-val" id="sum-tva">0€</span></div>
-                <div><span class="sum-label">TOTAL TTC</span><span class="sum-val" id="sum-ttc">0€</span></div>
-            </div>
-            <div class="room-scroll-nav" id="room-tabs"></div>
-        </div>
-        <div id="editor-list" style="padding:10px 0; margin-top:300px;"></div>
-        
-        <div class="measures-footer">
-            <div class="m-box"><label>L</label><input type="number" class="m-inp" id="m-L" onchange="App.calcMetrics()"></div>
-            <div class="m-box"><label>l</label><input type="number" class="m-inp" id="m-l" onchange="App.calcMetrics()"></div>
-            <div class="m-box"><label>H</label><input type="number" class="m-inp" id="m-h" value="2.70" onchange="App.calcMetrics()"></div>
-            <div class="m-box" style="flex:0.8"><label>M²</label><div class="m-res" id="m-surf" style="color:white; font-weight:800; font-size:1.2rem;">0</div></div>
+             <div class="room-scroll-nav" id="room-tabs"></div>
         </div>
 
-        <div class="selection-footer"><div style="font-weight:700;">Sel : <span id="sel-count">0</span></div><button class="btn-primary" style="width:auto; height:45px; padding:0 30px;" onclick="App.openExtractModal()">GÉNÉRER</button><button class="header-btn" onclick="App.toggleSelectMode()">×</button></div>
-        <button class="fab-sticky" style="bottom:100px;" onclick="App.openLibrary()"><i class="fas fa-plus"></i></button>
+        <div id="editor-list" class="editor-scroller"></div>
+        
+        <button class="fab-main" onclick="App.openLibrary()"><i class="fas fa-plus"></i></button>
+        <div id="accept-container" style="position:fixed; bottom:120px; left:24px; right:90px; z-index:880; display:none;">
+             <button class="btn-block" style="background:var(--success);" onclick="App.acceptDevis()">VALIDER</button>
+        </div>
     </main>
 
-    <main id="view-factures-global" class="view-section"><header class="mobile-header"><div class="logo-text">TOUTES FACTURES</div></header><div style="padding:15px;" id="global-invoice-list"></div></main>
+    <main id="view-factures-global" class="view-section"><header class="mobile-header"><div class="logo-text">FACTURES</div></header><div style="padding:15px;" id="global-invoice-list"></div></main>
 
     <nav class="bottom-nav">
-        <button class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i><span>HOME</span></button>
-        <button class="nav-btn" onclick="App.nav('documents')" id="nav-documents"><i class="fas fa-folder-open"></i><span>DOCS</span></button>
-        <div class="nav-ai-container"><div class="ai-circle-big" onclick="alert('IA')">IA</div></div>
-        <button class="nav-btn" onclick="App.nav('collabs')" id="nav-collabs"><i class="fas fa-users-cog"></i><span>EQUIPE</span></button>
-        <button class="nav-btn" onclick="App.nav('settings')" id="nav-settings"><i class="fas fa-cog"></i><span>RÉGLAGES</span></button>
+        <button class="nav-btn active" onclick="App.nav('home')" id="nav-home"><i class="fas fa-home"></i><span>Home</span></button>
+        <button class="nav-btn" onclick="App.nav('documents')" id="nav-documents"><i class="fas fa-folder"></i><span>Docs</span></button>
+        <div class="nav-ai-container"><div class="ai-circle-big" onclick="alert('IA Assistant')">IA</div></div>
+        <button class="nav-btn" onclick="App.nav('collabs')" id="nav-collabs"><i class="fas fa-users"></i><span>Equipe</span></button>
+        <button class="nav-btn" onclick="App.nav('settings')" id="nav-settings"><i class="fas fa-cog"></i><span>Param</span></button>
     </nav>
 
     <div class="side-overlay" id="side-overlay" onclick="App.toggleMenu()"></div>
-    <div class="side-menu" id="side-menu"><div class="menu-header"><div style="font-size:1.5rem; font-weight:800;">MENU</div><div>Collaborateur</div></div><div class="menu-item">Mon Profil</div><div class="menu-item">Mes Collègues</div><div style="padding:20px;"><button class="btn-primary" style="background:var(--c-danger);" onclick="App.hardReset()">RÉINITIALISER / REFRESH</button></div></div>
+    <div class="side-menu" id="side-menu">
+        <div class="menu-header"><div style="font-size:1.8rem; font-weight:800;">MENU</div><div style="opacity:0.7">Collaborateur</div></div>
+        <div class="menu-item" onclick="App.nav('settings')">Mon Profil</div>
+        <div class="menu-item" onclick="App.hardReset()" style="color:var(--danger)">Réinitialiser l'App</div>
+    </div>
 
-    <div id="modal-client" class="full-modal"><div class="modal-header"><h3>Client</h3><button class="header-btn" onclick="App.closeModal('modal-client')">×</button></div><div class="modal-body"><input type="hidden" id="cli-id"><div style="display:flex; gap:15px; margin-bottom:20px;"><button class="room-pill active" id="sw-phys" onclick="App.cliType('phys')" style="flex:1; height:45px;">Physique</button><button class="room-pill" id="sw-mor" onclick="App.cliType('mor')" style="flex:1; height:45px;">Société</button></div><label class="form-label">Identité</label><div style="display:flex; gap:10px;"><select id="cli-civ" class="app-input" style="flex:0 0 90px;"><option>M.</option><option>Mme</option></select><input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet"></div><div id="grp-mor" style="display:none; margin-top:10px; padding:20px; background:white; border:1px solid #E2E8F0; border-radius:12px;"><label class="form-label">Infos Société</label><input type="text" id="cli-soc" class="app-input" placeholder="Raison Sociale"><input type="text" id="cli-siret" class="app-input" placeholder="SIRET"><input type="text" id="cli-tva" class="app-input" placeholder="TVA Intracom."></div><label class="form-label" style="margin-top:20px;">Coordonnées</label><input type="text" id="cli-addr" class="app-input" placeholder="Adresse complète"><input type="email" id="cli-email" class="app-input" placeholder="Email"><input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone"><label class="form-label">Notes</label><textarea id="cli-note" class="app-input" style="height:100px;"></textarea></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">Enregistrer le Client</button></div></div>
-    <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-btn" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body"><div style="display:flex; align-items:flex-end; gap:10px; margin-bottom:15px;"><div style="flex:1;"><label class="form-label">Client</label><select id="prj-cli" class="app-input"></select></div><button class="btn-primary" style="width:60px; height:55px; margin-bottom:20px;" onclick="App.openClientModal()">+</button></div><label class="form-label">Info Chantier</label><input type="text" id="prj-nom" class="app-input" placeholder="Nom du chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Adresse complète"><label class="form-label">Détails Techniques</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><input type="text" id="prj-code" class="app-input" placeholder="Digicode"><input type="text" id="prj-etage" class="app-input" placeholder="Etage"></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><input type="text" id="prj-asc" class="app-input" placeholder="Ascenseur"><input type="text" id="prj-keys" class="app-input" placeholder="Clés"></div><input type="text" id="prj-syndic" class="app-input" placeholder="Contact Syndic / Gardien"><input type="text" id="prj-plomb" class="app-input" placeholder="Plombier Immeuble"><input type="text" id="prj-compteur" class="app-input" placeholder="Emplacement Compteurs"></div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER LE CHANTIER</button></div></div>
-    <div id="modal-item" class="full-modal"><div class="modal-header"><h3>Ouvrage</h3><button class="header-btn" onclick="App.closeModal('modal-item')">×</button></div><div class="modal-body"><input type="hidden" id="it-id"><textarea id="it-desc" class="app-input" style="height:100px; font-size:1.05rem;"></textarea><div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><input type="number" id="it-qty" class="app-input" placeholder="Qté"><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div><label class="form-label">TVA (%)</label><select id="it-tva" class="app-input"><option value="10">10%</option><option value="20">20%</option><option value="5.5">5.5%</option></select><div style="background:#FFFbeb; padding:15px; border-radius:12px; margin:20px 0; border:1px solid #fcd34d;"><label style="color:#b45309; font-size:0.75rem; font-weight:700;">TECHNIQUE (UNITAIRE)</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><input type="number" id="it-mat" class="app-input" placeholder="Mat €"><input type="number" id="it-time" class="app-input" placeholder="Temps h"></div></div><label class="form-label">Prix Vente HT (€/u)</label><input type="number" id="it-price" class="app-input" style="font-weight:800; color:var(--c-navy); font-size:1.3rem;"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItem()">Valider</button><button style="width:100%; margin-top:15px; border:2px solid #EF4444; background:white; color:#EF4444; height:55px; border-radius:12px; font-weight:700;" onclick="App.deleteItem()">Supprimer</button></div></div>
-    <div id="modal-library" class="full-modal"><div class="modal-header"><h3>Bibliothèque</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div><div class="modal-body" id="lib-container"></div></div>
-    <div id="modal-extract" class="full-modal"><div class="modal-header"><h3>Extraire</h3><button class="header-btn" onclick="App.closeModal('modal-extract')">×</button></div><div class="modal-body"><input type="text" id="extract-name" class="app-input" placeholder="Nom Cahier"></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateTaskSheet()">Confirmer</button></div></div>
-    <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Agenda</h3><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><div style="padding:15px; background:#EFF6FF; color:var(--c-blue-accent); border-radius:12px; margin-bottom:20px; font-weight:700; text-align:center;" id="agenda-today-label"></div><label class="form-label">Chantier</label><select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select><label class="form-label">Devis (Optionnel)</label><select id="agd-devis" class="app-input"></select><label class="form-label">Date et Heure</label><input type="datetime-local" id="agd-date" class="app-input"><div class="section-title" style="margin-top:30px;">Prochains RDV</div><div id="agenda-list-view" style="max-height:250px; overflow-y:auto; margin-top:10px;"></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveAgendaEvent()">Ajouter RDV & Calendrier</button></div></div>
-    <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Facture</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label class="form-label">Devis de référence</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="text-align:center; padding:15px; background:#F3F4F6; border-radius:12px; margin-bottom:15px;"><div style="font-weight:800; font-size:1.2rem;" id="inv-total-quote">0 €</div><div style="font-size:0.85rem; color:red;" id="inv-already"></div></div><div style="display:flex;gap:15px;margin-bottom:15px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')" style="height:45px; flex:1;">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')" style="height:45px; flex:1;">Solde</button></div><div id="grp-acompte"><label class="form-label">Pourcentage</label><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"></div><div style="text-align:center; font-size:1.8rem; font-weight:900; color:var(--c-navy); margin-top:20px;" id="inv-preview-amount">0€</div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">Générer Facture</button></div></div>
-    <div id="modal-doc-options" class="full-modal" style="background:rgba(0,0,0,0.8); justify-content:flex-end;"><div style="background:white; border-radius:20px 20px 0 0; padding:30px;"><h3 id="doc-opt-title" style="text-align:center; font-size:1.3rem; margin-bottom:5px;"></h3><p id="doc-opt-sub" style="text-align:center; color:#666; margin-bottom:30px; font-size:0.9rem;"></p><div style="display:flex; flex-direction:column; gap:15px;"><button class="btn-primary" style="background:white; color:#333; border:2px solid #E5E7EB;" onclick="App.handleDocAction('view')">Voir / Modifier</button><button class="btn-primary" style="background:white; color:#333; border:2px solid #E5E7EB;" onclick="App.handleDocAction('pdf')">Générer PDF</button><button class="btn-primary" style="background:white; color:#333; border:2px solid #E5E7EB;" onclick="App.handleDocAction('share')">Partager</button></div><button class="btn-primary" style="margin-top:30px; background:#F3F4F6; color:#333;" onclick="App.closeModal('modal-doc-options')">Fermer</button></div></div>
-    <div id="modal-view-cahier" class="full-modal"><div class="modal-header"><h3>Cahier des Charges</h3><button class="header-btn" onclick="App.closeModal('modal-view-cahier')">×</button></div><div class="modal-body" style="padding:0;"><div style="padding:20px; background:#F9FAFB; border-bottom:1px solid #eee;"><h4 style="margin:0; font-size:1.1rem;" id="vc-title">...</h4></div><table class="tech-table" id="vc-table"></table></div></div>
-    <div id="modal-create-cdc" class="full-modal"><div class="modal-header"><h3>Cahier des Charges</h3><button class="header-btn" onclick="App.closeModal('modal-create-cdc')">×</button></div><div class="modal-body"><label class="form-label">Sélectionner Devis</label><select id="cdc-source-devis" class="app-input"></select><label class="form-label">Nom du Document</label><input type="text" id="cdc-name" class="app-input" placeholder="Ex: Etude Technique"></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateCDCFromDevis()">CRÉER</button></div></div>
+    <div id="modal-client" class="full-modal"><div class="modal-header"><div class="modal-title">Nouveau Client</div><button class="header-btn" onclick="App.closeModal('modal-client')">×</button></div><div class="modal-body">
+        <input type="hidden" id="cli-id"><label class="form-label">Nom Complet</label><input type="text" id="cli-nom" class="app-input" placeholder="Ex: Jean Dupont">
+        <label class="form-label">Adresse</label><input type="text" id="cli-addr" class="app-input" placeholder="Adresse complète">
+        <label class="form-label">Téléphone</label><input type="tel" id="cli-tel" class="app-input" placeholder="06...">
+        <label class="form-label">Email</label><input type="email" id="cli-email" class="app-input" placeholder="email@...">
+    </div><div class="modal-footer"><button class="btn-block" onclick="App.saveClient()">ENREGISTRER</button></div></div>
 
-    <main id="view-collabs" class="view-section"><header class="mobile-header"><div class="logo-text">EQUIPE</div></header><div style="padding:15px;" id="collabs-list"></div></main>
-    
-    <main id="view-settings" class="view-section">
-        <header class="mobile-header"><div class="logo-text">RÉGLAGES</div></header>
-        <div style="padding:20px;">
-            <div style="background:white; padding:25px; border-radius:16px; margin-bottom:30px; text-align:center; border:1px solid #E5E7EB; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-                <div style="width:90px; height:90px; background:#EFF6FF; border-radius:50%; margin:0 auto 15px auto; display:flex; align-items:center; justify-content:center;"><i class="fas fa-user" style="font-size:2.5rem; color:var(--c-blue-accent)"></i></div>
-                <div style="font-weight:800; font-size:1.2rem;">Jean Dupont</div>
-            </div>
-            <button class="btn-primary" style="background:var(--c-danger); height:60px;" onclick="App.hardReset()">RÉINITIALISER L'APPLICATION</button>
-            <div style="text-align:center; margin-top:20px; color:#9CA3AF; font-size:0.8rem;">QOTIA Mobile v51</div>
+    <div id="modal-projet" class="full-modal"><div class="modal-header"><div class="modal-title">Nouveau Chantier</div><button class="header-btn" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body">
+        <label class="form-label">Client</label><div style="display:flex; gap:10px;"><select id="prj-cli" class="app-input" style="flex:1"></select><button style="width:60px; height:60px; background:var(--bg-body); border:1px solid #ddd; border-radius:16px;" onclick="App.openClientModal()">+</button></div>
+        <label class="form-label">Nom Chantier</label><input type="text" id="prj-nom" class="app-input" placeholder="Ex: Rénovation Cuisine">
+        <label class="form-label">Adresse (Si différente)</label><input type="text" id="prj-addr" class="app-input">
+        <label class="form-label">Détails (Digicode, Etage...)</label><input type="text" id="prj-code" class="app-input" placeholder="Codes d'accès">
+    </div><div class="modal-footer"><button class="btn-block" onclick="App.createProject()">CRÉER</button></div></div>
+
+    <div id="modal-item" class="full-modal"><div class="modal-header"><div class="modal-title">Article</div><button class="header-btn" onclick="App.closeModal('modal-item')">×</button></div><div class="modal-body">
+        <input type="hidden" id="it-id">
+        <label class="form-label">Description</label><textarea id="it-desc" class="app-input" style="height:100px; padding-top:15px;"></textarea>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+            <div><label class="form-label">Quantité</label><input type="number" id="it-qty" class="app-input"></div>
+            <div><label class="form-label">Unité</label><select id="it-unit" class="app-input"><option>m²</option><option>ml</option><option>U</option><option>Ens</option></select></div>
         </div>
-    </main>
+        <label class="form-label">Prix Vente (HT)</label><input type="number" id="it-price" class="app-input" style="font-weight:800; font-size:1.5rem; color:var(--primary);">
+        <div style="background:#FFF7ED; padding:15px; border-radius:12px; margin-top:10px;"><label class="form-label" style="color:#D97706;">Technique (Temps/Mat)</label><div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;"><input type="number" id="it-time" class="app-input" placeholder="Heures" style="margin:0;"><input type="number" id="it-mat" class="app-input" placeholder="Mat €" style="margin:0;"></div></div>
+    </div><div class="modal-footer"><button class="btn-block" onclick="App.saveItem()">VALIDER</button><button class="btn-ghost" onclick="App.deleteItem()">SUPPRIMER</button></div></div>
+
+    <div id="modal-agenda" class="full-modal"><div class="modal-header"><div class="modal-title">Nouveau RDV</div><button class="header-btn" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body">
+        <div id="agenda-today-label" style="text-align:center; margin-bottom:20px; font-weight:700; color:var(--secondary);"></div>
+        <label class="form-label">Chantier</label><select id="agd-chantier" class="app-input" onchange="App.loadDevisForAgenda()"></select>
+        <label class="form-label">Devis (Option)</label><select id="agd-devis" class="app-input"></select>
+        <label class="form-label">Date & Heure</label><input type="datetime-local" id="agd-date" class="app-input">
+        <div class="section-title">Liste des RDV</div><div id="agenda-list-view"></div>
+    </div><div class="modal-footer"><button class="btn-block" onclick="App.saveAgendaEvent()">AJOUTER</button></div></div>
+
+    <div id="modal-library" class="full-modal"><div class="modal-header"><div class="modal-title">Bibliothèque</div><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div><div class="modal-body" id="lib-container"></div></div>
+    
+    <div id="modal-invoice" class="full-modal"><div class="modal-header"><div class="modal-title">Facturation</div><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body">
+        <label class="form-label">Devis Source</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select>
+        <div style="padding:15px; background:#F1F5F9; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem;">Total Devis</div><div style="font-weight:800; font-size:1.2rem;" id="inv-total-quote">0 €</div></div>
+        <div style="display:flex; gap:10px; margin-bottom:20px;"><button class="room-pill active" id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px;">Acompte %</button><button class="room-pill" id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px;">Solde</button></div>
+        <input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()">
+        <div style="text-align:center; font-size:2rem; font-weight:800; color:var(--primary);" id="inv-preview-amount">0€</div>
+    </div><div class="modal-footer"><button class="btn-block" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
+
+    <div id="modal-create-cdc" class="full-modal"><div class="modal-header"><div class="modal-title">Cahier des Charges</div><button class="header-btn" onclick="App.closeModal('modal-create-cdc')">×</button></div><div class="modal-body">
+        <label class="form-label">Basé sur le Devis :</label><select id="cdc-source-devis" class="app-input"></select>
+        <label class="form-label">Nom du Document</label><input type="text" id="cdc-name" class="app-input" placeholder="Ex: Plan Technique Cuisine">
+    </div><div class="modal-footer"><button class="btn-block" onclick="App.generateCDCFromDevis()">GÉNÉRER DOCUMENT</button></div></div>
+
+    <div id="modal-view-cahier" class="full-modal"><div class="modal-header"><div class="modal-title">Visualisation</div><button class="header-btn" onclick="App.closeModal('modal-view-cahier')">×</button></div><div class="modal-body"><h2 id="vc-title" style="font-size:1.2rem; margin-bottom:20px;"></h2><table class="tech-table" id="vc-table"></table></div></div>
 
     <script>
-        const Config = { LIB: { "Démolition": { "Sols": [{desc:"Dépose carrelage", unit:"m²", price:25, time:0.4, mat:0}], "Murs": [{desc:"Dépose faïence", unit:"m²", price:20, time:0.3, mat:0}] }, "Peinture": { "Préparation": [{desc:"Ratissage", unit:"m²", price:25, time:0.6, mat:4}], "Finition": [{desc:"Peinture Mate", unit:"m²", price:18, time:0.4, mat:5}] }, "Plomberie": { "Sanitaire": [{desc:"Pose WC", unit:"U", price:450, time:4, mat:200}] } } };
+        const Config = { LIB: { "Démolition": { "Sols": [{desc:"Dépose carrelage", unit:"m²", price:25, time:0.4, mat:0}, {desc:"Dépose Parquet", unit:"m²", price:15, time:0.2, mat:0}], "Murs": [{desc:"Dépose faïence", unit:"m²", price:20, time:0.3, mat:0}] }, "Peinture": { "Préparation": [{desc:"Ratissage", unit:"m²", price:25, time:0.6, mat:4}], "Finition": [{desc:"Peinture Mate", unit:"m²", price:18, time:0.4, mat:5}] }, "Plomberie": { "Sanitaire": [{desc:"Pose WC", unit:"U", price:450, time:4, mat:200}] } } };
         const Store = {
             data: { clients: [], chantiers: [], activeChantierId: null, activeDevisId: null, appointments: [], collaborators: [] },
-            init() { try { const s = localStorage.getItem('qotia_v51_cdc'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
+            init() { try { const s = localStorage.getItem('qotia_v52_master'); if(s) this.data = JSON.parse(s); else this.seed(); } catch(e) { this.seed(); } },
             seed() {
-                this.data.clients = [{id:101, nom:'M. Dupont', addr:'Nice', type:'physique', tel:'0600000000', email:'', note:'', civ:'M.', siret:'', tva:'', soc:''}, {id:102, nom:'Agence Immo', addr:'Cannes', type:'morale'}, {id:103, nom:'Mme Blanc', addr:'Antibes', type:'physique'}, {id:104, nom:'M. Verdi', addr:'Monaco', type:'physique'}, {id:105, nom:'SCI Azur', addr:'Nice', type:'morale'}, {id:106, nom:'M. Rossi', addr:'Menton', type:'physique'}, {id:107, nom:'Mme Noire', addr:'Nice', type:'physique'}, {id:108, nom:'Syndic Bleu', addr:'Cannes', type:'morale'}];
-                this.data.collaborators = [{id:1, name:'Jean Pierre', role:'Plombier'}, {id:2, name:'Marc Web', role:'Electricien'}, {id:3, name:'Sophie Design', role:'Architecte'}];
+                this.data.clients = [{id:101, nom:'M. Dupont', addr:'Nice'}, {id:102, nom:'Agence Immo', addr:'Cannes'}];
                 this.data.chantiers = [{
                     id:201, clientId:101, name:'Rénovation Salon', status:'En Cours', ref:'C-001', rooms:['Salon'], metrics:{'Salon':{L:5,l:4,h:2.5}},
                     devisList: [{id:501, ref:'D-001', name:'Devis Initial', status:'Accepte', items:[{id:1, room:'Salon', desc:'Peinture', qty:20, unit:'m²', price:40, mat:5, time:0.5, tva:10}], total:800}],
                     factures: [{id:901, ref:'F-001', type:'Acompte', amount:240, paid:true, devisRef:'D-001'}],
                     extraDocs: [{id:99, ref:'CDC-001', name:'Plan Plomberie', type:'Etude', items:[]}]
                 }];
-                for(let i=2; i<=8; i++) { this.data.chantiers.push({id:200+i, clientId:100+i, name:`Chantier ${i}`, ref:`C-00${i}`, status:'Brouillon', devisList:[], factures:[]}); }
+                // Fill data
+                for(let i=3;i<10;i++) { this.data.clients.push({id:100+i, nom:`Client ${i}`, addr:'Nice'}); this.data.chantiers.push({id:200+i, clientId:100+i, name:`Chantier ${i}`, ref:`C-00${i}`, status:'Brouillon', devisList:[], factures:[]}); }
                 this.data.appointments = [{ id: 1, date: '2026-02-10T09:00', title: 'RDV: Rénovation Salon', sub: 'Devis: D-001' }];
+                this.data.collaborators = [{name:'Jean',role:'Plombier'},{name:'Marc',role:'Elec'}];
                 this.save();
             },
-            save() { localStorage.setItem('qotia_v51_cdc', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_v52_master', JSON.stringify(this.data)); }
         };
 
         const App = {
-            state: { editorMode:'devis', invType:'acompte', selectMode:false, selectedItems:new Set(), tempDoc:null },
-
+            state: { editorMode:'devis', invType:'acompte', selectMode:false, selectedItems:new Set() },
             init() { Store.init(); this.nav('home'); },
             
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
                 document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
-                let target = view; if(view === 'editor') target = 'editor';
+                let target = view === 'editor' ? 'editor' : view;
                 document.getElementById('view-'+target).classList.add('active');
                 if(document.getElementById('nav-'+view)) document.getElementById('nav-'+view).classList.add('active');
-                
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
                 if(view==='projets') this.renderProjets();
@@ -349,60 +460,40 @@
                 if(view==='collabs') this.renderCollabs();
             },
 
-            toggleMenu() { const m = document.getElementById('side-menu'); const o = document.getElementById('side-overlay'); if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); } else { m.classList.add('open'); o.classList.add('open'); } },
-            hardReset() { if(confirm("Effacer tout ?")) { localStorage.clear(); location.reload(); } },
-            toggleSelectMode() { this.state.selectMode = !this.state.selectMode; this.state.selectedItems.clear(); document.body.className = this.state.selectMode ? 'mode-select' : (this.state.editorMode=='etude'?'mode-etude':'mode-devis'); this.renderItems(); },
-            toggleItemSelection(id) { if(this.state.selectedItems.has(id)) this.state.selectedItems.delete(id); else this.state.selectedItems.add(id); document.getElementById('sel-count').innerText = this.state.selectedItems.size; this.renderItems(); },
-            openExtractModal() { if(this.state.selectedItems.size>0) document.getElementById('modal-extract').classList.add('open'); },
-            openDocOptions(doc) { App.state.tempDoc = doc; document.getElementById('doc-opt-title').innerText = doc.type; document.getElementById('doc-opt-sub').innerText = `${doc.ref} - ${doc.client}`; document.getElementById('modal-doc-options').classList.add('open'); },
-            handleDocAction(action) { const d = App.state.tempDoc; if(!d) return; if(action === 'view') { Store.data.activeChantierId = d.cid; if(d.type === 'Devis') App.openEditor(d.obj.id, 'devis'); else if(d.type === 'Etude') { if(d.obj.items) App.viewCahierTable(d.obj); } else if(d.type === 'Facture') App.openHub(d.cid); App.closeModal('modal-doc-options'); } else { alert(`Action ${action} simulée`); } },
-            openProjectInvoices() { this.nav('project-invoices'); },
-            openCreateInvoiceModal() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const sel = document.getElementById('inv-devis-select'); sel.innerHTML=''; c.devisList.forEach(d => { let opt = document.createElement('option'); opt.value = d.id; opt.text = `${d.ref} - ${d.total}€`; sel.appendChild(opt); }); this.onInvoiceDevisChange(); document.getElementById('modal-invoice').classList.add('open'); },
-            onInvoiceDevisChange() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(d) { document.getElementById('inv-total-quote').innerText = d.total.toFixed(2) + " €"; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); document.getElementById('inv-already').innerText = paid.toFixed(2) + " €"; this.calcInvPreview(); } },
-            calcInvPreview() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(!d) return; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); let amt = 0; if(this.state.invType === 'acompte') { const perc = parseFloat(document.getElementById('inv-percent').value) || 0; amt = d.total * (perc/100); } else { amt = d.total - paid; } document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €"; },
-            generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€','')); const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*10000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() }; if(!c.factures) c.factures=[]; c.factures.push(inv); Store.save(); App.closeModal('modal-invoice'); App.openHub(c.id); },
-            setInvType(t) { this.state.invType = t; document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill'; document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill'; document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none'; this.calcInvPreview(); },
-            payInvoice(id) { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const f = c.factures.find(f=>f.id==id); if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); } },
-            renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); },
-            viewCahierTable(doc) { document.getElementById('vc-title').innerText = doc.name + " (" + doc.ref + ")"; const tbl = document.getElementById('vc-table'); let html = '<thead><tr><th>Ouvrage</th><th>Qté</th><th>T/u</th><th>Total</th></tr></thead><tbody>'; let totalH = 0; if(doc.items && doc.items.length > 0) { doc.items.forEach(i => { let totTime = i.qty * i.time; totalH += totTime; html += `<tr><td>${i.desc}</td><td>${i.qty} ${i.unit}</td><td>${i.time}h</td><td><strong>${totTime.toFixed(1)}h</strong></td></tr>`; }); } else { html += `<tr><td colspan="4" style="text-align:center;">Aucune tâche sélectionnée</td></tr>`; } html += `</tbody><tfoot><tr><td colspan="3" class="tech-total">TOTAL HEURES</td><td class="tech-total">${totalH.toFixed(1)}h</td></tr></tfoot>`; tbl.innerHTML = html; document.getElementById('modal-view-cahier').classList.add('open'); },
-            renderCollabs() { const l = document.getElementById('collabs-list'); l.innerHTML=''; Store.data.collaborators.forEach(c => { let d = document.createElement('div'); d.className='list-item'; d.innerHTML = `<div style="display:flex; gap:15px; align-items:center;"><div style="width:40px; height:40px; background:#EEF2FF; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:var(--c-navy);">${c.name.charAt(0)}</div><div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem; color:#666;">${c.role}</div></div></div><i class="fas fa-chevron-right" style="color:#ccc;"></i>`; d.onclick = () => { let cahiers = []; Store.data.chantiers.forEach(ch => { if(ch.extraDocs) cahiers = cahiers.concat(ch.extraDocs); }); if(cahiers.length===0) alert("Aucun document attribué."); else { let msg = `Documents attribués à ${c.name}:\n`; cahiers.forEach(doc => msg += `- ${doc.name} (${doc.ref})\n`); alert(msg); } }; l.appendChild(d); }); },
-            generateTaskSheet() { const name = document.getElementById('extract-name').value || "Cahier Tâches"; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); const items = d.items.filter(i=>this.state.selectedItems.has(i.id)); if(items.length === 0) { alert("Aucune tâche sélectionnée !"); return; } if(!c.extraDocs) c.extraDocs = []; c.extraDocs.push({ id:Date.now(), ref:`CDC-${Math.floor(Math.random()*100)}`, name:name, type:'Etude', items:items, date:new Date().toLocaleDateString() }); Store.save(); App.closeModal('modal-extract'); App.toggleSelectMode(); alert("Cahier généré dans DOCUMENTS !"); App.openHub(c.id); },
-            
-            // --- AGENDA POWER ---
-            openAgenda() {
-                const sC = document.getElementById('agd-chantier'); sC.innerHTML='<option value="">Sélectionner Chantier...</option>';
-                Store.data.chantiers.forEach(c => { let o = document.createElement('option'); o.value=c.id; o.text=c.name; sC.appendChild(o); });
-                document.getElementById('agd-devis').innerHTML='<option value="">Sélectionner Devis (Optionnel)</option>';
-                document.getElementById('agd-date').value = '';
+            // --- HOME LOGIC ---
+            renderHome() {
+                // DATE
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 const todayStr = new Date().toLocaleDateString('fr-FR', options);
-                document.getElementById('agenda-today-label').innerText = "Aujourd'hui : " + todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
-                document.getElementById('modal-agenda').classList.add('open');
-                App.renderAgendaList();
-            },
-            loadDevisForAgenda() {
-                const cid = document.getElementById('agd-chantier').value; const sD = document.getElementById('agd-devis'); sD.innerHTML='<option value="">Sélectionner Devis (Optionnel)</option>';
-                if(!cid) return; const c = Store.data.chantiers.find(x=>x.id==cid); if(c && c.devisList) c.devisList.forEach(d => { let o = document.createElement('option'); o.value=d.id; o.text=d.name; sD.appendChild(o); });
-            },
-            saveAgendaEvent() { 
-                const cid = document.getElementById('agd-chantier').value; const did = document.getElementById('agd-devis').value; const date = document.getElementById('agd-date').value;
-                if(!cid || !date) return alert("Chantier et Date requis");
-                const c = Store.data.chantiers.find(x=>x.id==cid); const d = c.devisList ? c.devisList.find(x=>x.id==did) : null;
-                if(!Store.data.appointments) Store.data.appointments = [];
-                const title = `RDV: ${c.name}`;
-                Store.data.appointments.push({ id: Date.now(), date: date, title: title, sub: d ? `Devis: ${d.ref}` : `Chantier: ${c.ref}` });
-                Store.save(); App.renderAgendaList(); 
-                const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDTSTART:${date.replace(/[-:]/g,'').split('.')[0]}\nDESCRIPTION:${d ? d.name : ''}\nEND:VEVENT\nEND:VCALENDAR`;
-                const blob = new Blob([icsContent], { type: 'text/calendar' }); const url = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'rdv_qotia.ics'; a.click();
-                document.getElementById('agd-date').value = ''; alert("RDV Ajouté et exporté !");
-            },
-            renderAgendaList() {
-                const l = document.getElementById('agenda-list-view'); if(!l) return; l.innerHTML = '';
-                if(!Store.data.appointments) Store.data.appointments = [];
-                const sorted = [...Store.data.appointments].sort((a,b) => new Date(a.date) - new Date(b.date));
-                sorted.forEach(ev => {
-                    let div = document.createElement('div'); div.className='agenda-event'; let dObj = new Date(ev.date);
-                    div.innerHTML = `<div><div class="agenda-date">${dObj.toLocaleString()}</div><div class="agenda-title">${ev.title}</div><div class="agenda-sub">${ev.sub}</div></div><i class="fas fa-calendar-check" style="color:var(--c-success)"></i>`; l.appendChild(div);
+                document.getElementById('home-date-display').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
+                
+                // NEXT MEETING
+                const now = new Date();
+                const upcoming = (Store.data.appointments || [])
+                    .filter(a => new Date(a.date) > now)
+                    .sort((a,b) => new Date(a.date) - new Date(b.date));
+                
+                if(upcoming.length > 0) {
+                    const next = upcoming[0];
+                    const d = new Date(next.date);
+                    document.getElementById('home-next-rdv-title').innerText = next.title;
+                    document.getElementById('home-next-rdv-time').innerText = `${d.toLocaleDateString()} à ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+                } else {
+                    document.getElementById('home-next-rdv-title').innerText = "Aucun rendez-vous prévu";
+                    document.getElementById('home-next-rdv-time').innerText = "Profitez de votre journée !";
+                }
+
+                // UNPAID
+                let unpaid=0; 
+                if(Store.data.chantiers) Store.data.chantiers.forEach(c=>{ if(c.factures) c.factures.forEach(f => { if(!f.paid) unpaid += f.amount; }); });
+                document.getElementById('home-unpaid').innerText = unpaid.toFixed(0)+" €"; 
+
+                // RECENT LIST
+                const l=document.getElementById('home-recent-list'); l.innerHTML=''; 
+                Store.data.chantiers.slice(0,5).forEach(c=>{ 
+                    let div = document.createElement('div'); div.className = `modern-item`; 
+                    div.innerHTML = `<div class="item-main"><div class="item-title">${c.name}</div><div class="item-sub">${c.ref}</div></div><div class="item-action"><i class="fas fa-chevron-right"></i></div>`; 
+                    div.onclick=()=>App.openHub(c.id); l.appendChild(div); 
                 });
             },
 
@@ -412,74 +503,102 @@
                 if(!Store.data.clients) return;
                 Store.data.clients.forEach(c=>{ 
                     if(c.nom.toLowerCase().includes(q.toLowerCase())) { 
-                        let d=document.createElement('div'); d.className='list-item'; 
-                        d.innerHTML=`<div class="list-content" style="flex:1" onclick="App.editClient(${c.id})"><div class="list-title">${c.nom}</div><div class="list-sub">${c.addr||'-'}</div></div><div class="list-actions"><button class="btn-icon-circle btn-edit" onclick="App.editClient(${c.id})"><i class="fas fa-pen"></i></button></div>`; 
+                        let d=document.createElement('div'); d.className='modern-item'; 
+                        d.innerHTML=`<div class="item-main" onclick="App.editClient(${c.id})"><div class="item-title">${c.nom}</div><div class="item-sub">${c.addr||'-'}</div></div><div class="item-action"><i class="fas fa-pen"></i></div>`; 
+                        d.onclick = () => App.editClient(c.id);
                         l.appendChild(d); 
                     } 
                 }); 
             },
-            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-email','cli-tel','cli-siret','cli-tva','cli-note','cli-soc'].forEach(i=>document.getElementById(i).value=''); App.cliType('phys'); document.getElementById('modal-client').classList.add('open'); },
-            cliType(t) { document.getElementById('sw-phys').className = `room-pill ${t=='phys'?'active':''}`; document.getElementById('sw-mor').className = `room-pill ${t=='mor'?'active':''}`; document.getElementById('grp-mor').style.display = t=='mor'?'block':'none'; },
-            editClient(id) { const c = Store.data.clients.find(x=>x.id==id); document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom; document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel; document.getElementById('cli-email').value=c.email||''; document.getElementById('cli-note').value=c.note||''; document.getElementById('cli-civ').value=c.civ||'M.'; document.getElementById('cli-soc').value=c.soc||''; document.getElementById('cli-siret').value=c.siret||''; document.getElementById('cli-tva').value=c.tva||''; App.cliType(c.type); document.getElementById('modal-client').classList.add('open'); },
+            openClientModal() { ['cli-id','cli-nom','cli-addr','cli-tel','cli-email','cli-note'].forEach(i=>document.getElementById(i).value=''); document.getElementById('modal-client').classList.add('open'); },
+            editClient(id) { const c = Store.data.clients.find(x=>x.id==id); document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom; document.getElementById('cli-addr').value=c.addr; document.getElementById('modal-client').classList.add('open'); },
             saveClient() { 
-                const n = document.getElementById('cli-nom').value; const id = document.getElementById('cli-id').value; const type = document.getElementById('sw-mor').classList.contains('active') ? 'morale' : 'physique'; 
-                const c = { id: id ? parseInt(id) : Date.now(), nom:n, type:type, civ: document.getElementById('cli-civ').value, addr:document.getElementById('cli-addr').value, tel:document.getElementById('cli-tel').value, email:document.getElementById('cli-email').value, note:document.getElementById('cli-note').value, soc:document.getElementById('cli-soc').value, siret:document.getElementById('cli-siret').value, tva:document.getElementById('cli-tva').value }; 
+                const n = document.getElementById('cli-nom').value; const id = document.getElementById('cli-id').value; 
+                const c = { id: id ? parseInt(id) : Date.now(), nom:n, addr:document.getElementById('cli-addr').value }; 
                 if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx] = c; } else { Store.data.clients.push(c); } 
-                Store.save(); 
-                App.closeModal('modal-client'); 
-                App.renderClients(); 
-                if(document.getElementById('modal-projet').classList.contains('open')) { App.updateProjectClientSelect(c.id); } 
+                Store.save(); App.closeModal('modal-client'); App.renderClients(); 
+                if(document.getElementById('modal-projet').classList.contains('open')) App.updateProjectClientSelect(c.id); 
             },
 
-            // --- STANDARD ---
-            openProjectWizard() { App.updateProjectClientSelect(); ['prj-nom','prj-addr','prj-code','prj-etage','prj-asc','prj-keys','prj-syndic','prj-plomb','prj-compteur'].forEach(i=>document.getElementById(i).value=''); document.getElementById('modal-projet').classList.add('open'); },
-            updateProjectClientSelect(sid) { const s = document.getElementById('prj-cli'); s.innerHTML='<option value="">Sélectionner</option>'; Store.data.clients.forEach(c=>{let o=document.createElement('option');o.value=c.id;o.innerText=c.nom;s.appendChild(o)}); if(sid) s.value=sid; },
-            createProject() { const cid=document.getElementById('prj-cli').value; const nom=document.getElementById('prj-nom').value; if(cid && nom) { const ch={ id:Date.now(), clientId:cid, name:nom, ref:"C-"+new Date().getFullYear(), activeRoom:'Salon', rooms:['Salon'], metrics:{'Salon':{L:0,l:0,h:2.5}}, devisList: [], factures: [], details: { code: document.getElementById('prj-code').value, etage: document.getElementById('prj-etage').value, asc: document.getElementById('prj-asc').value, keys: document.getElementById('prj-keys').value, syndic: document.getElementById('prj-syndic').value, plomb: document.getElementById('prj-plomb').value, compteur: document.getElementById('prj-compteur').value }, addr: document.getElementById('prj-addr').value }; const defDevis = { id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 }; ch.devisList.push(defDevis); Store.data.chantiers.unshift(ch); Store.save(); App.closeModal('modal-projet'); Store.data.activeChantierId = ch.id; App.openEditor(defDevis.id, 'devis'); } },
-            openHub(id) { Store.data.activeChantierId = id; Store.save(); const c = Store.data.chantiers.find(x=>x.id==id); const cli = Store.data.clients.find(x=>x.id==c.clientId); document.getElementById('hub-name').innerText = c.name; document.getElementById('hub-client').innerText = cli ? cli.nom : 'Inconnu'; document.getElementById('hub-addr').innerText = c.addr || '-'; document.getElementById('hub-code').innerText = c.details?.code || '-'; document.getElementById('hub-syndic').innerText = c.details?.syndic || '-'; document.getElementById('hub-etage').innerText = c.details?.etage || '-'; App.renderHubData(c); this.nav('hub'); },
-            renderHubData(c) { const ld = document.getElementById('hub-devis-list'); ld.innerHTML=''; if(c.devisList) c.devisList.forEach(d => { let div = document.createElement('div'); div.className = `project-item ${d.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${d.ref}</div><div style="font-weight:700;">${d.name}</div><div style="font-size:0.7rem; color:${d.status=='Accepte'?'var(--c-success)':'#666'}">${d.status}</div></div><div style="font-weight:900;">${d.total.toFixed(0)}€</div>`; div.onclick = () => App.openEditor(d.id, 'devis'); ld.appendChild(div); }); const lf = document.getElementById('hub-factures-list'); lf.innerHTML=''; if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let div = document.createElement('div'); div.className = `doc-item doc-facture`; div.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${f.type}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div></div>`; div.onclick = () => alert("Détail facture"); lf.appendChild(div); }); const ldoc = document.getElementById('hub-docs-list'); ldoc.innerHTML=''; if(c.extraDocs) c.extraDocs.forEach(e => { let div = document.createElement('div'); div.className = `doc-item doc-etude`; div.innerHTML = `<div><div class="doc-type">TECH</div><div style="font-weight:700;">${e.name}</div></div><i class="fas fa-file-alt" style="color:#666"></i>`; div.onclick = () => App.openDocOptions({type:'Etude', ref:e.ref, name:e.name, obj:e, cid:c.id}); ldoc.appendChild(div); }); },
-            openEditor(devisId, mode) { Store.data.activeDevisId = devisId; Store.save(); this.state.editorMode = mode; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==devisId); document.getElementById('ed-ref').innerText = d.ref; if(!c.rooms || c.rooms.length===0) { c.rooms=['Salon']; c.activeRoom='Salon'; c.metrics={'Salon':{L:0,l:0,h:2.5}}; Store.save(); } const btnAccept = document.getElementById('accept-container'); if(d.status === 'Brouillon') btnAccept.style.display = 'block'; else btnAccept.style.display = 'none'; this.switchEditorMode(mode); this.renderRooms(); this.nav('editor'); },
-            switchEditorMode(m) { this.state.editorMode = m; this.state.selectMode = false; document.body.className = m==='etude'?'mode-etude':'mode-devis'; document.getElementById('btn-mode-devis').className = m=='devis'?'room-pill active':'room-pill'; document.getElementById('btn-mode-etude').className = m=='etude'?'room-pill active':'room-pill'; this.renderItems(); },
-            renderItems() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); const l = document.getElementById('editor-list'); l.innerHTML=''; let totHT=0; let totTVA=0; const isLocked = d.status === 'Accepte'; const items = d.items.filter(i=>i.room==c.activeRoom); if(items.length===0) l.innerHTML='<div style="text-align:center; padding:30px; color:#ccc;">Liste vide</div>'; items.forEach((i, idx) => { const rowHT = i.qty * i.price; const rowTVA = rowHT * (i.tva / 100); let div = document.createElement('div'); div.id = `card-${i.id}`; div.className = `item-card ${this.state.selectedItems.has(i.id)?'selected':''}`; let check = `<div class="select-check"><i class="fas fa-check-circle" style="color:#10B981"></i></div>`; div.innerHTML = `${this.state.selectMode ? check : ''}<div style="flex:1;"><div class="item-head"><span class="item-idx">#${idx+1}</span><span class="item-desc">${i.desc}</span></div><div class="item-body view-price-mode"><div class="item-cell"><label>QTÉ</label>${i.qty} ${i.unit}</div><div class="item-cell"><label>P.U HT</label>${i.price} €</div><div class="item-total-cell"><label>TOTAL HT</label><span class="item-price-val">${rowHT.toFixed(0)}€</span><span class="item-tva-tag">${i.tva}%</span></div></div><div class="view-tech-mode" style="padding:10px 12px; background:#F0FDF4; font-size:0.85rem; color:#065F46;"><i class="fas fa-clock"></i> ${i.time}h  |  <i class="fas fa-box"></i> ${i.mat}€</div></div>`; div.onclick = () => { if(this.state.selectMode) App.toggleItemSelection(i.id); else if(!isLocked) App.editItem(i.id); }; l.appendChild(div); }); d.items.forEach(i => { const rHT = i.qty*i.price; totHT += rHT; totTVA += rHT * (i.tva/100); }); d.total = totHT; document.getElementById('ed-total-header').innerText = totHT.toFixed(0)+' €'; document.getElementById('sum-ht').innerText = totHT.toFixed(0)+'€'; document.getElementById('sum-tva').innerText = totTVA.toFixed(0)+'€'; document.getElementById('sum-ttc').innerText = (totHT+totTVA).toFixed(0)+'€'; document.querySelector('.fab-add').style.display = isLocked ? 'none' : 'flex'; Store.save(); },
-            acceptDevis() { if(!confirm("Valider ce devis ? Il ne sera plus modifiable.")) return; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); d.status = 'Accepte'; Store.save(); App.openEditor(d.id, 'devis'); alert("Devis Validé !"); },
-            renderHome() { const l=document.getElementById('home-recent-list'); l.innerHTML=''; let tot=0, unpaid=0; Store.data.chantiers.slice(0,5).forEach(c=>{ if(c.devisList) c.devisList.forEach(d => { if(d.status=='Accepte') tot += d.total; }); if(c.factures) c.factures.forEach(f => { if(!f.paid) unpaid += f.amount; }); const cli=Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = `project-item ${c.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${c.ref}</div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem;">${cli?cli.nom:''}</div></div><i class="fas fa-chevron-right" style="color:#ccc"></i>`; div.onclick=()=>App.openHub(c.id); l.appendChild(div); }); document.getElementById('home-unpaid').innerText = unpaid.toFixed(0)+" €"; 
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; const todayStr = new Date().toLocaleDateString('fr-FR', options); document.getElementById('home-date-display').innerText = todayStr.charAt(0).toUpperCase() + todayStr.slice(1);
+            // --- PROJECTS ---
+            renderProjets() { const l=document.getElementById('projects-list-full'); l.innerHTML=''; Store.data.chantiers.forEach(c=>{ let d=document.createElement('div'); d.className='modern-item'; d.innerHTML=`<div class="item-main"><div class="item-title">${c.name}</div><div class="item-sub">${c.ref}</div></div><div class="item-action"><i class="fas fa-arrow-right"></i></div>`; d.onclick=()=>App.openHub(c.id); l.appendChild(d); }); },
+            openProjectWizard() { App.updateProjectClientSelect(); document.getElementById('modal-projet').classList.add('open'); },
+            updateProjectClientSelect(sid) { const s = document.getElementById('prj-cli'); s.innerHTML='<option>Client...</option>'; Store.data.clients.forEach(c=>{let o=document.createElement('option');o.value=c.id;o.innerText=c.nom;s.appendChild(o)}); if(sid) s.value=sid; },
+            createProject() { const cid=document.getElementById('prj-cli').value; const nom=document.getElementById('prj-nom').value; if(cid && nom) { const ch={ id:Date.now(), clientId:cid, name:nom, ref:"C-"+Date.now().toString().substr(-4), activeRoom:'Salon', rooms:['Salon'], metrics:{'Salon':{L:0,l:0,h:2.5}}, devisList: [], factures: [], extraDocs: [], addr: document.getElementById('prj-addr').value }; ch.devisList.push({ id:Date.now()+1, ref:'D-001', name:'Devis Initial', status:'Brouillon', items:[], total:0 }); Store.data.chantiers.unshift(ch); Store.save(); App.closeModal('modal-projet'); App.openHub(ch.id); } },
+
+            // --- HUB ---
+            openHub(id) { Store.data.activeChantierId = id; Store.save(); const c = Store.data.chantiers.find(x=>x.id==id); const cli = Store.data.clients.find(x=>x.id==c.clientId); document.getElementById('hub-name').innerText = c.name; document.getElementById('hub-client').innerText = cli ? cli.nom : '-'; App.renderHubData(c); this.nav('hub'); },
+            renderHubData(c) {
+                // Devis
+                const ld = document.getElementById('hub-devis-list'); ld.innerHTML=''; 
+                c.devisList.forEach(d => { let div = document.createElement('div'); div.className = `modern-item`; div.innerHTML = `<div class="item-main"><div class="item-title">${d.name}</div><div class="item-sub">${d.total.toFixed(0)}€</div></div><div class="item-action"><i class="fas fa-pen"></i></div>`; div.onclick = () => App.openEditor(d.id, 'devis'); ld.appendChild(div); });
+                // Factures
+                const lf = document.getElementById('hub-factures-list'); lf.innerHTML=''; 
+                if(c.factures) c.factures.forEach(f => { let div = document.createElement('div'); div.className = `modern-item`; div.innerHTML = `<div class="item-main"><div class="item-title">${f.ref}</div><div class="item-sub">${f.amount.toFixed(0)}€</div></div><div class="item-action"><i class="fas fa-eye"></i></div>`; div.onclick = () => alert("Détail facture " + f.ref); lf.appendChild(div); });
+                // Docs
+                const ldoc = document.getElementById('hub-docs-list'); ldoc.innerHTML=''; 
+                if(c.extraDocs) c.extraDocs.forEach(e => { let div = document.createElement('div'); div.className = `modern-item`; div.innerHTML = `<div class="item-main"><div class="item-title">${e.name}</div><div class="item-sub">CDC</div></div><div class="item-action"><i class="fas fa-file-alt"></i></div>`; div.onclick = () => App.viewCahierTable(e); ldoc.appendChild(div); });
             },
-            renderProjets() { const l=document.getElementById('projects-list-full'); l.innerHTML=''; Store.data.chantiers.forEach(c=>{ const cli=Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = `project-item ${c.status=='Accepte'?'proj-active':''}`; div.innerHTML = `<div><div class="doc-type">${c.ref}</div><div style="font-weight:700;">${c.name}</div><div style="font-size:0.8rem;">${cli?cli.nom:''}</div></div><i class="fas fa-chevron-right" style="color:#ccc"></i>`; div.onclick=()=>App.openHub(c.id); l.appendChild(div); }); },
-            editItem(id) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const i=d.items.find(x=>x.id==id); document.getElementById('it-id').value=id; document.getElementById('it-desc').value=i.desc; document.getElementById('it-qty').value=i.qty; document.getElementById('it-unit').value=i.unit; document.getElementById('it-price').value=i.price; document.getElementById('it-tva').value=i.tva||10; document.getElementById('it-mat').value=i.mat||0; document.getElementById('it-time').value=i.time||0; document.getElementById('modal-item').classList.add('open'); },
-            saveItem() { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const id = document.getElementById('it-id').value; const data = { desc: document.getElementById('it-desc').value, qty: parseFloat(document.getElementById('it-qty').value)||0, unit: document.getElementById('it-unit').value, price: parseFloat(document.getElementById('it-price').value)||0, tva: parseFloat(document.getElementById('it-tva').value)||10, mat: parseFloat(document.getElementById('it-mat').value)||0, time: parseFloat(document.getElementById('it-time').value)||0 }; if(id) { const i=d.items.find(x=>x.id==id); Object.assign(i, data); } else { if(!d.items) d.items=[]; d.items.push({id:Date.now(), room:c.activeRoom, ...data}); } Store.save(); App.closeModal('modal-item'); App.renderItems(); },
-            deleteItem() { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); d.items = d.items.filter(x=>x.id != document.getElementById('it-id').value); Store.save(); App.closeModal('modal-item'); App.renderItems(); },
-            openLibrary() { const c=document.getElementById('lib-container'); c.innerHTML=''; for(let [k,v] of Object.entries(Config.LIB)) { let h=document.createElement('div'); h.style='padding:10px; background:#EEF2FF; margin-top:10px; font-weight:800; color:#1E3A8A; border-radius:8px;'; h.innerText=k; c.appendChild(h); for(let [sk,sv] of Object.entries(v)) { sv.forEach(it=>{ let d=document.createElement('div'); d.className='list-item'; d.innerText=it.desc; d.onclick=()=>{ const ch=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const dv=ch.devisList.find(x=>x.id==Store.data.activeDevisId); dv.items.push({id:Date.now(), room:ch.activeRoom, desc:it.desc, qty:1, unit:it.unit, price:it.price, mat:it.mat, time:it.time, tva:10}); Store.save(); App.closeModal('modal-library'); App.renderItems(); }; c.appendChild(d); }); } } document.getElementById('modal-library').classList.add('open'); },
-            renderRooms() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const t = document.getElementById('room-tabs'); t.innerHTML=''; c.rooms.forEach(r => { let p = document.createElement('div'); p.className=`room-pill ${c.activeRoom==r?'active':''}`; p.innerText=r; p.onclick = () => { c.activeRoom=r; Store.save(); App.renderRooms(); App.renderItems(); }; t.appendChild(p); }); let add = document.createElement('div'); add.className='room-pill'; add.innerText='+'; add.onclick=()=>{ let n=prompt('Nom pièce?'); if(n){c.rooms.push(n); c.metrics[n]={L:0,l:0,h:2.5}; c.activeRoom=n; Store.save(); App.renderRooms();} }; t.appendChild(add); const m = c.metrics[c.activeRoom] || {L:0,l:0,h:2.5}; document.getElementById('m-L').value=m.L; document.getElementById('m-l').value=m.l; document.getElementById('m-h').value=m.h; App.calcMetrics(false); },
-            calcMetrics(save=true) { const L=parseFloat(document.getElementById('m-L').value)||0; const l=parseFloat(document.getElementById('m-l').value)||0; document.getElementById('m-surf').innerText = (L*l).toFixed(2); if(save) { const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); c.metrics[c.activeRoom]={L,l,h:parseFloat(document.getElementById('m-h').value)}; Store.save(); } },
-            closeModal(id) { document.getElementById(id).classList.remove('open'); },
-            toggleMenu() { const m = document.getElementById('side-menu'); const o = document.getElementById('side-overlay'); if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); } else { m.classList.add('open'); o.classList.add('open'); } },
-            hardReset() { if(confirm("Effacer tout ?")) { localStorage.clear(); location.reload(); } },
-            toggleSelectMode() { this.state.selectMode = !this.state.selectMode; this.state.selectedItems.clear(); document.body.className = this.state.selectMode ? 'mode-select' : (this.state.editorMode=='etude'?'mode-etude':'mode-devis'); this.renderItems(); },
-            toggleItemSelection(id) { if(this.state.selectedItems.has(id)) this.state.selectedItems.delete(id); else this.state.selectedItems.add(id); document.getElementById('sel-count').innerText = this.state.selectedItems.size; this.renderItems(); },
-            openExtractModal() { if(this.state.selectedItems.size>0) document.getElementById('modal-extract').classList.add('open'); },
-            openDocOptions(doc) { App.state.tempDoc = doc; document.getElementById('doc-opt-title').innerText = doc.type; document.getElementById('doc-opt-sub').innerText = `${doc.ref} - ${doc.client}`; document.getElementById('modal-doc-options').classList.add('open'); },
-            handleDocAction(action) { const d = App.state.tempDoc; if(!d) return; if(action === 'view') { Store.data.activeChantierId = d.cid; if(d.type === 'Devis') App.openEditor(d.obj.id, 'devis'); else if(d.type === 'Etude') { if(d.obj.items) App.viewCahierTable(d.obj); } else if(d.type === 'Facture') App.openHub(d.cid); App.closeModal('modal-doc-options'); } else { alert(`Action ${action} simulée`); } },
-            openProjectInvoices() { this.nav('project-invoices'); },
-            openCreateInvoiceModal() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const sel = document.getElementById('inv-devis-select'); sel.innerHTML=''; c.devisList.forEach(d => { let opt = document.createElement('option'); opt.value = d.id; opt.text = `${d.ref} - ${d.total}€`; sel.appendChild(opt); }); this.onInvoiceDevisChange(); document.getElementById('modal-invoice').classList.add('open'); },
-            onInvoiceDevisChange() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(d) { document.getElementById('inv-total-quote').innerText = d.total.toFixed(2) + " €"; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); document.getElementById('inv-already').innerText = paid.toFixed(2) + " €"; this.calcInvPreview(); } },
-            calcInvPreview() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); if(!d) return; const paid = (c.factures||[]).filter(f=>f.linkedDevisId==did).reduce((a,b)=>a+b.amount,0); let amt = 0; if(this.state.invType === 'acompte') { const perc = parseFloat(document.getElementById('inv-percent').value) || 0; amt = d.total * (perc/100); } else { amt = d.total - paid; } document.getElementById('inv-preview-amount').innerText = amt.toFixed(2) + " €"; },
-            generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const did = document.getElementById('inv-devis-select').value; const d = c.devisList.find(x=>x.id==did); let amt = parseFloat(document.getElementById('inv-preview-amount').innerText.replace('€','')); const inv = { id: Date.now(), ref: "FAC-"+Math.floor(Math.random()*10000), type: this.state.invType, amount: amt, paid: false, linkedDevisId: did, date: new Date().toLocaleDateString() }; if(!c.factures) c.factures=[]; c.factures.push(inv); Store.save(); App.closeModal('modal-invoice'); App.openHub(c.id); },
-            setInvType(t) { this.state.invType = t; document.getElementById('btn-acompte').className = t=='acompte'?'room-pill active':'room-pill'; document.getElementById('btn-solde').className = t=='solde'?'room-pill active':'room-pill'; document.getElementById('grp-acompte').style.display = t=='acompte'?'block':'none'; this.calcInvPreview(); },
-            payInvoice(id) { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const f = c.factures.find(f=>f.id==id); if(f) { f.paid = true; Store.save(); App.openProjectInvoices(); } },
-            renderFacturesGlobal() { const l = document.getElementById('global-invoice-list'); l.innerHTML=''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { let st = f.paid ? 'PAYÉ' : 'À PAYER'; let clr = f.paid ? 'var(--c-success)' : 'var(--c-danger)'; let d = document.createElement('div'); d.className=`doc-item doc-facture`; d.innerHTML = `<div><div class="doc-type" style="color:${clr}">${st}</div><div style="font-weight:700;">${f.ref}</div><div style="font-size:0.8rem;">${c.name}</div></div><div style="text-align:right;"><div style="font-weight:900;">${f.amount.toFixed(0)}€</div><i class="fas fa-chevron-right" style="color:#ccc;"></i></div>`; d.onclick = () => App.openHub(c.id); l.appendChild(d); }); }); },
-            viewCahierTable(doc) { document.getElementById('vc-title').innerText = doc.name + " (" + doc.ref + ")"; const tbl = document.getElementById('vc-table'); let html = '<thead><tr><th>Ouvrage</th><th>Qté</th><th>T/u</th><th>Total</th></tr></thead><tbody>'; let totalH = 0; if(doc.items && doc.items.length > 0) { doc.items.forEach(i => { let totTime = i.qty * i.time; totalH += totTime; html += `<tr><td>${i.desc}</td><td>${i.qty} ${i.unit}</td><td>${i.time}h</td><td><strong>${totTime.toFixed(1)}h</strong></td></tr>`; }); } else { html += `<tr><td colspan="4" style="text-align:center;">Aucune tâche sélectionnée</td></tr>`; } html += `</tbody><tfoot><tr><td colspan="3" class="tech-total">TOTAL HEURES</td><td class="tech-total">${totalH.toFixed(1)}h</td></tr></tfoot>`; tbl.innerHTML = html; document.getElementById('modal-view-cahier').classList.add('open'); },
+
+            // --- DOCUMENTS PAGE ---
+            renderDocuments(filter) {
+                const l = document.getElementById('documents-list'); l.innerHTML=''; 
+                let docs = [];
+                Store.data.chantiers.forEach(c => {
+                    const cli = Store.data.clients.find(x=>x.id==c.clientId); const cn = cli ? cli.nom : '-';
+                    c.devisList.forEach(d => docs.push({type:'Devis', ref:d.ref, name:d.name, client:cn, amount:d.total, obj:d, cid:c.id}));
+                    if(c.factures) c.factures.forEach(f => docs.push({type:'Facture', ref:f.ref, name:'Facture', client:cn, amount:f.amount, obj:f, cid:c.id}));
+                    if(c.extraDocs) c.extraDocs.forEach(e => docs.push({type:'Etude', ref:e.ref, name:e.name, client:cn, amount:0, obj:e, cid:c.id}));
+                });
+                if(filter!='all') docs=docs.filter(d=>d.type===filter);
+                docs.forEach(d => {
+                    let div = document.createElement('div'); div.className='modern-item';
+                    div.innerHTML=`<div class="item-main"><div class="item-title">${d.type} ${d.ref}</div><div class="item-sub">${d.client}</div></div><div class="item-action"><i class="fas fa-arrow-right"></i></div>`;
+                    div.onclick = () => { 
+                        Store.data.activeChantierId = d.cid;
+                        if(d.type==='Devis') App.openEditor(d.obj.id, 'devis');
+                        else if(d.type==='Facture') App.openHub(d.cid);
+                        else App.viewCahierTable(d.obj);
+                    };
+                    l.appendChild(div);
+                });
+            },
+
+            // --- EDITOR & LOGIC ---
+            createNewDevis() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const newId = Date.now(); const newDevis = { id: newId, ref: `D-${Math.floor(Math.random()*1000)}`, name: `Devis #${c.devisList.length+1}`, status: 'Brouillon', items: [], total: 0 }; c.devisList.push(newDevis); Store.save(); App.openEditor(newId, 'devis'); },
+            openEditor(devisId, mode) { Store.data.activeDevisId = devisId; Store.save(); this.state.editorMode = mode; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==devisId); document.getElementById('ed-ref').innerText = d.ref; if(!c.rooms || c.rooms.length===0) { c.rooms=['Salon']; c.activeRoom='Salon'; c.metrics={'Salon':{L:0,l:0,h:2.5}}; Store.save(); } const btnAccept = document.getElementById('accept-container'); if(d.status === 'Brouillon') btnAccept.style.display = 'block'; else btnAccept.style.display = 'none'; this.switchEditorMode(mode); this.renderRooms(); this.nav('editor'); },
+            switchEditorMode(m) { this.state.editorMode = m; document.getElementById('btn-mode-devis').className = m=='devis'?'room-pill active':'room-pill'; document.getElementById('btn-mode-etude').className = m=='etude'?'room-pill active':'room-pill'; this.renderItems(); },
+            renderItems() { 
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); const l = document.getElementById('editor-list'); l.innerHTML=''; 
+                let totHT=0, totTVA=0;
+                d.items.filter(i=>i.room==c.activeRoom).forEach((i, idx) => { 
+                    const rowHT = i.qty * i.price; 
+                    let div = document.createElement('div'); div.className = 'e-card';
+                    div.innerHTML = `<div class="e-head"><div class="e-desc">${i.desc}</div><div class="item-idx">#${idx+1}</div></div><div class="e-grid"><div><div class="e-val">${i.qty}</div><div class="e-lbl">${i.unit}</div></div><div><div class="e-val">${i.price}€</div><div class="e-lbl">P.U</div></div><div><div class="e-val">${rowHT.toFixed(0)}€</div><div class="e-lbl">TOTAL</div></div></div>`;
+                    div.onclick = () => App.editItem(i.id);
+                    l.appendChild(div); 
+                });
+                d.items.forEach(i => { const rHT = i.qty*i.price; totHT += rHT; totTVA += rHT * (i.tva/100); }); d.total = totHT; document.getElementById('ed-total-header').innerText = totHT.toFixed(0)+' €'; document.querySelector('.sum-val').innerText = totHT.toFixed(0)+'€'; Store.save();
+            },
+            
+            // --- CDC LOGIC ---
             openCreateCDCModal() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const s = document.getElementById('cdc-source-devis'); s.innerHTML=''; c.devisList.forEach(d => { let o = document.createElement('option'); o.value=d.id; o.text=d.name; s.appendChild(o); }); document.getElementById('modal-create-cdc').classList.add('open'); },
             generateCDCFromDevis() { 
                 const did = document.getElementById('cdc-source-devis').value; const name = document.getElementById('cdc-name').value || "Cahier des Charges"; 
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==did);
                 if(!d) return;
                 if(!c.extraDocs) c.extraDocs = [];
-                c.extraDocs.push({ id:Date.now(), ref:`CDC-${Math.floor(Math.random()*100)}`, name:name, type:'Etude', items:JSON.parse(JSON.stringify(d.items)), date:new Date().toLocaleDateString() });
+                c.extraDocs.push({ id:Date.now(), ref:`CDC-${Math.floor(Math.random()*100)}`, name:name, type:'Etude', items:JSON.parse(JSON.stringify(d.items)) });
                 Store.save(); App.closeModal('modal-create-cdc'); App.openHub(c.id); alert("Cahier créé !");
             },
-            generateTaskSheet() { const name = document.getElementById('extract-name').value || "Cahier Tâches"; const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); const items = d.items.filter(i=>this.state.selectedItems.has(i.id)); if(items.length === 0) { alert("Aucune tâche sélectionnée !"); return; } if(!c.extraDocs) c.extraDocs = []; c.extraDocs.push({ id:Date.now(), ref:`CDC-${Math.floor(Math.random()*100)}`, name:name, type:'Etude', items:items, date:new Date().toLocaleDateString() }); Store.save(); App.closeModal('modal-extract'); App.toggleSelectMode(); alert("Cahier généré dans DOCUMENTS !"); App.openHub(c.id); }
-        };
+            viewCahierTable(doc) { document.getElementById('vc-title').innerText = doc.name; const tbl = document.getElementById('vc-table'); let html = '<thead><tr><th>Ouvrage</th><th>Qté</th><th>H/u</th></tr></thead><tbody>'; if(doc.items) doc.items.forEach(i => html += `<tr><td>${i.desc}</td><td>${i.qty}</td><td>${i.time||0}</td></tr>`); tbl.innerHTML = html; document.getElementById('modal-view-cahier').classList.add('open'); },
 
+            // --- HELPERS ---
+            closeModal(id) { document.getElementById(id).classList.remove('open'); },
+            toggleMenu() { const m = document.getElementById('side-menu'); const o = document.getElementById('side-overlay'); if(m.classList.contains('open')) { m.classList.remove('open'); o.classList.remove('open'); } else { m.classList.add('open'); o.classList.add('open'); } },
+            hardReset() { if(confirm("Reset?")) { localStorage.clear(); location.reload(); } },
+            openLibrary() { const c=document.getElementById('lib-container'); c.innerHTML=''; for(let [k,v] of Object.entries(Config.LIB)) { let h=document.createElement('div'); h.innerHTML=`<b>${k}</b>`; h.style="margin-top:10px; color:#1E3A8A"; c.appendChild(h); v.forEach(it=>{ let d=document.createElement('div'); d.className='modern-item'; d.innerText=it.desc; d.onclick=()=>{ const ch=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const dv=ch.devisList.find(x=>x.id==Store.data.activeDevisId); dv.items.push({id:Date.now(), room:ch.activeRoom, ...it, qty:1, tva:10}); Store.save(); App.closeModal('modal-library'); App.renderItems(); }; c.appendChild(d); }); } document.getElementById('modal-library').classList.add('open'); }
+        };
         window.onload = () => App.init();
     </script>
 </body>
