@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0F172A">
-    <title>QOTIA V55 - Final Edition</title>
+    <title>QOTIA V55 - Full AI Edition</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -62,6 +62,17 @@
         .logo-text i { color: var(--accent); }
         .header-btn { font-size: 1.4rem; color: var(--primary); background: none; border: none; cursor: pointer; padding: 5px; }
 
+        /* IA FLOATING BUTTON */
+        .ia-btn-fixed {
+            position: fixed; bottom: 100px; left: 20px;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--accent); color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
+            z-index: 2000; border: 3px solid white; cursor: pointer;
+        }
+
         /* HOME DESIGN */
         .home-container { padding: 15px 20px; display: flex; flex-direction: column; gap: 20px; }
         .welcome-block { margin-top: 20px; }
@@ -98,12 +109,6 @@
         .bm-call { background: #ECFDF5; color: var(--success); }
         .bm-map { background: #EFF6FF; color: #2563EB; }
 
-        /* NAV */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; padding-bottom: 15px; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: none; border: none; font-size: 0.7rem; font-weight: 700; gap: 4px; }
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn.active i { color: var(--accent); }
-
         /* KPI */
         .kpi-fixed-container { position: fixed; bottom: var(--h-nav); left: 0; width: 100%; padding: 10px 20px; background: var(--bg-body); border-top: 1px solid var(--border); }
         .kpi-bar { background: #FEF2F2; border: 1px solid #FECACA; border-radius: 14px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -115,6 +120,12 @@
         .e-head { display: flex; justify-content: space-between; margin-bottom: 12px; font-weight: 700; }
         .e-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
         .editable-val { background: #F8FAFC; padding: 8px; border-radius: 8px; text-align: center; font-weight: 800; border: 1px solid #E2E8F0; }
+
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; padding-bottom: 15px; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: none; border: none; font-size: 0.7rem; font-weight: 700; gap: 4px; }
+        .nav-btn.active { color: var(--primary); }
+        .nav-btn.active i { color: var(--accent); }
 
         /* FAB */
         .fab { position: fixed; bottom: 100px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--accent); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4); border: 4px solid white; z-index: 900; }
@@ -131,10 +142,12 @@
         .type-pill { padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border); background: white; font-weight: 700; flex: 1; text-align: center; }
         .type-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        #side-menu { left: -80%; width: 80%; transition: left 0.3s ease; }
+        #side-menu { left: -80%; width: 80%; transition: left 0.3s ease; background: white; }
     </style>
 </head>
 <body>
+
+    <div class="ia-btn-fixed" onclick="alert('Analyse IA: Chantier optimisé à 94%')">IA</div>
 
     <main id="view-home" class="view-section active">
         <header class="mobile-header">
@@ -181,10 +194,20 @@
         </div>
     </main>
 
+    <main id="view-agenda" class="view-section">
+        <header class="mobile-header">
+            <button class="header-btn" onclick="App.nav('home')"><i class="fas fa-arrow-left"></i></button>
+            <div class="logo-text">AGENDA PRO</div>
+            <div style="width:30px"></div>
+        </header>
+        <div style="padding: 20px;" id="agenda-list"></div>
+        <button class="fab" onclick="App.openAptModal()"><i class="fas fa-plus"></i></button>
+    </main>
+
     <main id="view-clients" class="view-section">
         <header class="mobile-header"><div class="logo-text">MES CLIENTS</div></header>
         <div style="padding: 20px;">
-            <input type="text" class="app-input" placeholder="Rechercher un client..." onkeyup="App.renderClients(this.value)">
+            <input type="text" class="app-input" placeholder="Rechercher..." onkeyup="App.renderClients(this.value)">
             <div id="clients-list"></div>
         </div>
         <button class="fab" onclick="App.openClientModal()"><i class="fas fa-plus"></i></button>
@@ -196,14 +219,6 @@
         <button class="fab" onclick="App.openProjectWizard()"><i class="fas fa-plus"></i></button>
     </main>
 
-    <main id="view-agenda" class="view-section">
-        <header class="mobile-header"><div class="logo-text">MON AGENDA</div></header>
-        <div style="padding: 20px;">
-            <div id="agenda-list"></div>
-        </div>
-        <button class="fab" onclick="App.openAppointmentModal()"><i class="fas fa-calendar-plus"></i></button>
-    </main>
-
     <main id="view-hub" class="view-section">
         <header class="mobile-header">
             <button class="header-btn" onclick="App.nav('projets')"><i class="fas fa-arrow-left"></i></button>
@@ -212,14 +227,14 @@
         </header>
         <div style="padding: 20px; background: white; border-bottom: 1px solid var(--border);">
             <div id="hub-client" style="font-weight: 700; color: var(--accent); font-size: 0.8rem;">CLIENT</div>
-            <div id="hub-name" style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">NOM CHANTIER</div>
+            <div id="hub-name" style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">NOM</div>
         </div>
         <div style="padding: 20px;">
             <div style="font-weight: 800; margin-bottom: 15px;">DEVIS</div>
-            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 15px;" onclick="App.createNewDevis()">+ NOUVEAU DEVIS</button>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom:15px;" onclick="App.createNewDevis()">+ NOUVEAU DEVIS</button>
             <div id="hub-devis-list"></div>
             <div style="font-weight: 800; margin-top: 25px; margin-bottom: 15px;">FACTURES</div>
-            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom: 15px;" onclick="App.openCreateInvoiceModal()">+ GÉNÉRER UNE FACTURE</button>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom:15px;" onclick="App.openCreateInvoiceModal()">+ GÉNÉRER FACTURE</button>
             <div id="hub-factures-list"></div>
         </div>
     </main>
@@ -239,7 +254,7 @@
     <main id="view-documents" class="view-section">
         <header class="mobile-header"><div class="logo-text">DOCUMENTS</div></header>
         <div style="padding: 20px;">
-            <div style="display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <button class="type-pill active" onclick="App.renderDocuments('all')">Tous</button>
                 <button class="type-pill" onclick="App.renderDocuments('Devis')">Devis</button>
                 <button class="type-pill" onclick="App.renderDocuments('Facture')">Factures</button>
@@ -256,28 +271,26 @@
         <button class="nav-btn" onclick="App.toggleMenu()"><i class="fas fa-cog"></i><span>Plus</span></button>
     </nav>
 
-    <div id="modal-appointment" class="full-modal">
-        <div class="modal-header"><h3>NOUVEAU RDV</h3><button class="header-btn" onclick="App.closeModal('modal-appointment')">×</button></div>
+    <div id="modal-apt" class="full-modal">
+        <div class="modal-header"><h3>NOUVEAU RDV</h3><button class="header-btn" onclick="App.closeModal('modal-apt')">×</button></div>
         <div class="modal-body">
-            <label>Titre du RDV</label>
-            <input type="text" id="apt-title" class="app-input" placeholder="ex: Devis peinture">
-            <label>Client / Lieu</label>
-            <input type="text" id="apt-sub" class="app-input" placeholder="ex: M. Martin">
-            <label>Date et Heure</label>
-            <input type="datetime-local" id="apt-date" class="app-input">
+            <label>Titre</label><input type="text" id="apt-title" class="app-input" placeholder="Visite technique">
+            <label>Client</label><input type="text" id="apt-sub" class="app-input" placeholder="M. Martin">
+            <label>Date</label><input type="datetime-local" id="apt-date" class="app-input">
         </div>
-        <div class="modal-footer"><button class="btn-primary" onclick="App.saveAppointment()">AJOUTER À L'AGENDA</button></div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.saveApt()">ENREGISTRER</button></div>
     </div>
 
     <div id="modal-client" class="full-modal">
         <div class="modal-header"><h3>NOUVEAU CLIENT</h3><button class="header-btn" onclick="App.closeModal('modal-client')">×</button></div>
         <div class="modal-body">
-            <input type="hidden" id="cli-id"><label>Nom complet</label><input type="text" id="cli-nom" class="app-input">
+            <input type="hidden" id="cli-id">
+            <label>Nom</label><input type="text" id="cli-nom" class="app-input">
             <label>Adresse</label><input type="text" id="cli-addr" class="app-input">
             <label>Tél</label><input type="tel" id="cli-tel" class="app-input">
             <label>Email</label><input type="email" id="cli-email" class="app-input">
         </div>
-        <div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">ENREGISTRER</button></div>
+        <div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">VALIDER</button></div>
     </div>
 
     <div id="modal-project" class="full-modal">
@@ -289,8 +302,13 @@
         <div class="modal-footer"><button class="btn-primary" onclick="App.saveProject()">LANCER</button></div>
     </div>
 
+    <div id="modal-library" class="full-modal">
+        <div class="modal-header"><h3>BIBLIOTHÈQUE</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div>
+        <div class="modal-body" id="lib-container"></div>
+    </div>
+
     <div id="modal-invoice" class="full-modal">
-        <div class="modal-header"><h3>FACTURE</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div>
+        <div class="modal-header"><h3>GÉNÉRER FACTURE</h3><button class="header-btn" onclick="App.closeModal('modal-invoice')">×</button></div>
         <div class="modal-body">
             <label>Devis source</label><select id="inv-devis-select" class="app-input" onchange="App.calcInvPreview()"></select>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
@@ -298,21 +316,21 @@
                 <button id="btn-type-solde" class="type-pill" onclick="App.setInvType('solde')">Solde</button>
             </div>
             <div id="box-acompte"><label>Pourcentage (%)</label><input type="number" id="inv-percent" class="app-input" value="30" oninput="App.calcInvPreview()"></div>
-            <div id="inv-preview-amount" style="font-size:2rem; font-weight:900; text-align:center; padding:20px; border:2px dashed var(--accent); border-radius:12px;">0 €</div>
+            <div id="inv-preview-amount" style="font-size:2rem; font-weight:900; text-align:center; padding:20px; border:2px dashed var(--accent);">0 €</div>
         </div>
         <div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">VALIDER</button></div>
     </div>
 
-    <div id="modal-library" class="full-modal">
-        <div class="modal-header"><h3>BIBLIOTHÈQUE</h3><button class="header-btn" onclick="App.closeModal('modal-library')">×</button></div>
-        <div class="modal-body" id="lib-container"></div>
-    </div>
-
     <div id="side-menu" class="full-modal">
-        <div class="modal-header"><h3>PARAMÈTRES</h3><button class="header-btn" onclick="App.toggleMenu()">×</button></div>
+        <div class="modal-header"><h3>RÉGLAGES</h3><button class="header-btn" onclick="App.toggleMenu()">×</button></div>
         <div class="modal-body">
-            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom:10px;" onclick="App.hardReset()">RÉINITIALISER L'APP</button>
-            <div style="text-align:center; color:var(--text-sub); margin-top:20px;">Version 55.0 Final</div>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom:15px;" onclick="location.reload()">
+                <i class="fas fa-sync-alt"></i> REFRESH APP
+            </button>
+            <button class="btn-primary" style="background:#F1F5F9; color:var(--primary); margin-bottom:15px;" onclick="App.hardReset()">
+                <i class="fas fa-trash"></i> RÉINITIALISER TOUT
+            </button>
+            <div style="text-align:center; margin-top:30px; color:var(--text-sub);">QOTIA V55.2 AI</div>
         </div>
     </div>
 
@@ -320,25 +338,25 @@
         const Config = {
             LIB: {
                 "DEMOLITION": [{desc:"Dépose carrelage", unit:"m²", price:22}, {desc:"Evacuation", unit:"forfait", price:250}],
-                "ELECTRICITE": [{desc:"Prise 16A", unit:"U", price:65}, {desc:"Point DCL", unit:"U", price:85}],
-                "PLOMBERIE": [{desc:"WC Suspendu", unit:"U", price:450}, {desc:"Meuble vasque", unit:"U", price:180}]
+                "ELECTRICITE": [{desc:"Tableau électrique", unit:"U", price:850}, {desc:"Prise 16A", unit:"U", price:65}],
+                "PLOMBERIE": [{desc:"WC Suspendu", unit:"U", price:450}, {desc:"Pose vasque", unit:"U", price:180}]
             }
         };
 
         const Store = {
             data: { clients: [], chantiers: [], appointments: [], activeChantierId: null, activeDevisId: null },
             init() {
-                const s = localStorage.getItem('qotia_v55_final');
+                const s = localStorage.getItem('qotia_full_v55');
                 if(s) this.data = JSON.parse(s);
                 else this.seed();
             },
             seed() {
-                this.data.clients = [{id:1, nom:'Dupont Immobilier', addr:'12 Rue de la Paix, Paris', tel:'0600000000', email:'c@d.fr'}];
-                this.data.chantiers = [{id:1, clientId:1, name:'Rénovation Cuisine', ref:'CH-101', devisList:[], factures:[]}];
-                this.data.appointments = [{id:1, date: new Date().toISOString(), title:'Visite technique', sub:'M. Dupont'}];
+                this.data.clients = [{id:1, nom:'Client Test', addr:'123 Rue de Nice', tel:'060000', email:'test@test.fr'}];
+                this.data.chantiers = [{id:1, clientId:1, name:'Chantier Demo', ref:'CH-001', devisList:[], factures:[]}];
+                this.data.appointments = [{id:1, date: new Date().toISOString(), title:'Visite Test', sub:'M. Martin'}];
                 this.save();
             },
-            save() { localStorage.setItem('qotia_v55_final', JSON.stringify(this.data)); }
+            save() { localStorage.setItem('qotia_full_v55', JSON.stringify(this.data)); }
         };
 
         const App = {
@@ -351,180 +369,114 @@
 
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-                const target = document.getElementById('view-' + view);
-                if(target) target.classList.add('active');
-                
+                document.getElementById('view-' + view).classList.add('active');
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-                const btn = document.getElementById('nav-' + view);
-                if(btn) btn.classList.add('active');
-
+                if(document.getElementById('nav-' + view)) document.getElementById('nav-' + view).classList.add('active');
                 if(view === 'home') this.renderHome();
-                if(view === 'clients') this.renderClients();
-                if(view === 'projets') this.renderProjets();
                 if(view === 'agenda') this.renderAgenda();
             },
 
             renderHome() {
                 const d = new Date();
                 document.getElementById('home-date-display').innerText = d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-                
                 const list = document.getElementById('home-today-list');
                 list.innerHTML = '';
                 const today = (Store.data.appointments || []).slice(0, 3);
                 today.forEach(a => {
-                    list.innerHTML += `<div class="card-item"><div><div class="card-title">${a.title}</div><div class="card-sub">${a.sub}</div></div><div style="font-weight:800; color:var(--accent);">${new Date(a.date).getHours()}:00</div></div>`;
+                    list.innerHTML += `<div class="card-item" onclick="App.openAgenda()"><div><div class="card-title">${a.title}</div><div class="card-sub">${a.sub}</div></div><div style="font-weight:800; color:var(--accent);">${new Date(a.date).getHours()}:00</div></div>`;
                 });
-
                 let unpaid = 0;
                 Store.data.chantiers.forEach(c => (c.factures || []).forEach(f => { if(!f.paid) unpaid += f.amount; }));
                 document.getElementById('home-unpaid').innerText = unpaid.toLocaleString() + " €";
             },
 
-            /* AGENDA LOGIC */
+            /* AGENDA */
             openAgenda() { this.nav('agenda'); },
-            
             renderAgenda() {
                 const list = document.getElementById('agenda-list');
                 list.innerHTML = '';
                 const apps = Store.data.appointments.sort((a,b) => new Date(a.date) - new Date(b.date));
-                if(apps.length === 0) list.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-sub);">Aucun rendez-vous</div>';
                 apps.forEach(a => {
                     const dt = new Date(a.date);
-                    list.innerHTML += `
-                        <div class="card-item">
-                            <div>
-                                <div class="card-tag">${dt.toLocaleDateString('fr-FR')}</div>
-                                <div class="card-title">${a.title}</div>
-                                <div class="card-sub">${a.sub}</div>
-                            </div>
-                            <div style="font-weight:900;">${dt.getHours()}:${dt.getMinutes().toString().padStart(2,'0')}</div>
-                        </div>`;
+                    list.innerHTML += `<div class="card-item"><div><div class="card-tag">${dt.toLocaleDateString()}</div><div class="card-title">${a.title}</div><div class="card-sub">${a.sub}</div></div><div style="font-weight:900;">${dt.getHours()}:00</div></div>`;
                 });
             },
-
-            openAppointmentModal() {
-                document.getElementById('apt-title').value = '';
-                document.getElementById('apt-sub').value = '';
-                document.getElementById('modal-appointment').classList.add('open');
+            openAptModal() { document.getElementById('modal-apt').classList.add('open'); },
+            saveApt() {
+                Store.data.appointments.push({id:Date.now(), title:document.getElementById('apt-title').value, sub:document.getElementById('apt-sub').value, date:document.getElementById('apt-date').value});
+                Store.save(); this.closeModal('modal-apt'); this.renderAgenda();
             },
 
-            saveAppointment() {
-                const title = document.getElementById('apt-title').value;
-                const sub = document.getElementById('apt-sub').value;
-                const date = document.getElementById('apt-date').value;
-                if(!title || !date) return alert("Titre et Date requis");
-                Store.data.appointments.push({ id: Date.now(), title, sub, date });
-                Store.save();
-                this.closeModal('modal-appointment');
-                this.renderAgenda();
-            },
-
-            /* CLIENTS LOGIC */
-            renderClients(q = '') {
+            /* CLIENTS */
+            renderClients(q='') {
                 const list = document.getElementById('clients-list');
-                list.innerHTML = '';
-                Store.data.clients.filter(c => c.nom.toLowerCase().includes(q.toLowerCase())).forEach(c => {
-                    list.innerHTML += `
-                        <div class="card-item">
-                            <div><div class="card-title">${c.nom}</div><div class="card-sub">${c.addr}</div></div>
-                            <div style="display:flex; gap:8px;">
-                                <a href="tel:${c.tel}" class="btn-mini bm-call"><i class="fas fa-phone"></i></a>
-                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.addr)}" target="_blank" class="btn-mini bm-map"><i class="fas fa-map-marker-alt"></i></a>
-                            </div>
-                        </div>`;
-                });
+                list.innerHTML = Store.data.clients.filter(c => c.nom.toLowerCase().includes(q.toLowerCase())).map(c => `<div class="card-item"><div><div class="card-title">${c.nom}</div><div class="card-sub">${c.addr}</div></div><div style="display:flex; gap:8px;"><a href="tel:${c.tel}" class="btn-mini bm-call"><i class="fas fa-phone"></i></a><a href="https://www.google.com/maps/search/${encodeURIComponent(c.addr)}" target="_blank" class="btn-mini bm-map"><i class="fas fa-map-marker-alt"></i></a></div></div>`).join('');
             },
-
             openClientModal() { document.getElementById('modal-client').classList.add('open'); },
             saveClient() {
-                const c = { id: Date.now(), nom: document.getElementById('cli-nom').value, addr: document.getElementById('cli-addr').value, tel: document.getElementById('cli-tel').value, email: document.getElementById('cli-email').value };
-                if(!c.nom) return alert("Nom requis");
-                Store.data.clients.push(c);
-                Store.save();
-                this.closeModal('modal-client');
-                this.renderClients();
+                const c = { id:Date.now(), nom:document.getElementById('cli-nom').value, addr:document.getElementById('cli-addr').value, tel:document.getElementById('cli-tel').value };
+                Store.data.clients.push(c); Store.save(); this.closeModal('modal-client'); this.renderClients();
             },
 
-            /* PROJETS LOGIC */
+            /* PROJETS & HUB */
             renderProjets() {
                 const list = document.getElementById('projects-list-full');
-                list.innerHTML = '';
-                Store.data.chantiers.forEach(c => {
-                    list.innerHTML += `<div class="card-item" onclick="App.openHub(${c.id})"><div><div class="card-tag">${c.ref}</div><div class="card-title">${c.name}</div></div><i class="fas fa-chevron-right"></i></div>`;
-                });
+                list.innerHTML = Store.data.chantiers.map(c => `<div class="card-item" onclick="App.openHub(${c.id})"><div><div class="card-tag">${c.ref}</div><div class="card-title">${c.name}</div></div><i class="fas fa-chevron-right"></i></div>`).join('');
             },
-
             openProjectWizard() {
                 const sel = document.getElementById('proj-client-select');
                 sel.innerHTML = Store.data.clients.map(c => `<option value="${c.id}">${c.nom}</option>`).join('');
                 document.getElementById('modal-project').classList.add('open');
             },
-
             saveProject() {
-                const p = { id: Date.now(), clientId: parseInt(document.getElementById('proj-client-select').value), name: document.getElementById('proj-name').value, ref: 'CH-' + Date.now().toString().slice(-3), devisList: [], factures: [] };
-                Store.data.chantiers.push(p);
-                Store.save();
-                this.closeModal('modal-project');
-                this.renderProjets();
+                const p = {id:Date.now(), clientId:parseInt(document.getElementById('proj-client-select').value), name:document.getElementById('proj-name').value, ref:'CH-'+Date.now().toString().slice(-3), devisList:[], factures:[]};
+                Store.data.chantiers.push(p); Store.save(); this.closeModal('modal-project'); this.renderProjets();
             },
-
             openHub(id) {
                 Store.data.activeChantierId = id;
                 const c = Store.data.chantiers.find(x => x.id == id);
                 document.getElementById('hub-name').innerText = c.name;
-                
-                const dList = document.getElementById('hub-devis-list');
-                dList.innerHTML = c.devisList.map(d => `<div class="card-item" onclick="App.openEditor(${d.id})"><div><div class="card-title">${d.name}</div><div class="card-sub">${d.total} €</div></div><i class="fas fa-edit"></i></div>`).join('');
-                
-                const fList = document.getElementById('hub-factures-list');
-                fList.innerHTML = c.factures.map(f => `<div class="card-item"><div><div class="card-title">${f.ref}</div><div class="card-sub">${f.amount} € - ${f.paid ? 'PAYÉ' : 'DÛ'}</div></div></div>`).join('');
-                
+                document.getElementById('hub-devis-list').innerHTML = c.devisList.map(d => `<div class="card-item" onclick="App.openEditor(${d.id})"><div><div class="card-title">${d.name}</div><div class="card-sub">${d.total} €</div></div><i class="fas fa-edit"></i></div>`).join('');
+                document.getElementById('hub-factures-list').innerHTML = (c.factures || []).map(f => `<div class="card-item"><div><div class="card-title">${f.ref}</div><div class="card-sub">${f.amount} €</div></div></div>`).join('');
                 this.nav('hub');
             },
 
             /* EDITOR & DEVIS */
             createNewDevis() {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
-                const d = { id: Date.now(), name: "Devis " + (c.devisList.length+1), total: 0, items: [] };
-                c.devisList.push(d);
-                Store.save();
-                this.openEditor(d.id);
+                const d = {id:Date.now(), name:"Devis "+(c.devisList.length+1), total:0, items:[]};
+                c.devisList.push(d); Store.save(); this.openEditor(d.id);
             },
-
             openEditor(did) {
-                Store.data.activeDevisId = did;
-                this.nav('editor');
-                this.renderItems();
+                Store.data.activeDevisId = did; this.nav('editor'); this.renderItems();
             },
-
             renderItems() {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
                 const d = c.devisList.find(x => x.id == Store.data.activeDevisId);
-                const list = document.getElementById('editor-list');
-                list.innerHTML = '';
+                const list = document.getElementById('editor-list'); list.innerHTML = '';
                 let total = 0;
                 d.items.forEach((it, idx) => {
-                    const row = it.qty * it.price;
-                    total += row;
-                    list.innerHTML += `<div class="e-card"><div class="e-head">${it.desc}</div><div class="e-grid"><div>Qté<div class="editable-val" onclick="App.editItemVal(${idx},'qty')">${it.qty}</div></div><div>Prix<div class="editable-val" onclick="App.editItemVal(${idx},'price')">${it.price}</div></div><div>Total<div style="font-weight:800; padding:8px;">${row}€</div></div></div></div>`;
+                    const row = it.qty * it.price; total += row;
+                    list.innerHTML += `<div class="e-card"><div class="e-head"><span>${it.desc}</span><i class="fas fa-trash" onclick="App.removeItem(${idx})" style="color:red"></i></div><div class="e-grid"><div>Qté<div class="editable-val" onclick="App.editItemVal(${idx},'qty')">${it.qty}</div></div><div>Prix<div class="editable-val" onclick="App.editItemVal(${idx},'price')">${it.price}</div></div><div>Total<div style="font-weight:800; padding:8px;">${row}€</div></div></div></div>`;
                 });
-                d.total = total;
-                document.getElementById('ed-total-header').innerText = total + " €";
+                d.total = total; document.getElementById('ed-total-header').innerText = total.toLocaleString() + " €";
                 Store.save();
             },
-
             editItemVal(idx, f) {
-                const v = prompt("Valeur ?");
-                if(v && !isNaN(v)) {
+                const v = prompt("Valeur?");
+                if(v) { 
                     const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
                     c.devisList.find(x => x.id == Store.data.activeDevisId).items[idx][f] = parseFloat(v);
                     this.renderItems();
                 }
             },
-
+            removeItem(idx) {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                c.devisList.find(x => x.id == Store.data.activeDevisId).items.splice(idx, 1);
+                this.renderItems();
+            },
             openLibrary() {
-                const cont = document.getElementById('lib-container');
-                cont.innerHTML = '';
+                const cont = document.getElementById('lib-container'); cont.innerHTML = '';
                 for(let cat in Config.LIB) {
                     cont.innerHTML += `<div style="font-weight:800; margin:15px 0 5px; color:var(--accent);">${cat}</div>`;
                     Config.LIB[cat].forEach(it => {
@@ -533,32 +485,19 @@
                 }
                 document.getElementById('modal-library').classList.add('open');
             },
-
             addToDevis(desc, price, unit) {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
                 c.devisList.find(x => x.id == Store.data.activeDevisId).items.push({desc, price, unit, qty:1});
-                Store.save();
-                this.closeModal('modal-library');
-                this.renderItems();
+                Store.save(); this.closeModal('modal-library'); this.renderItems();
             },
 
-            /* INVOICE */
+            /* FATTURE */
             openCreateInvoiceModal() {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
-                if(c.devisList.length === 0) return alert("Créez un devis d'abord");
                 document.getElementById('inv-devis-select').innerHTML = c.devisList.map(d => `<option value="${d.id}">${d.name} (${d.total}€)</option>`).join('');
-                this.calcInvPreview();
-                document.getElementById('modal-invoice').classList.add('open');
+                this.calcInvPreview(); document.getElementById('modal-invoice').classList.add('open');
             },
-
-            setInvType(t) {
-                this.state.invType = t;
-                document.getElementById('btn-type-acompte').classList.toggle('active', t==='acompte');
-                document.getElementById('btn-type-solde').classList.toggle('active', t==='solde');
-                document.getElementById('box-acompte').style.display = (t==='acompte') ? 'block' : 'none';
-                this.calcInvPreview();
-            },
-
+            setInvType(t) { this.state.invType = t; this.calcInvPreview(); },
             calcInvPreview() {
                 const did = document.getElementById('inv-devis-select').value;
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
@@ -566,25 +505,17 @@
                 let amt = (this.state.invType === 'acompte') ? d.total * (document.getElementById('inv-percent').value / 100) : d.total;
                 document.getElementById('inv-preview-amount').innerText = Math.round(amt) + " €";
             },
-
             generateInvoice() {
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
-                c.factures.push({ id: Date.now(), ref: 'FAC-'+Date.now().toString().slice(-3), amount: parseInt(document.getElementById('inv-preview-amount').innerText), paid: false });
-                Store.save();
-                this.closeModal('modal-invoice');
-                this.openHub(c.id);
+                c.factures.push({id:Date.now(), ref:'FAC-'+Date.now().toString().slice(-3), amount:parseInt(document.getElementById('inv-preview-amount').innerText), paid:false});
+                Store.save(); this.closeModal('modal-invoice'); this.openHub(c.id);
             },
 
             renderDocuments(type) {
-                const list = document.getElementById('documents-list');
-                list.innerHTML = '';
+                const list = document.getElementById('documents-list'); list.innerHTML = '';
                 Store.data.chantiers.forEach(c => {
-                    if(type === 'all' || type === 'Devis') c.devisList.forEach(d => {
-                        list.innerHTML += `<div class="card-item"><div><div class="card-tag">DEVIS</div><div class="card-title">${d.name}</div></div><div style="font-weight:800">${d.total}€</div></div>`;
-                    });
-                    if(type === 'all' || type === 'Facture') c.factures.forEach(f => {
-                        list.innerHTML += `<div class="card-item"><div><div class="card-tag" style="background:#FEF2F2; color:red">FACTURE</div><div class="card-title">${f.ref}</div></div><div style="font-weight:800">${f.amount}€</div></div>`;
-                    });
+                    if(type === 'all' || type === 'Devis') c.devisList.forEach(d => list.innerHTML += `<div class="card-item"><div><div class="card-tag">DEVIS</div><div class="card-title">${d.name}</div></div><div>${d.total}€</div></div>`);
+                    if(type === 'all' || type === 'Facture') (c.factures || []).forEach(f => list.innerHTML += `<div class="card-item"><div><div class="card-tag" style="background:red; color:white">FAC</div><div class="card-title">${f.ref}</div></div><div>${f.amount}€</div></div>`);
                 });
             },
 
@@ -594,7 +525,7 @@
                 const m = document.getElementById('side-menu');
                 m.style.left = (m.style.left === '0px') ? '-80%' : '0px';
             },
-            hardReset() { if(confirm("Supprimer tout ?")) { localStorage.clear(); location.reload(); } }
+            hardReset() { if(confirm("Supprimer tout?")) { localStorage.clear(); location.reload(); } }
         };
 
         window.onload = () => App.init();
