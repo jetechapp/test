@@ -303,6 +303,10 @@
     <div id="modal-library" class="full-modal">
         <div class="modal-header"><h3>Bibliothèque</h3><button class="header-back-container" onclick="App.closeModal('modal-library')">×</button></div>
         <div class="modal-body">
+            <div style="position:sticky; top:0; background:#F8FAFC; z-index:10; padding-bottom:10px;">
+                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca (es. demolition, carrelage...)" onkeyup="App.renderLibraryItems(this.value)" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            </div>
+
             <div style="background:#FFF; border:2px solid var(--primary); padding:10px; border-radius:12px; margin-bottom:15px;">
                 <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Pièce Cible :</label>
                 <div id="lib-room-buttons" class="room-tag-scroll"></div>
@@ -374,19 +378,27 @@
             async init() {
                 App.showToast("Sync con Cloud...");
                 
-                // 1. CARICA BIBLIOTECA EVOLUTA
-                const { data: libData, error: libErr } = await sbClient.from('library_items').select('*');
+                // 1. CARICA BIBLIOTECA EVOLUTA (Ordinata per Famiglia e Nome)
+                const { data: libData, error: libErr } = await sbClient
+                    .from('library_items')
+                    .select('*')
+                    .order('category', { ascending: true }) // Ordina le famiglie A-Z
+                    .order('desc', { ascending: true });    // Ordina gli articoli A-Z
+
                 if(!libErr && libData) {
                     Config.LIB = {};
                     libData.forEach(item => {
-                        if(!Config.LIB[item.category]) Config.LIB[item.category] = [];
-                        Config.LIB[item.category].push({
+                        // Se la categoria è vuota o null, mettiamola sotto "Altro"
+                        const cat = item.category || "Altro";
+                        
+                        if(!Config.LIB[cat]) Config.LIB[cat] = [];
+                        Config.LIB[cat].push({
                             id: item.id,
                             code: item.ref_code,
                             desc: item.desc, 
                             unit: item.unit, 
-                            labor_time: item.labor_time, // Ore
-                            material_cost: item.material_cost // Euro
+                            labor_time: item.labor_time, 
+                            material_cost: item.material_cost 
                         });
                     });
                 }
@@ -595,54 +607,114 @@
                 const categories = Object.keys(Config.LIB);
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
                 
+                // Resetta la barra di ricerca
+                document.getElementById('lib-search').value = '';
+
                 const currentPiece = App.state.lastPiece || "Général";
                 document.getElementById('lib-target-piece').value = currentPiece;
+                
+                // Genera i bottoni delle stanze
                 const btnContainer = document.getElementById('lib-room-buttons'); btnContainer.innerHTML = '';
                 ['Cuisine', 'SDB', 'Salon', 'Chambre', 'Extérieur'].forEach(r => {
                     const btn = document.createElement('div'); btn.className = `room-tag-btn ${r === currentPiece ? 'active' : ''}`; btn.innerText = r;
-                    btn.onclick = () => { App.state.lastPiece = r; document.getElementById('lib-target-piece').value = r; document.querySelectorAll('.room-tag-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
+                    btn.onclick = () => { 
+                        App.state.lastPiece = r; 
+                        document.getElementById('lib-target-piece').value = r; 
+                        document.querySelectorAll('.room-tag-btn').forEach(b => b.classList.remove('active')); 
+                        btn.classList.add('active'); 
+                    };
                     btnContainer.appendChild(btn);
                 });
 
-                const cont = document.getElementById('lib-container'); cont.innerHTML='';
+                // Chiama la funzione di renderizzazione (mostra tutto all'inizio)
+                App.renderLibraryItems('');
                 
-                for(let [k,v] of Object.entries(Config.LIB)) { 
-                    let h=document.createElement('div'); h.innerHTML=`<div style="font-weight:800; margin-top:15px; margin-bottom:10px; border-bottom:1px solid #ddd;">${k}</div>`; cont.appendChild(h); 
-                    v.forEach(it => { 
-                        const dynamicPrice = App.calculateItemPrice(it);
-                        
-                        let div=document.createElement('div'); div.className='card-item'; 
-                        div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.9rem;">${it.desc}</div>
-                        <div class="card-sub" style="color:var(--primary); font-weight:700;">
-                            ${dynamicPrice.toFixed(2)}€ / ${it.unit} 
-                            <span style="font-weight:400; color:#64748B;">(T: ${it.labor_time}h | M: ${it.material_cost}€)</span>
-                        </div></div><i class="fas fa-plus" style="color:var(--accent)"></i>`; 
-                        
-                        div.onclick=()=>{ 
-                            const piece = document.getElementById('lib-target-piece').value;
-                            const ch=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const dv=ch.devisList.find(x=>x.id==Store.data.activeDevisId); 
-                            
-                            const newItem = {
-                                id: Date.now(), 
-                                desc: it.desc,
-                                unit: it.unit,
-                                time: it.labor_time, 
-                                material_cost: it.material_cost, 
-                                price: dynamicPrice, 
-                                qty: 0, 
-                                piece: piece
-                            }; 
-                            dv.items.push(newItem); 
-                            Store.save(); 
-                            App.closeModal('modal-library'); 
-                            App.calcTotals(); 
-                            App.renderEditorItems(); 
-                            setTimeout(() => App.editDevisItem(newItem.id), 200);
-                        }; 
-                        cont.appendChild(div); 
-                    }); 
-                } 
                 document.getElementById('modal-library').classList.add('open'); 
+            },
+
+            // NUOVA FUNZIONE DI RICERCA CON FAMIGLIE
+            renderLibraryItems(query) {
+                const cont = document.getElementById('lib-container'); 
+                cont.innerHTML = '';
+                const term = query ? query.toLowerCase() : '';
+                
+                let foundAny = false;
+
+                // Scorre tutte le categorie (Famiglie) salvate in Config.LIB
+                for(let [category, items] of Object.entries(Config.LIB)) { 
+                    
+                    // Se c'è una ricerca, filtra gli articoli. Se no, prendili tutti.
+                    const filteredItems = items.filter(it => it.desc.toLowerCase().includes(term));
+                    
+                    // Mostra la categoria solo se contiene articoli (dopo il filtro)
+                    if(filteredItems.length > 0) {
+                        foundAny = true;
+                        
+                        // --- INTESTAZIONE FAMIGLIA ---
+                        let header = document.createElement('div'); 
+                        // Stile: Sfondo grigio chiaro, testo scuro, bordo a sinistra colorato
+                        header.style.cssText = "background:#F1F5F9; padding:10px 15px; margin-top:20px; margin-bottom:10px; border-radius:8px; font-weight:800; color:var(--primary); font-size:1rem; border-left:5px solid var(--accent); text-transform:uppercase; letter-spacing:0.5px;";
+                        header.innerText = category;
+                        cont.appendChild(header); 
+                        
+                        // --- LISTA ARTICOLI DELLA FAMIGLIA ---
+                        filteredItems.forEach(it => { 
+                            const dynamicPrice = App.calculateItemPrice(it);
+                            
+                            let div = document.createElement('div'); 
+                            div.className = 'card-item'; 
+                            // Rimuoviamo il margine inferiore eccessivo per compattare la lista
+                            div.style.marginBottom = "8px"; 
+                            
+                            div.innerHTML = `
+                                <div class="card-info">
+                                    <div class="card-title" style="font-size:0.95rem;">${it.desc}</div>
+                                    <div class="card-sub" style="color:var(--primary); font-weight:700;">
+                                        ${dynamicPrice.toFixed(2)}€ / ${it.unit} 
+                                        <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">
+                                            (T: ${it.labor_time}h | M: ${it.material_cost}€)
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style="background:var(--accent); color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+                                    <i class="fas fa-plus" style="font-size:0.9rem;"></i>
+                                </div>
+                            `; 
+                            
+                            div.onclick = () => { 
+                                // Logica di aggiunta al preventivo (identica a prima)
+                                const piece = document.getElementById('lib-target-piece').value;
+                                const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                                const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
+                                
+                                const newItem = {
+                                    id: Date.now(), 
+                                    desc: it.desc,
+                                    unit: it.unit,
+                                    time: it.labor_time, 
+                                    material_cost: it.material_cost, 
+                                    price: dynamicPrice, 
+                                    qty: 0, 
+                                    piece: piece
+                                }; 
+                                dv.items.push(newItem); 
+                                Store.save(); 
+                                App.showToast("Aggiunto: " + it.desc);
+                                App.calcTotals(); 
+                                App.renderEditorItems(); 
+                            }; 
+                            cont.appendChild(div); 
+                        });
+                    }
+                } 
+
+                // Messaggio se non si trova nulla
+                if(!foundAny) {
+                    cont.innerHTML = `<div style="text-align:center; padding:40px; color:#94A3B8;">
+                        <i class="fas fa-search" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>
+                        Nessun articolo trovato per "${query}"
+                    </div>`;
+                }
             },
 
             editDevisItem(id) {
