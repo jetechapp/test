@@ -323,18 +323,14 @@
     <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Créer Facture</h3><button class="header-back-container" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label style="font-weight:700;">Depuis Devis:</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="background:#F1F5F9; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem; color:#64748B">Montant Devis</div><div style="font-size:1.4rem; font-weight:900;" id="inv-total-quote">0€</div></div><div style="display:flex; gap:10px; margin-bottom:15px;"><button id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Acompte %</button><button id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; margin-top:20px;"><div>Montant Facture</div><div style="font-size:2rem; font-weight:900; color:var(--primary);" id="inv-preview-amount">0€</div></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
 
     <script>
-        // --- CONFIGURAZIONE CLOUD (DA SOSTITUIRE) ---
         const SUPABASE_URL = 'https://uhuxdsubvvnytuftyztq.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVodXhkc3VidnZueXR1ZnR5enRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MzI3NDMsImV4cCI6MjA4NTUwODc0M30.lXOPs-qDfXuO7ExdpbQJawb_gSWD31FDT0FHSD4xdmE';
         
-        // CORREZIONE 1: Rinominato per evitare conflitto con la libreria globale 'supabase'
         const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- GESTIONE AUTENTICAZIONE ---
         const Auth = {
             user: null,
             async init() {
-                // CORREZIONE 2: Usare sbClient invece di supabase
                 const { data } = await sbClient.auth.getSession();
                 if (data.session) {
                     this.user = data.session.user;
@@ -378,19 +374,17 @@
             async init() {
                 App.showToast("Sync con Cloud...");
                 
-                // 1. CARICA BIBLIOTECA EVOLUTA (Ordinata per Famiglia e Nome)
+                // 1. CARICA BIBLIOTECA (Ordinata)
                 const { data: libData, error: libErr } = await sbClient
                     .from('library_items')
                     .select('*')
-                    .order('category', { ascending: true }) // Ordina le famiglie A-Z
-                    .order('desc', { ascending: true });    // Ordina gli articoli A-Z
+                    .order('category', { ascending: true })
+                    .order('desc', { ascending: true });
 
                 if(!libErr && libData) {
                     Config.LIB = {};
                     libData.forEach(item => {
-                        // Se la categoria è vuota o null, mettiamola sotto "Altro"
                         const cat = item.category || "Altro";
-                        
                         if(!Config.LIB[cat]) Config.LIB[cat] = [];
                         Config.LIB[cat].push({
                             id: item.id,
@@ -403,7 +397,6 @@
                     });
                 }
 
-                // 2. CARICA DATI UTENTE
                 const { data: userData } = await sbClient
                     .from('app_state')
                     .select('data_json')
@@ -438,7 +431,7 @@
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général' },
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null },
             
             init() { Auth.init(); },
 
@@ -607,13 +600,12 @@
                 const categories = Object.keys(Config.LIB);
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
                 
-                // Resetta la barra di ricerca
                 document.getElementById('lib-search').value = '';
+                App.state.libCategory = null; 
 
                 const currentPiece = App.state.lastPiece || "Général";
                 document.getElementById('lib-target-piece').value = currentPiece;
                 
-                // Genera i bottoni delle stanze
                 const btnContainer = document.getElementById('lib-room-buttons'); btnContainer.innerHTML = '';
                 ['Cuisine', 'SDB', 'Salon', 'Chambre', 'Extérieur'].forEach(r => {
                     const btn = document.createElement('div'); btn.className = `room-tag-btn ${r === currentPiece ? 'active' : ''}`; btn.innerText = r;
@@ -626,95 +618,80 @@
                     btnContainer.appendChild(btn);
                 });
 
-                // Chiama la funzione di renderizzazione (mostra tutto all'inizio)
                 App.renderLibraryItems('');
-                
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
-            // NUOVA FUNZIONE DI RICERCA CON FAMIGLIE
             renderLibraryItems(query) {
                 const cont = document.getElementById('lib-container'); 
                 cont.innerHTML = '';
                 const term = query ? query.toLowerCase() : '';
-                
-                let foundAny = false;
 
-                // Scorre tutte le categorie (Famiglie) salvate in Config.LIB
-                for(let [category, items] of Object.entries(Config.LIB)) { 
-                    
-                    // Se c'è una ricerca, filtra gli articoli. Se no, prendili tutti.
-                    const filteredItems = items.filter(it => it.desc.toLowerCase().includes(term));
-                    
-                    // Mostra la categoria solo se contiene articoli (dopo il filtro)
-                    if(filteredItems.length > 0) {
-                        foundAny = true;
-                        
-                        // --- INTESTAZIONE FAMIGLIA ---
-                        let header = document.createElement('div'); 
-                        // Stile: Sfondo grigio chiaro, testo scuro, bordo a sinistra colorato
-                        header.style.cssText = "background:#F1F5F9; padding:10px 15px; margin-top:20px; margin-bottom:10px; border-radius:8px; font-weight:800; color:var(--primary); font-size:1rem; border-left:5px solid var(--accent); text-transform:uppercase; letter-spacing:0.5px;";
-                        header.innerText = category;
-                        cont.appendChild(header); 
-                        
-                        // --- LISTA ARTICOLI DELLA FAMIGLIA ---
-                        filteredItems.forEach(it => { 
-                            const dynamicPrice = App.calculateItemPrice(it);
-                            
-                            let div = document.createElement('div'); 
-                            div.className = 'card-item'; 
-                            // Rimuoviamo il margine inferiore eccessivo per compattare la lista
-                            div.style.marginBottom = "8px"; 
-                            
-                            div.innerHTML = `
-                                <div class="card-info">
-                                    <div class="card-title" style="font-size:0.95rem;">${it.desc}</div>
-                                    <div class="card-sub" style="color:var(--primary); font-weight:700;">
-                                        ${dynamicPrice.toFixed(2)}€ / ${it.unit} 
-                                        <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">
-                                            (T: ${it.labor_time}h | M: ${it.material_cost}€)
-                                        </span>
-                                    </div>
-                                </div>
-                                <div style="background:var(--accent); color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-                                    <i class="fas fa-plus" style="font-size:0.9rem;"></i>
-                                </div>
-                            `; 
-                            
-                            div.onclick = () => { 
-                                // Logica di aggiunta al preventivo (identica a prima)
-                                const piece = document.getElementById('lib-target-piece').value;
-                                const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
-                                const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
-                                
-                                const newItem = {
-                                    id: Date.now(), 
-                                    desc: it.desc,
-                                    unit: it.unit,
-                                    time: it.labor_time, 
-                                    material_cost: it.material_cost, 
-                                    price: dynamicPrice, 
-                                    qty: 0, 
-                                    piece: piece
-                                }; 
-                                dv.items.push(newItem); 
-                                Store.save(); 
-                                App.showToast("Aggiunto: " + it.desc);
-                                App.calcTotals(); 
-                                App.renderEditorItems(); 
-                            }; 
-                            cont.appendChild(div); 
-                        });
+                // --- RICERCA ATTIVA ---
+                if (term.length > 0) {
+                    let foundAny = false;
+                    for(let [category, items] of Object.entries(Config.LIB)) { 
+                        const filteredItems = items.filter(it => it.desc.toLowerCase().includes(term));
+                        if(filteredItems.length > 0) {
+                            foundAny = true;
+                            let h = document.createElement('div'); 
+                            h.innerHTML=`<div style="font-weight:800; margin-top:15px; margin-bottom:5px; color:var(--text-sub); font-size:0.8rem; text-transform:uppercase;">${category}</div>`; 
+                            cont.appendChild(h); 
+                            App.renderLibItemsList(cont, filteredItems);
+                        }
                     }
-                } 
-
-                // Messaggio se non si trova nulla
-                if(!foundAny) {
-                    cont.innerHTML = `<div style="text-align:center; padding:40px; color:#94A3B8;">
-                        <i class="fas fa-search" style="font-size:2rem; margin-bottom:10px; opacity:0.5;"></i><br>
-                        Nessun articolo trovato per "${query}"
-                    </div>`;
+                    if(!foundAny) cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Nessun risultato</div>`;
+                    return;
                 }
+
+                // --- GRIGLIA FAMIGLIE ---
+                if (App.state.libCategory === null) {
+                    const categories = Object.keys(Config.LIB).sort();
+                    let grid = document.createElement('div');
+                    grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px; padding-top:10px;";
+                    categories.forEach(cat => {
+                        let btn = document.createElement('div');
+                        btn.style.cssText = "background:white; border:1px solid var(--border); border-radius:12px; padding:20px 10px; text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;";
+                        let icon = '<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i>';
+                        btn.innerHTML = `${icon}<div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div><div style="font-size:0.7rem; color:var(--text-sub);">${Config.LIB[cat].length} articoli</div>`;
+                        btn.onclick = () => { App.state.libCategory = cat; App.renderLibraryItems(''); };
+                        grid.appendChild(btn);
+                    });
+                    cont.appendChild(grid);
+                    return;
+                }
+
+                // --- LISTA ARTICOLI ---
+                if (App.state.libCategory) {
+                    const catItems = Config.LIB[App.state.libCategory];
+                    let header = document.createElement('div');
+                    header.style.cssText = "display:flex; align-items:center; gap:10px; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #E2E8F0;";
+                    let backBtn = document.createElement('button');
+                    backBtn.innerHTML = '<i class="fas fa-arrow-left"></i>';
+                    backBtn.style.cssText = "background:#F1F5F9; border:none; width:40px; height:40px; border-radius:50%; color:var(--primary); font-size:1rem; cursor:pointer;";
+                    backBtn.onclick = () => { App.state.libCategory = null; App.renderLibraryItems(''); };
+                    let title = document.createElement('div');
+                    title.innerHTML = `<div style="font-size:1.1rem; font-weight:800; color:var(--primary);">${App.state.libCategory}</div>`;
+                    header.appendChild(backBtn); header.appendChild(title);
+                    cont.appendChild(header);
+                    App.renderLibItemsList(cont, catItems);
+                }
+            },
+
+            renderLibItemsList(container, items) {
+                items.forEach(it => { 
+                    const dynamicPrice = App.calculateItemPrice(it);
+                    let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
+                    div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.95rem;">${it.desc}</div><div class="card-sub" style="color:var(--primary); font-weight:700;">${dynamicPrice.toFixed(2)}€ / ${it.unit} <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">(T: ${it.labor_time}h | M: ${it.material_cost}€)</span></div></div><div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer;"><i class="fas fa-plus" style="font-size:0.9rem;"></i></div>`; 
+                    div.onclick = () => { 
+                        const piece = document.getElementById('lib-target-piece').value;
+                        const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                        const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
+                        const newItem = { id: Date.now(), desc: it.desc, unit: it.unit, time: it.labor_time, material_cost: it.material_cost, price: dynamicPrice, qty: 0, piece: piece }; 
+                        dv.items.push(newItem); Store.save(); App.showToast("Ag: " + it.desc); App.calcTotals(); App.renderEditorItems(); 
+                    }; 
+                    container.appendChild(div); 
+                });
             },
 
             editDevisItem(id) {
