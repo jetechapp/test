@@ -18,7 +18,7 @@
             --bg-body: #F8FAFC;        
             --surface: #FFFFFF;
             --border: #CBD5E1;
-            --text-main: #1E293B;       
+            --text-main: #1E293B;        
             --text-sub: #64748B;
             --accent: #F59E0B;
             --danger: #EF4444; 
@@ -323,13 +323,15 @@
         const SUPABASE_URL = 'https://uhuxdsubvvnytuftyztq.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVodXhkc3VidnZueXR1ZnR5enRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MzI3NDMsImV4cCI6MjA4NTUwODc0M30.lXOPs-qDfXuO7ExdpbQJawb_gSWD31FDT0FHSD4xdmE';
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // CORREZIONE 1: Rinominato per evitare conflitto con la libreria globale 'supabase'
+        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // --- GESTIONE AUTENTICAZIONE ---
         const Auth = {
             user: null,
             async init() {
-                const { data } = await supabase.auth.getSession();
+                // CORREZIONE 2: Usare sbClient invece di supabase
+                const { data } = await sbClient.auth.getSession();
                 if (data.session) {
                     this.user = data.session.user;
                     document.getElementById('login-overlay').style.display = 'none';
@@ -347,7 +349,7 @@
                 if(!email || !pass) return msg.innerText = "Inserisci credenziali";
                 
                 btn.innerText = "Caricamento...";
-                const { data, error } = await supabase.auth.signInWithPassword({ email: email, password: pass });
+                const { data, error } = await sbClient.auth.signInWithPassword({ email: email, password: pass });
 
                 if (error) {
                     btn.innerText = "ENTRER";
@@ -359,7 +361,7 @@
                 }
             },
             async logout() {
-                await supabase.auth.signOut();
+                await sbClient.auth.signOut();
                 location.reload();
             }
         };
@@ -373,7 +375,7 @@
                 App.showToast("Sync con Cloud...");
                 
                 // 1. CARICA BIBLIOTECA EVOLUTA
-                const { data: libData, error: libErr } = await supabase.from('library_items').select('*');
+                const { data: libData, error: libErr } = await sbClient.from('library_items').select('*');
                 if(!libErr && libData) {
                     Config.LIB = {};
                     libData.forEach(item => {
@@ -390,7 +392,7 @@
                 }
 
                 // 2. CARICA DATI UTENTE
-                const { data: userData } = await supabase
+                const { data: userData } = await sbClient
                     .from('app_state')
                     .select('data_json')
                     .eq('user_id', Auth.user.id)
@@ -415,7 +417,7 @@
             },
 
             async save() {
-                await supabase.from('app_state').upsert({ 
+                await sbClient.from('app_state').upsert({ 
                     user_id: Auth.user.id, 
                     data_json: this.data,
                     last_update: new Date()
