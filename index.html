@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V2</title>
+    <title>QOTIA CLOUD V2 - SMART SEARCH</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
 
     <style>
         /* --- STILI CORE --- */
@@ -305,13 +307,13 @@
         <div class="modal-body">
             
             <div style="position:sticky; top:0; background:#F8FAFC; z-index:10; padding-bottom:5px;">
-                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca articolo..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca articolo (es. Demolision, muro 20)..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
             </div>
 
             <div style="margin-bottom:15px;">
                 <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Filtra per Famiglia:</label>
                 <select id="lib-category-select" class="app-input" onchange="App.renderLibraryItems()" style="font-weight:700; color:var(--primary);">
-                    <option value="">Tutte le Famiglie</option>
+                    <option value="">-- Tutte le Famiglie --</option>
                     </select>
             </div>
 
@@ -331,6 +333,7 @@
     <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Créer Facture</h3><button class="header-back-container" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label style="font-weight:700;">Depuis Devis:</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="background:#F1F5F9; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem; color:#64748B">Montant Devis</div><div style="font-size:1.4rem; font-weight:900;" id="inv-total-quote">0€</div></div><div style="display:flex; gap:10px; margin-bottom:15px;"><button id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Acompte %</button><button id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; margin-top:20px;"><div>Montant Facture</div><div style="font-size:2rem; font-weight:900; color:var(--primary);" id="inv-preview-amount">0€</div></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
 
     <script>
+        // CONFIGURAZIONE
         const SUPABASE_URL = 'https://uhuxdsubvvnytuftyztq.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVodXhkc3VidnZueXR1ZnR5enRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MzI3NDMsImV4cCI6MjA4NTUwODc0M30.lXOPs-qDfXuO7ExdpbQJawb_gSWD31FDT0FHSD4xdmE';
         
@@ -355,7 +358,6 @@
                 const msg = document.getElementById('login-msg');
 
                 if(!email || !pass) return msg.innerText = "Inserisci credenziali";
-                
                 btn.innerText = "Caricamento...";
                 const { data, error } = await sbClient.auth.signInWithPassword({ email: email, password: pass });
 
@@ -374,7 +376,8 @@
             }
         };
 
-        let Config = { LIB: {} }; 
+        // Config conterrà la libreria e il motore di ricerca Fuse
+        let Config = { LIB: {}, searchIndex: null, allItems: [] }; 
 
         const Store = {
             data: { clients: [], chantiers: [], appointments: [], partners: [], settings: { hourlyRate: 45 } },
@@ -382,30 +385,47 @@
             async init() {
                 App.showToast("Sync con Cloud...");
                 
-                // --- FIX IMPORTANTE: range(0, 10000) PER SCARICARE TUTTO ---
+                // --- CARICAMENTO E INDICIZZAZIONE PER "LIVELLO 2" ---
                 const { data: libData, error: libErr } = await sbClient
                     .from('library_items')
                     .select('*')
-                    .range(0, 10000) // Aumentato limite per vedere tutte le categorie
+                    .range(0, 10000) // Assicura di scaricare tutto
                     .order('category', { ascending: true })
                     .order('desc', { ascending: true });
 
                 if(!libErr && libData) {
                     Config.LIB = {};
+                    Config.allItems = [];
+
                     libData.forEach(item => {
                         const cat = item.category || "Altro";
                         if(!Config.LIB[cat]) Config.LIB[cat] = [];
-                        Config.LIB[cat].push({
+                        
+                        const processedItem = {
                             id: item.id,
+                            category: cat,
                             code: item.ref_code,
                             desc: item.desc, 
                             unit: item.unit, 
                             labor_time: item.labor_time, 
                             material_cost: item.material_cost 
-                        });
+                        };
+
+                        Config.LIB[cat].push(processedItem);
+                        Config.allItems.push(processedItem);
                     });
+
+                    // INIZIALIZZA IL MOTORE DI RICERCA INTELLIGENTE (FUSE.JS)
+                    // keys: dove cercare. threshold: quanto "tollerante" essere (0.3 = medio, 0.2 = stretto)
+                    const options = {
+                        includeScore: true,
+                        threshold: 0.3, 
+                        keys: ['desc', 'category']
+                    };
+                    Config.searchIndex = new Fuse(Config.allItems, options);
                 }
 
+                // Carica Dati Utente
                 const { data: userData } = await sbClient
                     .from('app_state')
                     .select('data_json')
@@ -611,14 +631,15 @@
                 
                 // RESET
                 document.getElementById('lib-search').value = '';
+                App.state.libCategory = null; 
                 
-                // POPOLARE IL MENU A TENDINA (Novità richiesta)
+                // POPOLARE IL MENU A TENDINA
                 const sel = document.getElementById('lib-category-select');
                 sel.innerHTML = '<option value="">-- Tutte le Famiglie --</option>';
                 categories.forEach(cat => {
                     sel.innerHTML += `<option value="${cat}">${cat}</option>`;
                 });
-                sel.value = ""; // Default "Tutte"
+                sel.value = ""; 
 
                 const currentPiece = App.state.lastPiece || "Général";
                 document.getElementById('lib-target-piece').value = currentPiece;
@@ -641,85 +662,100 @@
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
+            // --- FUNZIONE DI RICERCA POTENZIATA CON FUSE.JS ---
             renderLibraryItems() {
                 const cont = document.getElementById('lib-container'); 
                 cont.innerHTML = '';
                 
-                // Recupera valori filtri
-                const searchTerm = document.getElementById('lib-search').value.toLowerCase();
+                const searchTerm = document.getElementById('lib-search').value;
                 const selectedCat = document.getElementById('lib-category-select').value;
                 
-                let foundAny = false;
-
-                // Scorre tutte le categorie
-                for(let [category, items] of Object.entries(Config.LIB)) { 
+                // Caso 1: C'è un termine di ricerca? USA FUSE.JS (Motore Intelligente)
+                if (searchTerm.length > 1) {
+                    const results = Config.searchIndex.search(searchTerm);
                     
-                    // 1. Filtro per Categoria (se selezionata nella tendina)
-                    if (selectedCat && category !== selectedCat) continue;
-
-                    // 2. Filtro per Ricerca (se scritta)
-                    const filteredItems = items.filter(it => it.desc.toLowerCase().includes(searchTerm));
-                    
-                    if(filteredItems.length > 0) {
-                        foundAny = true;
-                        
-                        // Intestazione Famiglia
-                        let h = document.createElement('div'); 
-                        h.innerHTML=`<div style="font-weight:800; margin-top:15px; margin-bottom:10px; border-bottom:1px solid #ddd; color:var(--primary);">${category}</div>`; 
-                        cont.appendChild(h); 
-                        
-                        // Lista Articoli
-                        filteredItems.forEach(it => { 
-                            const dynamicPrice = App.calculateItemPrice(it);
-                            
-                            let div = document.createElement('div'); 
-                            div.className = 'card-item'; 
-                            div.style.marginBottom = "8px"; 
-                            
-                            div.innerHTML = `
-                                <div class="card-info">
-                                    <div class="card-title" style="font-size:0.95rem;">${it.desc}</div>
-                                    <div class="card-sub" style="color:var(--primary); font-weight:700;">
-                                        ${dynamicPrice.toFixed(2)}€ / ${it.unit} 
-                                        <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">
-                                            (T: ${it.labor_time}h | M: ${it.material_cost}€)
-                                        </span>
-                                    </div>
-                                </div>
-                                <div style="background:var(--accent); color:white; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-                                    <i class="fas fa-plus" style="font-size:0.9rem;"></i>
-                                </div>
-                            `; 
-                            
-                            div.onclick = () => { 
-                                const piece = document.getElementById('lib-target-piece').value;
-                                const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
-                                const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
-                                
-                                const newItem = {
-                                    id: Date.now(), 
-                                    desc: it.desc,
-                                    unit: it.unit,
-                                    time: it.labor_time, 
-                                    material_cost: it.material_cost, 
-                                    price: dynamicPrice, 
-                                    qty: 0, 
-                                    piece: piece
-                                }; 
-                                dv.items.push(newItem); 
-                                Store.save(); 
-                                App.showToast("Ag: " + it.desc);
-                                App.calcTotals(); 
-                                App.renderEditorItems(); 
-                            }; 
-                            cont.appendChild(div); 
-                        });
+                    if(results.length === 0) {
+                        cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Nessun risultato per "${searchTerm}"</div>`;
+                        return;
                     }
-                } 
 
-                if(!foundAny) {
-                    cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Nessun risultato</div>`;
+                    // Se c'è anche un filtro per categoria selezionato, filtriamo i risultati di Fuse
+                    const filteredResults = selectedCat 
+                        ? results.filter(res => res.item.category === selectedCat)
+                        : results;
+
+                    App.renderLibItemsList(cont, filteredResults.map(r => r.item));
+                    return;
                 }
+
+                // Caso 2: Navigazione classica (Gerarchica)
+                if (App.state.libCategory === null && !selectedCat) {
+                    // Vista Griglia Famiglie
+                    const categories = Object.keys(Config.LIB).sort();
+                    let grid = document.createElement('div');
+                    grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px; padding-top:10px;";
+                    categories.forEach(cat => {
+                        let btn = document.createElement('div');
+                        btn.style.cssText = "background:white; border:1px solid var(--border); border-radius:12px; padding:20px 10px; text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;";
+                        let icon = '<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i>';
+                        btn.innerHTML = `${icon}<div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div><div style="font-size:0.7rem; color:var(--text-sub);">${Config.LIB[cat].length} articoli</div>`;
+                        btn.onclick = () => { 
+                            App.state.libCategory = cat; 
+                            document.getElementById('lib-category-select').value = cat; // Sincronizza tendina
+                            App.renderLibraryItems(); 
+                        };
+                        grid.appendChild(btn);
+                    });
+                    cont.appendChild(grid);
+                } else {
+                    // Vista Lista Articoli (Di una specifica famiglia)
+                    const activeCat = selectedCat || App.state.libCategory;
+                    const catItems = Config.LIB[activeCat];
+                    
+                    if(catItems) {
+                        let header = document.createElement('div');
+                        header.style.cssText = "display:flex; align-items:center; gap:10px; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #E2E8F0;";
+                        let backBtn = document.createElement('button');
+                        backBtn.innerHTML = '<i class="fas fa-arrow-left"></i>';
+                        backBtn.style.cssText = "background:#F1F5F9; border:none; width:40px; height:40px; border-radius:50%; color:var(--primary); font-size:1rem; cursor:pointer;";
+                        backBtn.onclick = () => { 
+                            App.state.libCategory = null; 
+                            document.getElementById('lib-category-select').value = ""; // Reset tendina
+                            App.renderLibraryItems(); 
+                        };
+                        let title = document.createElement('div');
+                        title.innerHTML = `<div style="font-size:1.1rem; font-weight:800; color:var(--primary);">${activeCat}</div>`;
+                        header.appendChild(backBtn); header.appendChild(title);
+                        cont.appendChild(header);
+                        
+                        App.renderLibItemsList(cont, catItems);
+                    }
+                }
+            },
+
+            renderLibItemsList(container, items) {
+                if(items.length > 50) {
+                    // Ottimizzazione per performance: mostra solo i primi 50 se sono troppi
+                    const limitMsg = document.createElement('div');
+                    limitMsg.style.cssText="text-align:center; font-size:0.8rem; color:orange; margin-bottom:10px;";
+                    limitMsg.innerText = `Mostrati primi 50 di ${items.length} risultati. Affina la ricerca.`;
+                    container.appendChild(limitMsg);
+                    items = items.slice(0, 50);
+                }
+
+                items.forEach(it => { 
+                    const dynamicPrice = App.calculateItemPrice(it);
+                    let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
+                    div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.95rem;">${it.desc}</div><div class="card-sub" style="color:var(--primary); font-weight:700;">${dynamicPrice.toFixed(2)}€ / ${it.unit} <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">(T: ${it.labor_time}h | M: ${it.material_cost}€)</span></div></div><div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer;"><i class="fas fa-plus" style="font-size:0.9rem;"></i></div>`; 
+                    div.onclick = () => { 
+                        const piece = document.getElementById('lib-target-piece').value;
+                        const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                        const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
+                        const newItem = { id: Date.now(), desc: it.desc, unit: it.unit, time: it.labor_time, material_cost: it.material_cost, price: dynamicPrice, qty: 0, piece: piece }; 
+                        dv.items.push(newItem); Store.save(); App.showToast("Ag: " + it.desc); App.calcTotals(); App.renderEditorItems(); 
+                    }; 
+                    container.appendChild(div); 
+                });
             },
 
             editDevisItem(id) {
