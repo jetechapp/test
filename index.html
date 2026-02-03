@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V3 - SUB-CATEGORIES</title>
+    <title>QOTIA CLOUD V4 - FULL LIST</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -401,7 +401,7 @@
                         const processedItem = {
                             id: item.id,
                             category: cat,
-                            sub_category: item.sub_category || "Divers", // Gestione sub-category vuota
+                            sub_category: item.sub_category || "Général", // Gestione sub-category vuota
                             code: item.ref_code,
                             desc: item.desc, 
                             unit: item.unit, 
@@ -752,14 +752,7 @@
             },
 
             renderLibItemsList(container, items) {
-                if(items.length > 50) {
-                    const limitMsg = document.createElement('div');
-                    limitMsg.style.cssText="text-align:center; font-size:0.8rem; color:orange; margin-bottom:10px;";
-                    limitMsg.innerText = `Mostrati primi 50 di ${items.length} risultati. Affina la ricerca.`;
-                    container.appendChild(limitMsg);
-                    items = items.slice(0, 50);
-                }
-
+                // --- RIMOSSO LIMITE DI 50 ARTICOLI PER MOSTRARE TUTTO ---
                 items.forEach(it => { 
                     const dynamicPrice = App.calculateItemPrice(it);
                     let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
