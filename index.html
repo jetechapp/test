@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V2 - SMART SEARCH</title>
+    <title>QOTIA CLOUD V3 - SUB-CATEGORIES</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -307,14 +307,11 @@
         <div class="modal-body">
             
             <div style="position:sticky; top:0; background:#F8FAFC; z-index:10; padding-bottom:5px;">
-                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca articolo (es. Demolision, muro 20)..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca articolo (es. Velux, Douche)..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
             </div>
 
-            <div style="margin-bottom:15px;">
-                <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Filtra per Famiglia:</label>
-                <select id="lib-category-select" class="app-input" onchange="App.renderLibraryItems()" style="font-weight:700; color:var(--primary);">
-                    <option value="">-- Tutte le Famiglie --</option>
-                    </select>
+            <div id="lib-breadcrumb" style="display:none; font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
+                <span id="lib-bc-cat"></span> <i class="fas fa-chevron-right" style="font-size:0.7em;"></i> <span id="lib-bc-sub" style="color:var(--primary);"></span>
             </div>
 
             <div style="background:#FFF; border:2px solid var(--primary); padding:10px; border-radius:12px; margin-bottom:15px;">
@@ -333,7 +330,6 @@
     <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Créer Facture</h3><button class="header-back-container" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label style="font-weight:700;">Depuis Devis:</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="background:#F1F5F9; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem; color:#64748B">Montant Devis</div><div style="font-size:1.4rem; font-weight:900;" id="inv-total-quote">0€</div></div><div style="display:flex; gap:10px; margin-bottom:15px;"><button id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Acompte %</button><button id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; margin-top:20px;"><div>Montant Facture</div><div style="font-size:2rem; font-weight:900; color:var(--primary);" id="inv-preview-amount">0€</div></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
 
     <script>
-        // CONFIGURAZIONE
         const SUPABASE_URL = 'https://uhuxdsubvvnytuftyztq.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVodXhkc3VidnZueXR1ZnR5enRxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk5MzI3NDMsImV4cCI6MjA4NTUwODc0M30.lXOPs-qDfXuO7ExdpbQJawb_gSWD31FDT0FHSD4xdmE';
         
@@ -376,7 +372,7 @@
             }
         };
 
-        // Config conterrà la libreria e il motore di ricerca Fuse
+        // Configurazione globale
         let Config = { LIB: {}, searchIndex: null, allItems: [] }; 
 
         const Store = {
@@ -385,12 +381,13 @@
             async init() {
                 App.showToast("Sync con Cloud...");
                 
-                // --- CARICAMENTO E INDICIZZAZIONE PER "LIVELLO 2" ---
+                // --- CARICAMENTO DATI CON SOTTO-CATEGORIE ---
                 const { data: libData, error: libErr } = await sbClient
                     .from('library_items')
                     .select('*')
-                    .range(0, 10000) // Assicura di scaricare tutto
+                    .range(0, 10000)
                     .order('category', { ascending: true })
+                    .order('sub_category', { ascending: true }) // Ordina anche le sotto-cat
                     .order('desc', { ascending: true });
 
                 if(!libErr && libData) {
@@ -404,6 +401,7 @@
                         const processedItem = {
                             id: item.id,
                             category: cat,
+                            sub_category: item.sub_category || "Divers", // Gestione sub-category vuota
                             code: item.ref_code,
                             desc: item.desc, 
                             unit: item.unit, 
@@ -415,12 +413,11 @@
                         Config.allItems.push(processedItem);
                     });
 
-                    // INIZIALIZZA IL MOTORE DI RICERCA INTELLIGENTE (FUSE.JS)
-                    // keys: dove cercare. threshold: quanto "tollerante" essere (0.3 = medio, 0.2 = stretto)
+                    // INIZIALIZZA FUSE.JS (Cerca anche nelle sotto-categorie)
                     const options = {
                         includeScore: true,
                         threshold: 0.3, 
-                        keys: ['desc', 'category']
+                        keys: ['desc', 'category', 'sub_category'] 
                     };
                     Config.searchIndex = new Fuse(Config.allItems, options);
                 }
@@ -460,7 +457,8 @@
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null },
+            // Aggiunto libSubCategory allo state
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null },
             
             init() { Auth.init(); },
 
@@ -629,17 +627,11 @@
                 const categories = Object.keys(Config.LIB).sort();
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
                 
-                // RESET
+                // RESET TOTALE
                 document.getElementById('lib-search').value = '';
                 App.state.libCategory = null; 
-                
-                // POPOLARE IL MENU A TENDINA
-                const sel = document.getElementById('lib-category-select');
-                sel.innerHTML = '<option value="">-- Tutte le Famiglie --</option>';
-                categories.forEach(cat => {
-                    sel.innerHTML += `<option value="${cat}">${cat}</option>`;
-                });
-                sel.value = ""; 
+                App.state.libSubCategory = null; // Reset anche sotto-categoria
+                document.getElementById('lib-breadcrumb').style.display = 'none';
 
                 const currentPiece = App.state.lastPiece || "Général";
                 document.getElementById('lib-target-piece').value = currentPiece;
@@ -662,80 +654,105 @@
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
-            // --- FUNZIONE DI RICERCA POTENZIATA CON FUSE.JS ---
+            // --- FUNZIONE DI RICERCA A 3 LIVELLI + FUSE.JS ---
             renderLibraryItems() {
                 const cont = document.getElementById('lib-container'); 
                 cont.innerHTML = '';
                 
                 const searchTerm = document.getElementById('lib-search').value;
-                const selectedCat = document.getElementById('lib-category-select').value;
+                const breadcrumb = document.getElementById('lib-breadcrumb');
                 
-                // Caso 1: C'è un termine di ricerca? USA FUSE.JS (Motore Intelligente)
+                // --- SCENARIO 1: C'È UNA RICERCA ATTIVA (Bypassa tutto) ---
                 if (searchTerm.length > 1) {
+                    breadcrumb.style.display = 'none';
                     const results = Config.searchIndex.search(searchTerm);
                     
                     if(results.length === 0) {
                         cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Nessun risultato per "${searchTerm}"</div>`;
                         return;
                     }
-
-                    // Se c'è anche un filtro per categoria selezionato, filtriamo i risultati di Fuse
-                    const filteredResults = selectedCat 
-                        ? results.filter(res => res.item.category === selectedCat)
-                        : results;
-
-                    App.renderLibItemsList(cont, filteredResults.map(r => r.item));
+                    App.renderLibItemsList(cont, results.map(r => r.item));
                     return;
                 }
 
-                // Caso 2: Navigazione classica (Gerarchica)
-                if (App.state.libCategory === null && !selectedCat) {
-                    // Vista Griglia Famiglie
+                // --- SCENARIO 2: LIVELLO RADICE (Mostra FAMIGLIE) ---
+                if (App.state.libCategory === null) {
+                    breadcrumb.style.display = 'none';
                     const categories = Object.keys(Config.LIB).sort();
+                    
                     let grid = document.createElement('div');
                     grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px; padding-top:10px;";
+                    
                     categories.forEach(cat => {
                         let btn = document.createElement('div');
                         btn.style.cssText = "background:white; border:1px solid var(--border); border-radius:12px; padding:20px 10px; text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;";
                         let icon = '<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i>';
-                        btn.innerHTML = `${icon}<div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div><div style="font-size:0.7rem; color:var(--text-sub);">${Config.LIB[cat].length} articoli</div>`;
+                        btn.innerHTML = `${icon}<div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div>`;
                         btn.onclick = () => { 
                             App.state.libCategory = cat; 
-                            document.getElementById('lib-category-select').value = cat; // Sincronizza tendina
                             App.renderLibraryItems(); 
                         };
                         grid.appendChild(btn);
                     });
                     cont.appendChild(grid);
-                } else {
-                    // Vista Lista Articoli (Di una specifica famiglia)
-                    const activeCat = selectedCat || App.state.libCategory;
-                    const catItems = Config.LIB[activeCat];
-                    
-                    if(catItems) {
-                        let header = document.createElement('div');
-                        header.style.cssText = "display:flex; align-items:center; gap:10px; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid #E2E8F0;";
-                        let backBtn = document.createElement('button');
-                        backBtn.innerHTML = '<i class="fas fa-arrow-left"></i>';
-                        backBtn.style.cssText = "background:#F1F5F9; border:none; width:40px; height:40px; border-radius:50%; color:var(--primary); font-size:1rem; cursor:pointer;";
-                        backBtn.onclick = () => { 
-                            App.state.libCategory = null; 
-                            document.getElementById('lib-category-select').value = ""; // Reset tendina
+                    return;
+                }
+
+                // --- SCENARIO 3: FAMIGLIA SELEZIONATA (Mostra SOTTO-FAMIGLIE) ---
+                if (App.state.libCategory && App.state.libSubCategory === null) {
+                    breadcrumb.style.display = 'block';
+                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
+                    document.getElementById('lib-bc-sub').innerText = '';
+
+                    // Pulsante Indietro
+                    let backBtn = document.createElement('div');
+                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
+                    backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
+                    backBtn.onclick = () => { App.state.libCategory = null; App.renderLibraryItems(); };
+                    cont.appendChild(backBtn);
+
+                    // Estrai Sotto-Categorie uniche
+                    const allItemsInCat = Config.LIB[App.state.libCategory];
+                    const subCats = [...new Set(allItemsInCat.map(i => i.sub_category))].sort();
+
+                    let grid = document.createElement('div');
+                    grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px;";
+
+                    subCats.forEach(sub => {
+                        let btn = document.createElement('div');
+                        btn.style.cssText = "background:#F8FAFC; border:1px solid var(--border); border-radius:12px; padding:15px 10px; text-align:center; cursor:pointer; font-weight:600; color:var(--text-main);";
+                        btn.innerText = sub;
+                        btn.onclick = () => { 
+                            App.state.libSubCategory = sub; 
                             App.renderLibraryItems(); 
                         };
-                        let title = document.createElement('div');
-                        title.innerHTML = `<div style="font-size:1.1rem; font-weight:800; color:var(--primary);">${activeCat}</div>`;
-                        header.appendChild(backBtn); header.appendChild(title);
-                        cont.appendChild(header);
-                        
-                        App.renderLibItemsList(cont, catItems);
-                    }
+                        grid.appendChild(btn);
+                    });
+                    cont.appendChild(grid);
+                    return;
+                }
+
+                // --- SCENARIO 4: SOTTO-FAMIGLIA SELEZIONATA (Mostra ARTICOLI) ---
+                if (App.state.libCategory && App.state.libSubCategory) {
+                    breadcrumb.style.display = 'block';
+                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
+                    document.getElementById('lib-bc-sub').innerText = App.state.libSubCategory;
+
+                    // Pulsante Indietro
+                    let backBtn = document.createElement('div');
+                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
+                    backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
+                    backBtn.onclick = () => { App.state.libSubCategory = null; App.renderLibraryItems(); };
+                    cont.appendChild(backBtn);
+
+                    // Filtra articoli
+                    const finalItems = Config.LIB[App.state.libCategory].filter(i => i.sub_category === App.state.libSubCategory);
+                    App.renderLibItemsList(cont, finalItems);
                 }
             },
 
             renderLibItemsList(container, items) {
                 if(items.length > 50) {
-                    // Ottimizzazione per performance: mostra solo i primi 50 se sono troppi
                     const limitMsg = document.createElement('div');
                     limitMsg.style.cssText="text-align:center; font-size:0.8rem; color:orange; margin-bottom:10px;";
                     limitMsg.innerText = `Mostrati primi 50 di ${items.length} risultati. Affina la ricerca.`;
