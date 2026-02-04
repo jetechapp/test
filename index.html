@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.7 - SMART QUANTITY</title>
+    <title>QOTIA CLOUD V7.8 - SMART EDIT</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,12 +14,8 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
 
     <style>
-        /* --- STILI CORE (V7 STABILE) --- */
-        :root {
-            --primary: #0F172A; --bg-body: #F8FAFC; --surface: #FFFFFF; --border: #CBD5E1;
-            --text-main: #1E293B; --text-sub: #64748B; --accent: #F59E0B; --danger: #EF4444; 
-            --success: #15803d; --time: #3B82F6; --h-header: 65px; --h-nav: 90px;
-        }
+        /* --- STILI CORE --- */
+        :root { --primary: #0F172A; --bg-body: #F8FAFC; --surface: #FFFFFF; --border: #CBD5E1; --text-main: #1E293B; --text-sub: #64748B; --accent: #F59E0B; --danger: #EF4444; --success: #15803d; --time: #3B82F6; --h-header: 65px; --h-nav: 90px; --radius: 14px; --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 15px; height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow: hidden; padding-top: env(safe-area-inset-top); }
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: var(--bg-body); z-index: 10; }
@@ -32,24 +28,58 @@
         #view-editor.active { display: flex; }
         .editor-header-musk { flex-shrink: 0; background: white; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; z-index: 30; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         #editor-list-container { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 140px; }
-        .card-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .card-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card); }
         .card-info { flex: 1; }
         .card-title { font-weight: 800; font-size: 1.05rem; color: var(--primary); margin-bottom: 4px; }
         .card-sub { font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
+        .card-tag { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #E2E8F0; color: #475569; display: inline-block; margin-bottom: 4px; }
+        .client-badge { font-size: 0.75rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
+        .project-title { font-size: 1.2rem; font-weight: 900; color: var(--primary); margin-top: 2px; }
+        .kpi-row { display: flex; gap: 15px; margin-top: 10px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+        .kpi-box { flex: 1; background: #F8FAFC; padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #E2E8F0; }
+        .kpi-label { font-size: 0.65rem; color: #64748B; font-weight: 700; text-transform: uppercase; }
+        .kpi-val { font-size: 1.1rem; font-weight: 800; }
+        .view-toggle { display: flex; padding: 10px 20px; gap: 10px; background: white; }
+        .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; background: #F1F5F9; color: #64748B; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .toggle-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(15,23,42,0.2); }
+        .piece-section { margin-bottom: 20px; }
+        .piece-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 5px; cursor: pointer; background: #E2E8F0; border-radius: 8px; margin-bottom: 10px; padding: 10px; color: var(--primary); }
+        .piece-title { font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .e-card { background: white; margin: 0 0 10px 0; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 3px solid var(--primary); box-shadow: var(--shadow-card); }
+        .e-card-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .e-desc { font-weight: 700; color: var(--text-main); font-size: 0.95rem; width: 70%; line-height: 1.4; }
+        .e-loc-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; color: #64748B; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+        .e-stats { display: flex; gap: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; }
+        .stat-box { flex: 1; text-align: center; }
+        .stat-lbl { font-size: 0.65rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
+        .stat-val { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
+        .stat-val.time { color: var(--time); }
+        .floating-fab { position: fixed; bottom: 110px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.6rem; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 100; cursor: pointer; transition: transform 0.1s; }
         .home-fixed-area { background: var(--bg-body); padding: 10px 20px 20px 20px; z-index: 40; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .welcome-block { margin-bottom: 15px; }
         .welcome-name { font-size: 1.8rem; font-weight: 900; color: var(--primary); margin: 0; }
+        .welcome-date { font-size: 0.9rem; font-weight: 600; color: var(--accent); text-transform: capitalize; }
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .big-btn { height: 95px; border-radius: 18px; border: 1px solid white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); background: white; color: var(--text-main); }
         .big-btn span { font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 5px; }
         .btn-chantier i { color: #D97706; font-size: 1.8rem; margin-bottom: 5px; }
         .btn-client i { color: #2563EB; font-size: 1.8rem; margin-bottom: 5px; }
+        .hub-header-card { background: white; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .section-separator { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #E2E8F0; }
+        .section-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+        .action-create-btn { background: white; color: var(--primary); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .check-container { display: flex; align-items: center; padding: 12px; background: white; border-bottom: 1px solid #F1F5F9; cursor: pointer; }
+        .custom-checkbox { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; margin-right: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .custom-checkbox.checked { background: var(--primary); border-color: var(--primary); }
+        .custom-checkbox.checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: white; font-size: 0.8rem; }
+        .assigned-badge { background: #DCFCE7; color: #166534; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 5px; display: inline-flex; align-items: center; gap: 4px; }
         .room-tag-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 15px 0; -webkit-overflow-scrolling: touch; }
         .room-tag-btn { background: #F1F5F9; color: var(--primary); border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
         .room-tag-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; align-items: flex-start; padding-top: 14px; padding-bottom: env(safe-area-inset-bottom); }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: transparent; border: none; font-size: 0.7rem; font-weight: 600; gap: 5px; cursor: pointer; }
         .nav-btn.active { color: var(--primary); }
+        .nav-btn i { font-size: 1.5rem; }
         .full-modal { position: fixed; inset: 0; background: #F8FAFC; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5000; }
         .full-modal.open { transform: translateY(0); }
         .modal-header { height: 70px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
@@ -57,34 +87,28 @@
         .modal-footer { padding: 20px; background: white; border-top: 1px solid var(--border); padding-bottom: max(20px, env(safe-area-inset-bottom)); flex-shrink: 0; display:flex; gap:10px; }
         .app-input { width: 100%; height: 50px; background: #fff; border: 2px solid #E2E8F0; border-radius: 12px; padding: 0 15px; font-size: 1rem; color: var(--primary); margin-bottom: 15px; outline: none; font-weight: 500; appearance: none; }
         .btn-primary { width: 100%; height: 50px; background: var(--primary); color: white; font-weight: 700; border-radius: 12px; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); }
+        .type-switch { display: flex; background: #E2E8F0; padding: 5px; border-radius: 14px; margin-bottom: 20px; }
+        .type-option { flex: 1; text-align: center; padding: 12px; font-weight: 700; font-size: 0.95rem; color: #64748B; border-radius: 10px; cursor: pointer; }
+        .type-option.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
-        /* --- NUOVI STILI PER IL MODULO MISURE & QUANTITÀ --- */
-        #room-dims-container { background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 12px; padding: 12px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .dim-box { text-align: center; }
-        .dim-label { font-size: 0.65rem; font-weight: 700; color: #0369A1; text-transform: uppercase; margin-bottom: 4px; }
-        .dim-input { width: 100%; text-align: center; padding: 5px; border: 1px solid #BAE6FD; border-radius: 6px; font-weight: 700; color: var(--primary); font-size: 0.9rem; outline: none; }
-        
-        #room-metrics { display: flex; justify-content: space-around; background: #FFF; padding: 8px; border-radius: 8px; margin-top: 8px; grid-column: span 3; border: 1px dashed #BAE6FD; }
-        .metric-val { font-size: 0.8rem; font-weight: 800; color: var(--primary); }
-        .metric-lbl { font-size: 0.65rem; color: #64748B; font-weight: 600; }
+        /* --- STILI NUOVI V7.8 --- */
+        #room-selector-widget { background: #FFF; border: 2px dashed var(--border); border-radius: 16px; margin-bottom: 15px; overflow: hidden; transition: all 0.3s; }
+        .dims-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .dims-inputs input { text-align: center; padding: 0; margin-bottom: 5px; font-size: 0.9rem; }
+        .dims-inputs label { font-size: 0.7rem; font-weight: 700; color: var(--text-sub); text-align: center; display: block; }
+        .metric-badge { background: #DCFCE7; border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; font-weight: 700; color: #166534; display: inline-flex; align-items: center; gap: 5px; border:1px solid #86EFAC; margin-right: 5px; margin-top: 5px; }
 
-        /* POPUP QUANTITÀ */
-        #qty-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 6000; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(3px); }
-        #qty-overlay.open { display: flex; animation: slideUp 0.25s ease-out; }
-        .qty-card { background: white; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
-        .qty-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 5px; color: var(--primary); }
-        .qty-desc { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 20px; }
-        .qty-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .qty-option { background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s; }
-        .qty-option:active { border-color: var(--primary); background: #E0F2FE; }
-        .qty-option strong { display: block; font-size: 1.4rem; color: var(--primary); }
-        .qty-option span { font-size: 0.75rem; font-weight: 700; color: #64748B; text-transform: uppercase; }
-        
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        /* Quick Qty Buttons nella Modale Edit */
+        #quick-qty-buttons { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        .qty-shortcut { background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+        .qty-shortcut:active { background: #2563EB; color: white; }
 
-        #toast-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); z-index: 9000; pointer-events: none; width: 85%; }
-        .toast { background: #1E293B; color: white; padding: 14px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; opacity: 0; transform: translateY(20px); transition: all 0.3s; margin-top: 10px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        #toast-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); z-index: 10000; pointer-events: none; width: 90%; }
+        .toast { background: #1E293B; color: white; padding: 14px 20px; border-radius: 50px; font-weight: 600; font-size: 0.95rem; opacity: 0; transform: translateY(20px); transition: all 0.3s; margin-top: 10px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         .toast.show { opacity: 1; transform: translateY(0); }
+        
+        #modal-client { z-index: 6000 !important; }
+        #modal-projet { z-index: 5000; }
     </style>
 </head>
 <body>
@@ -104,7 +128,7 @@
 
     <main id="view-home" class="view-section active">
         <header class="mobile-header">
-            <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA <span style="font-size:0.7em; opacity:0.6; font-weight:400;">v7.7</span></div>
+            <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA <span style="font-size:0.7em; opacity:0.6; font-weight:400;">v7.8</span></div>
             <button style="background:none; border:none; font-size:1.2rem;" onclick="App.nav('settings')"><i class="fas fa-cog"></i></button>
         </header>
         <div class="home-fixed-area">
@@ -143,10 +167,6 @@
             <div style="padding: 0 20px 120px 20px;">
                 <div class="section-separator"><span class="section-title">Devis</span><button class="action-create-btn" style="background:var(--primary); color:white;" onclick="App.createNewDevis()"><i class="fas fa-plus"></i> Créer</button></div>
                 <div id="hub-devis-list"></div>
-                
-                <div class="section-separator"><span class="section-title">Opérations</span><button class="action-create-btn" onclick="App.openSelectCDCModal()"><i class="fas fa-tasks"></i> Gérer</button></div>
-                <div id="hub-docs-list"></div>
-                
                 <div class="section-separator"><span class="section-title">Factures</span><button class="action-create-btn" onclick="App.openCreateInvoiceModal()"><i class="fas fa-euro-sign"></i> Facture</button></div>
                 <div id="hub-factures-list"></div>
             </div>
@@ -183,7 +203,6 @@
                 <button class="action-create-btn" onclick="App.renderDocuments('all')">Tous</button>
                 <button class="action-create-btn" onclick="App.renderDocuments('Devis')">Devis</button>
                 <button class="action-create-btn" onclick="App.renderDocuments('Facture')">Factures</button>
-                <button class="action-create-btn" style="border-color:var(--time); color:var(--time);" onclick="App.renderDocuments('CDC')">CDC</button>
             </div>
             <div id="documents-list"></div>
         </div>
@@ -217,111 +236,80 @@
         <button class="nav-btn" onclick="App.nav('settings')" id="nav-settings"><i class="fas fa-cog"></i><span>Param.</span></button>
     </nav>
 
-    <div id="modal-partner" class="full-modal"><div class="modal-header"><h3>Nouveau Partenaire</h3><button class="header-back-container" onclick="App.closeModal('modal-partner')">×</button></div><div class="modal-body"><label style="font-weight:700;">Nom</label><input type="text" id="ptn-name" class="app-input" placeholder="ex: Mario Rossi"><label style="font-weight:700;">Rôle</label><select id="ptn-role" class="app-input"><option value="Collaborateur">Collaborateur</option><option value="Artisan">Artisan</option></select></div><div class="modal-footer"><button class="btn-primary" onclick="App.savePartner()">ENREGISTRER</button></div></div>
-
-    <div id="modal-select-cdc" class="full-modal">
-        <div class="modal-header"><h3>Opérations Ouvrages</h3><button class="header-back-container" onclick="App.closeModal('modal-select-cdc')">×</button></div>
-        <div class="modal-body">
-            <label style="font-weight:700; margin-bottom:10px; display:block;">Source Devis</label>
-            <select id="sel-source-devis" class="app-input" onchange="App.renderSelectionList()"></select>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <label style="font-weight:700; color:var(--text-sub);">Sélectionner</label>
-                <button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout</button>
-            </div>
-            <div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden;"></div>
-        </div>
-        <div class="modal-footer" style="flex-direction:column; gap:10px;">
-            <div style="display:flex; gap:10px; width:100%;">
-                <select id="cdc-assignee" class="app-input" style="flex:1; margin:0; font-size:0.9rem; padding:0 10px;"></select>
-                <button class="btn-primary" style="flex:1;" onclick="App.assignCollaborator()"><i class="fas fa-check"></i> Assigner</button>
-            </div>
-            <button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER DANS LE DOSSIER</button>
-        </div>
-    </div>
-    
-    <div id="modal-view-cahier" class="full-modal"><div class="modal-header"><h3 id="vc-title">...</h3><button class="header-back-container" onclick="App.closeModal('modal-view-cahier')">×</button></div><div class="modal-body"><table style="width:100%; border-collapse:collapse;" id="vc-table"></table></div></div>
-    
     <div id="modal-library" class="full-modal">
         <div class="modal-header"><h3>Bibliothèque</h3><button class="header-back-container" onclick="App.closeModal('modal-library')">×</button></div>
         <div class="modal-body">
-            
             <div style="position:sticky; top:0; background:#F8FAFC; z-index:10; padding-bottom:5px;">
                 <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca articolo..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
             </div>
 
-            <div style="background:#FFF; border:2px solid var(--primary); padding:10px; border-radius:12px; margin-bottom:15px;">
-                <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Pièce Cible :</label>
+            <div id="room-selector-widget">
                 
-                <div id="lib-room-buttons" class="room-tag-scroll"></div>
-                
-                <input type="text" id="lib-target-piece" class="app-input" style="margin:0; height:40px; font-weight:800; color:var(--primary); text-align:center; border:none; background:#F8FAFC;" readonly>
-                
-                <div id="room-dims-container">
-                    <div class="dim-box">
-                        <label class="dim-label">Long (L)</label>
-                        <input type="number" id="dim-L" class="dim-input" placeholder="0" oninput="App.calculateMetrics()">
-                    </div>
-                    <div class="dim-box">
-                        <label class="dim-label">Larg (l)</label>
-                        <input type="number" id="dim-W" class="dim-input" placeholder="0" oninput="App.calculateMetrics()">
-                    </div>
-                    <div class="dim-box">
-                        <label class="dim-label">Haut (H)</label>
-                        <input type="number" id="dim-H" class="dim-input" placeholder="2.50" value="2.50" oninput="App.calculateMetrics()">
-                    </div>
-                    
-                    <div id="room-metrics">
-                        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-                            <span class="metric-val" id="res-sol">0</span> <span class="metric-lbl">Sol(m²)</span>
-                            <span class="metric-val" id="res-mur" style="color:var(--accent)">0</span> <span class="metric-lbl">Mur(m²)</span>
-                            <span class="metric-val" id="res-perim" style="color:var(--success)">0</span> <span class="metric-lbl">Périm(m)</span>
+                <div id="room-view-mode" style="padding:15px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                        <div>
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); text-transform:uppercase;">Pièce Active</div>
+                            <div id="room-display-final" style="font-size:1.1rem; font-weight:800; color:var(--primary);">Sélectionner...</div>
+                            <div id="room-metrics-display" style="display:flex; gap:5px; margin-top:5px; flex-wrap:wrap; min-height:20px;"></div>
+                        </div>
+                        <div onclick="App.toggleRoomEdit(true)" style="width:45px; height:45px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer;">
+                            <i class="fas fa-plus"></i>
                         </div>
                     </div>
+                    <div id="room-used-buttons" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+                </div>
+
+                <div id="room-edit-mode" style="display:none; padding:15px; background:#F1F5F9; border-top:1px solid var(--border);">
+                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Nouvelle Pièce:</label>
+                    <select id="room-select-standard" class="app-input" onchange="App.onRoomSelectChange()" style="margin-bottom:10px;">
+                        <option value="">-- Choisir --</option>
+                        <option value="Cuisine">Cuisine</option>
+                        <option value="Salon">Salon</option>
+                        <option value="SDB">SDB</option>
+                        <option value="Chambre">Chambre</option>
+                        <option value="Couloir">Couloir</option>
+                        <option value="WC">WC</option>
+                        <option value="Extérieur">Extérieur</option>
+                        <option value="Autre">Autre...</option>
+                    </select>
+                    <input type="text" id="input-room-name" class="app-input" style="display:none; margin-bottom:10px;" placeholder="Nom de la pièce...">
+                    
+                    <div style="background:white; padding:12px; border-radius:12px; border:1px solid #CBD5E1;">
+                        <div style="font-size:0.75rem; font-weight:800; text-align:center; margin-bottom:8px; color:var(--primary); letter-spacing:1px;">DIMENSIONS (m)</div>
+                        <div class="dims-inputs">
+                            <div><label>Long (L)</label><input type="number" id="dim-L" class="app-input" placeholder="0"></div>
+                            <div><label>Larg (l)</label><input type="number" id="dim-W" class="app-input" placeholder="0"></div>
+                            <div><label>Haut (H)</label><input type="number" id="dim-H" class="app-input" placeholder="2.50" value="2.50"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary" style="margin-top:15px;" onclick="App.confirmRoom()">CONFIRMER & CALCULER</button>
                 </div>
             </div>
 
-            <div id="lib-breadcrumb" style="display:none; font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
-                <span id="lib-bc-cat"></span> <i class="fas fa-chevron-right" style="font-size:0.7em;"></i> <span id="lib-bc-sub" style="color:var(--primary);"></span>
+            <div id="lib-breadcrumb" style="display:none; font-size:0.9rem; font-weight:700; color:var(--text-sub); margin-bottom:15px; padding-left:5px;">
+                <span id="lib-bc-cat"></span> <i class="fas fa-chevron-right" style="font-size:0.7em; margin:0 5px;"></i> <span id="lib-bc-sub" style="color:var(--primary);"></span>
+            </div>
+            
+            <div style="margin-bottom:10px;">
+                 <select id="lib-category-select" class="app-input" onchange="App.renderLibraryItems()" style="font-weight:700; color:var(--primary); height:40px;">
+                    <option value="">-- Tutte le Famiglie --</option>
+                </select>
             </div>
 
             <div id="lib-container"></div>
         </div>
     </div>
 
-    <div id="qty-overlay">
-        <div class="qty-card">
-            <div class="qty-title" id="qp-title">Article</div>
-            <div class="qty-desc" id="qp-desc">...</div>
-            
-            <div class="qty-grid">
-                <div class="qty-option" onclick="App.addFromPicker('sol')">
-                    <strong id="qp-sol">0</strong>
-                    <span>SOL (m²)</span>
-                </div>
-                <div class="qty-option" onclick="App.addFromPicker('mur')">
-                    <strong id="qp-mur">0</strong>
-                    <span>MUR (m²)</span>
-                </div>
-                <div class="qty-option" onclick="App.addFromPicker('perim')">
-                    <strong id="qp-perim">0</strong>
-                    <span>PLINTHES (m)</span>
-                </div>
-                <div class="qty-option" onclick="App.addFromPicker(1)">
-                    <strong>1</strong>
-                    <span>UNITÉ</span>
-                </div>
-            </div>
-            
-            <div style="display:flex; gap:10px;">
-                <input type="number" id="qp-manual" class="app-input" style="margin:0;" placeholder="Manuel...">
-                <button class="btn-primary" style="width:100px;" onclick="App.addFromPicker('manual')">OK</button>
-            </div>
-             <button onclick="App.closeQtyPicker()" style="width:100%; padding:10px; border:none; background:none; color:#64748B; margin-top:10px;">Annuler</button>
-        </div>
-    </div>
+    <div id="modal-partner" class="full-modal"><div class="modal-header"><h3>Nouveau Partenaire</h3><button class="header-back-container" onclick="App.closeModal('modal-partner')">×</button></div><div class="modal-body"><label style="font-weight:700;">Nom</label><input type="text" id="ptn-name" class="app-input" placeholder="ex: Mario Rossi"><label style="font-weight:700;">Rôle</label><select id="ptn-role" class="app-input"><option value="Collaborateur">Collaborateur</option><option value="Artisan">Artisan</option></select></div><div class="modal-footer"><button class="btn-primary" onclick="App.savePartner()">ENREGISTRER</button></div></div>
+    <div id="modal-select-cdc" class="full-modal"><div class="modal-header"><h3>Opérations Ouvrages</h3><button class="header-back-container" onclick="App.closeModal('modal-select-cdc')">×</button></div><div class="modal-body"><label style="font-weight:700; margin-bottom:10px; display:block;">Source Devis</label><select id="sel-source-devis" class="app-input" onchange="App.renderSelectionList()"></select><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><label style="font-weight:700; color:var(--text-sub);">Sélectionner</label><button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout</button></div><div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden;"></div></div><div class="modal-footer" style="flex-direction:column; gap:10px;"><div style="display:flex; gap:10px; width:100%;"><select id="cdc-assignee" class="app-input" style="flex:1; margin:0; font-size:0.9rem; padding:0 10px;"></select><button class="btn-primary" style="flex:1;" onclick="App.assignCollaborator()"><i class="fas fa-check"></i> Assigner</button></div><button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER DANS LE DOSSIER</button></div></div>
+    
+    <div id="modal-edit-item" class="full-modal"><div class="modal-header"><h3>Modifier Article</h3><button class="header-back-container" onclick="App.closeModal('modal-edit-item')">×</button></div><div class="modal-body"><input type="hidden" id="edit-item-idx"><label style="font-weight:700; color:var(--text-sub);">Pièce</label><select id="edit-item-piece" class="app-input" style="font-weight:700;"></select><label style="font-weight:700; display:block; margin-bottom:8px;">Description</label><input type="text" id="edit-item-desc" class="app-input">
+    
+    <div id="quick-qty-buttons"></div>
 
-    <div id="modal-client" class="full-modal"><div class="modal-header"><h3>Nouveau Client</h3><button class="header-back-container" onclick="App.closeModal('modal-client')">×</button></div><div class="modal-body"><input type="hidden" id="cli-id"><div class="type-switch"><div class="type-option active" id="type-particulier" onclick="App.toggleClientType('particulier')">Particulier</div><div class="type-option" id="type-societe" onclick="App.toggleClientType('societe')">Société</div></div><input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet"><div id="field-siret" style="display:none;"><input type="text" id="cli-siret" class="app-input" placeholder="TVA / SIRET"></div><input type="text" id="cli-addr" class="app-input" placeholder="Adresse"><input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone"><input type="email" id="cli-email" class="app-input" placeholder="Email"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">ENREGISTRER</button></div></div>
-    <div id="modal-edit-item" class="full-modal"><div class="modal-header"><h3>Modifier Article</h3><button class="header-back-container" onclick="App.closeModal('modal-edit-item')">×</button></div><div class="modal-body"><input type="hidden" id="edit-item-idx"><label style="font-weight:700; color:var(--text-sub);">Pièce</label><select id="edit-item-piece" class="app-input" style="font-weight:700;"></select><label style="font-weight:700; display:block; margin-bottom:8px;">Description</label><input type="text" id="edit-item-desc" class="app-input"><div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Qté</label><input type="number" id="edit-item-qty" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Unit.</label><input type="text" id="edit-item-unit" class="app-input" disabled style="background:#f1f5f9;"></div></div><div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Prix U.</label><input type="number" id="edit-item-price" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px; color:#3B82F6;">Temps U.</label><input type="number" id="edit-item-time" class="app-input" style="border-color:#3B82F6; color:#3B82F6;"></div></div><button class="btn-primary" style="background:#fee2e2; color:#dc2626; margin-top:20px;" onclick="App.deleteItem()">SUPPRIMER LIGNE</button></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItemChanges()">CONFIRMER</button></div></div>
+    <div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Qté</label><input type="number" id="edit-item-qty" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Unit.</label><input type="text" id="edit-item-unit" class="app-input" disabled style="background:#f1f5f9;"></div></div><div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Prix U.</label><input type="number" id="edit-item-price" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px; color:#3B82F6;">Temps U.</label><input type="number" id="edit-item-time" class="app-input" style="border-color:#3B82F6; color:#3B82F6;"></div></div><button class="btn-primary" style="background:#fee2e2; color:#dc2626; margin-top:20px;" onclick="App.deleteItem()">SUPPRIMER LIGNE</button></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItemChanges()">CONFIRMER</button></div></div>
+    
     <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-back-container" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body"><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="prj-cli" class="app-input" style="flex:1; margin:0;"></select><button onclick="App.openClientModal()" style="width:55px; border-radius:12px; border:2px solid var(--border); background:white; font-size:1.2rem;">+</button></div><input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Lieu"></div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER</button></div></div>
     <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Nouveau RDV</h3><button class="header-back-container" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><select id="agd-chantier" class="app-input"></select><input type="datetime-local" id="agd-date" class="app-input"><button class="btn-primary" onclick="App.saveAgendaEvent()">ENREGISTRER</button><div style="margin-top:30px; font-weight:800;">Prochains Événements</div><div id="agenda-list-view" style="margin-top:10px;"></div></div></div>
     <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Créer Facture</h3><button class="header-back-container" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label style="font-weight:700;">Depuis Devis:</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="background:#F1F5F9; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem; color:#64748B">Montant Devis</div><div style="font-size:1.4rem; font-weight:900;" id="inv-total-quote">0€</div></div><div style="display:flex; gap:10px; margin-bottom:15px;"><button id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Acompte %</button><button id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; margin-top:20px;"><div>Montant Facture</div><div style="font-size:2rem; font-weight:900; color:var(--primary);" id="inv-preview-amount">0€</div></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
@@ -344,25 +332,13 @@
                     } else {
                         document.getElementById('login-overlay').style.display = 'flex';
                     }
-                } catch(e) {
-                    console.error(e);
-                    alert("Erreur Connexion: " + e.message);
-                }
+                } catch(e) { console.error(e); }
             },
             async login() {
                 const email = document.getElementById('login-email').value;
                 const pass = document.getElementById('login-pass').value;
-                const btn = document.getElementById('btn-login');
-                const msg = document.getElementById('login-msg');
-
-                if(!email || !pass) return msg.innerText = "Inserisci credenziali";
-                btn.innerText = "Caricamento...";
                 const { data, error } = await sbClient.auth.signInWithPassword({ email: email, password: pass });
-
-                if (error) {
-                    btn.innerText = "ENTRER";
-                    msg.innerText = "Errore: " + error.message;
-                } else {
+                if (error) { alert("Erreur: " + error.message); } else {
                     this.user = data.user;
                     document.getElementById('login-overlay').style.display = 'none';
                     Store.init();
@@ -393,97 +369,60 @@
                 if(!libErr && libData) {
                     Config.LIB = {};
                     Config.allItems = [];
-
                     libData.forEach(item => {
                         const cat = item.category || "Altro";
                         if(!Config.LIB[cat]) Config.LIB[cat] = [];
-                        
-                        const processedItem = {
-                            id: item.id,
-                            category: cat,
-                            sub_category: item.sub_category || "Général",
-                            code: item.ref_code,
-                            desc: item.desc, 
-                            unit: item.unit, 
-                            labor_time: item.labor_time, 
-                            material_cost: item.material_cost 
-                        };
-
+                        const processedItem = { id: item.id, category: cat, sub_category: item.sub_category || "Général", code: item.ref_code, desc: item.desc, unit: item.unit, labor_time: item.labor_time, material_cost: item.material_cost };
                         Config.LIB[cat].push(processedItem);
                         Config.allItems.push(processedItem);
                     });
-
                     if(typeof Fuse !== 'undefined') {
                         const options = { includeScore: true, threshold: 0.3, keys: ['desc', 'category', 'sub_category'] };
                         Config.searchIndex = new Fuse(Config.allItems, options);
                     }
                 }
 
-                const { data: userData } = await sbClient
-                    .from('app_state')
-                    .select('data_json')
-                    .eq('user_id', Auth.user.id)
-                    .single();
-
+                const { data: userData } = await sbClient.from('app_state').select('data_json').eq('user_id', Auth.user.id).single();
                 if (userData && userData.data_json) {
                     this.data = userData.data_json;
                     if(!this.data.clients) this.data.clients = [];
                     if(!this.data.chantiers) this.data.chantiers = [];
-                    if(!this.data.appointments) this.data.appointments = [];
-                    if(!this.data.partners) this.data.partners = [];
-                    if(!this.data.settings) this.data.settings = { hourlyRate: 45 };
                 } else {
                     this.seed();
                     setTimeout(() => App.openSetupModal(), 1000);
                 }
-                
                 App.nav('home');
             },
 
             seed() {
-                this.data.clients = [];
-                this.data.chantiers = [];
-                this.data.appointments = [];
-                this.data.partners = [];
-                this.data.settings = { hourlyRate: 45 }; 
+                this.data = { clients: [], chantiers: [], appointments: [], partners: [], settings: { hourlyRate: 45 } };
                 this.save();
             },
 
             async save() {
-                await sbClient.from('app_state').upsert({ 
-                    user_id: Auth.user.id, 
-                    data_json: this.data,
-                    last_update: new Date()
-                });
+                await sbClient.from('app_state').upsert({ user_id: Auth.user.id, data_json: this.data, last_update: new Date() });
             }
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, roomCache: {}, activeRoomDims: {sol:0, mur:0, perim:0}, currentItemToAdd: null },
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, activeRoomDims: {sol:0, mur:0, perim:0}, activeItemToAdd: null },
             
             init() { Auth.init(); },
 
             openSetupModal() {
-                const rate = prompt("Benvenuto! Per calcolare i prezzi correttamente, inserisci la tua Tariffa Oraria (€/h):", Store.data.settings.hourlyRate);
-                if(rate) {
-                    Store.data.settings.hourlyRate = parseFloat(rate);
-                    Store.save();
-                    App.showToast("Tariffa salvata: " + rate + "€/h");
-                }
+                const rate = prompt("Tariffa Oraria (€/h):", Store.data.settings.hourlyRate);
+                if(rate) { Store.data.settings.hourlyRate = parseFloat(rate); Store.save(); App.showToast("Salvato"); }
             },
 
             calculateItemPrice(item) {
                 const rate = Store.data.settings.hourlyRate || 45;
-                const laborCost = (item.labor_time || 0) * rate;
-                const matCost = (item.material_cost || 0);
-                return laborCost + matCost;
+                return (item.labor_time || 0) * rate + (item.material_cost || 0);
             },
 
             nav(view) {
                 document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
                 document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
                 const el = document.getElementById('view-'+view); if(el) el.classList.add('active');
-                const nEl = document.getElementById('nav-'+view); if(nEl) nEl.classList.add('active');
                 if(view==='home') this.renderHome();
                 if(view==='clients') this.renderClients();
                 if(view==='projets') this.renderProjets();
@@ -517,44 +456,19 @@
             
             renderSettings() {
                 const l = document.getElementById('settings-partners-list'); l.innerHTML = '';
-                l.innerHTML += `<div class="section-title">La mia Tariffa</div>
-                <div class="card-item" onclick="App.openSetupModal()">
-                    <div class="card-info"><div class="card-title">Costo Orario</div><div class="card-sub">Usato per calcolare i prezzi</div></div>
-                    <div style="font-size:1.2rem; font-weight:800; color:var(--primary);">${Store.data.settings.hourlyRate} €/h</div>
-                    <i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;"></i>
-                </div>
-                <div class="section-title" style="margin-top:20px;">Partenaires</div>`;
-                
+                l.innerHTML += `<div class="section-title">La mia Tariffa</div><div class="card-item" onclick="App.openSetupModal()"><div class="card-info"><div class="card-title">Costo Orario</div><div class="card-sub">Usato per calcolare i prezzi</div></div><div style="font-size:1.2rem; font-weight:800; color:var(--primary);">${Store.data.settings.hourlyRate} €/h</div></div><div class="section-title" style="margin-top:20px;">Partenaires</div>`;
                 (Store.data.partners||[]).forEach(p => { l.innerHTML += `<div class="card-item"><div class="card-info"><div class="card-title">${p.name}</div><div class="card-sub">${p.role}</div></div><i class="fas fa-trash" style="color:#CBD5E1; cursor:pointer;" onclick="App.deletePartner(${p.id})"></i></div>`; });
-                
-                const logoutBtn = document.createElement('div');
-                logoutBtn.className = 'card-item'; logoutBtn.style.borderColor = '#EF4444'; logoutBtn.style.marginTop = '30px';
-                logoutBtn.innerHTML = `<div><b style="color:#EF4444">LOGOUT</b></div><i class="fas fa-sign-out-alt" style="color:#EF4444"></i>`;
-                logoutBtn.onclick = Auth.logout;
-                l.appendChild(logoutBtn);
+                const logoutBtn = document.createElement('div'); logoutBtn.className = 'card-item'; logoutBtn.style.borderColor = '#EF4444'; logoutBtn.style.marginTop = '30px'; logoutBtn.innerHTML = `<div><b style="color:#EF4444">LOGOUT</b></div><i class="fas fa-sign-out-alt" style="color:#EF4444"></i>`; logoutBtn.onclick = Auth.logout; l.appendChild(logoutBtn);
             },
 
             openHub(id) {
                 Store.data.activeChantierId = id; Store.save();
                 const c = Store.data.chantiers.find(x=>x.id==id); const cli = (Store.data.clients || []).find(x=>x.id==c.clientId);
                 document.getElementById('hub-name').innerText = c.name; document.getElementById('hub-client').innerText = cli ? cli.nom : '?'; document.getElementById('hub-ref').innerText = c.ref;
-                
                 const ld = document.getElementById('hub-devis-list'); ld.innerHTML=''; 
-                c.devisList.forEach(d => { 
-                    ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${(d.total||0).toLocaleString()} €</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; 
-                });
-
-                const lcdc = document.getElementById('hub-docs-list'); lcdc.innerHTML = '';
-                if(c.extraDocs) {
-                    c.extraDocs.forEach(doc => {
-                        lcdc.innerHTML += `<div class="card-item" style="border-left:4px solid var(--time)"><div class="card-info"><div class="card-title">${doc.name}</div><div class="card-sub">${doc.ref}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateCDCPDF('${doc.id}')"></i></div>`;
-                    });
-                }
-
+                c.devisList.forEach(d => { ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${(d.total||0).toLocaleString()} €</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; });
                 const lf = document.getElementById('hub-factures-list'); lf.innerHTML=''; 
-                c.factures.forEach(f => { 
-                    lf.innerHTML+=`<div class="card-item" style="border-left:${f.paid?'4px solid var(--success)':'4px solid var(--danger)'}"><div class="card-info"><div class="card-title">${f.ref}</div><div class="card-sub">${f.amount}€</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i></div>`; 
-                });
+                c.factures.forEach(f => { lf.innerHTML+=`<div class="card-item" style="border-left:${f.paid?'4px solid var(--success)':'4px solid var(--danger)'}"><div class="card-info"><div class="card-title">${f.ref}</div><div class="card-sub">${f.amount}€</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i></div>`; });
                 this.nav('hub');
             },
             createNewDevis() {
@@ -562,17 +476,13 @@
                 const name = prompt("Nom du devis :", 'Devis #' + (c.devisList.length + 1));
                 if (!name) return;
                 const id = Date.now();
-                c.devisList.push({ id: id, ref: 'D-'+Math.floor(Math.random()*1000), name: name, status:'Brouillon', items: [], total: 0, totalTime: 0 });
+                c.devisList.push({ id: id, ref: 'D-'+Math.floor(Math.random()*1000), name: name, status:'Brouillon', items: [], total: 0, totalTime: 0, roomMetrics: {} });
                 Store.save(); App.openEditor(id);
             },
             openEditor(did) { 
                 Store.data.activeDevisId = did; 
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                if(!c) { 
-                    const found = Store.data.chantiers.find(ch => ch.devisList.some(d => d.id == did));
-                    if(found) { Store.data.activeChantierId = found.id; return App.openEditor(did); }
-                    return App.nav('projets'); 
-                }
+                if(!c) { const found = Store.data.chantiers.find(ch => ch.devisList.some(d => d.id == did)); if(found) { Store.data.activeChantierId = found.id; return App.openEditor(did); } return App.nav('projets'); }
                 const cli = (Store.data.clients || []).find(x=>x.id==c.clientId); const d = c.devisList.find(x=>x.id==did);
                 document.getElementById('ed-client-name').innerText = cli ? cli.nom : 'Inconnu';
                 document.getElementById('ed-quote-name').innerText = c.name + " - " + d.name;
@@ -598,7 +508,6 @@
                 const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
                 const l = document.getElementById('editor-list-container'); l.innerHTML=''; 
                 if(d.items.length === 0) { l.innerHTML = '<div style="text-align:center; padding:40px; color:#94A3B8;">Vide</div>'; return; }
-
                 if (App.state.viewMode === 'pieces') {
                     const grouped = {};
                     d.items.forEach(i => { const p = i.piece || "Zone Générale"; if(!grouped[p]) grouped[p]=[]; grouped[p].push(i); });
@@ -624,60 +533,36 @@
                 }
             },
 
-            // --- LIBRARY & METRIC MODULE V7.7 ---
+            // --- LIBRARY & ROOMS V7.8 (METRIC INTEGRATED) ---
             openLibrary() {
                 const categories = Object.keys(Config.LIB).sort();
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
-                
-                // RESET
                 document.getElementById('lib-search').value = '';
-                App.state.libCategory = null; 
-                App.state.libSubCategory = null;
+                App.state.libCategory = null; App.state.libSubCategory = null;
                 document.getElementById('lib-breadcrumb').style.display = 'none';
                 
-                const currentPiece = App.state.lastPiece || "Général";
-                document.getElementById('lib-target-piece').value = currentPiece;
-                
-                // MEMORIA: RECUPERA DIMENSIONI DELLA STANZA CORRENTE
-                const cachedDims = App.state.roomCache[currentPiece];
-                if(cachedDims) {
-                    document.getElementById('dim-L').value = cachedDims.L;
-                    document.getElementById('dim-W').value = cachedDims.W;
-                    document.getElementById('dim-H').value = cachedDims.H;
-                    App.state.activeRoomDims = cachedDims;
-                    App.updateMetricsDisplay(cachedDims);
-                } else {
-                    document.getElementById('dim-L').value = '';
-                    document.getElementById('dim-W').value = '';
-                    document.getElementById('dim-H').value = '2.50';
-                    App.state.activeRoomDims = {sol:0, mur:0, perim:0};
-                    App.updateMetricsDisplay({sol:0, mur:0, perim:0});
-                }
+                const sel = document.getElementById('lib-category-select');
+                sel.innerHTML = '<option value="">-- Tutte le Famiglie --</option>';
+                categories.forEach(cat => sel.innerHTML += `<option value="${cat}">${cat}</option>`);
+                sel.value = ""; 
+
+                // --- RESETTA SELETTORE STANZA (E CALCOLI) ---
+                document.getElementById('lib-target-piece').value = App.state.lastPiece || "Général";
+                document.getElementById('dim-L').value = '';
+                document.getElementById('dim-W').value = '';
+                document.getElementById('dim-H').value = '2.50';
+                App.state.activeRoomDims = {sol:0, mur:0, perim:0};
+                App.updateMetricsDisplay();
 
                 const btnContainer = document.getElementById('lib-room-buttons'); btnContainer.innerHTML = '';
                 ['Cuisine', 'SDB', 'Salon', 'Chambre', 'Extérieur'].forEach(r => {
-                    const btn = document.createElement('div'); btn.className = `room-tag-btn ${r === currentPiece ? 'active' : ''}`; btn.innerText = r;
+                    const btn = document.createElement('div'); btn.className = `room-tag-btn ${r === App.state.lastPiece ? 'active' : ''}`; btn.innerText = r;
                     btn.onclick = () => { 
                         App.state.lastPiece = r; 
                         document.getElementById('lib-target-piece').value = r; 
                         document.querySelectorAll('.room-tag-btn').forEach(b => b.classList.remove('active')); 
                         btn.classList.add('active'); 
-                        
-                        // Switch Room -> Switch Memory
-                        const saved = App.state.roomCache[r];
-                        if(saved) {
-                             document.getElementById('dim-L').value = saved.L;
-                             document.getElementById('dim-W').value = saved.W;
-                             document.getElementById('dim-H').value = saved.H;
-                             App.state.activeRoomDims = saved;
-                             App.updateMetricsDisplay(saved);
-                        } else {
-                             document.getElementById('dim-L').value = '';
-                             document.getElementById('dim-W').value = '';
-                             document.getElementById('dim-H').value = '2.50';
-                             App.state.activeRoomDims = {sol:0, mur:0, perim:0};
-                             App.updateMetricsDisplay({sol:0, mur:0, perim:0});
-                        }
+                        App.loadRoomDimensions(r); // CARICA LE MISURE SALVATE
                     };
                     btnContainer.appendChild(btn);
                 });
@@ -686,7 +571,29 @@
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
-            // CALCOLO METRICO IN TEMPO REALE
+            // CARICA LE DIMENSIONI SALVATE NEL PREVENTIVO
+            loadRoomDimensions(roomName) {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
+                
+                if(!d.roomMetrics) d.roomMetrics = {}; // Crea oggetto se non esiste
+                const saved = d.roomMetrics[roomName];
+
+                if(saved) {
+                     document.getElementById('dim-L').value = saved.L;
+                     document.getElementById('dim-W').value = saved.W;
+                     document.getElementById('dim-H').value = saved.H;
+                     App.state.activeRoomDims = saved;
+                     App.updateMetricsDisplay(saved);
+                } else {
+                     document.getElementById('dim-L').value = '';
+                     document.getElementById('dim-W').value = '';
+                     document.getElementById('dim-H').value = '2.50';
+                     App.state.activeRoomDims = {sol:0, mur:0, perim:0};
+                     App.updateMetricsDisplay({sol:0, mur:0, perim:0});
+                }
+            },
+
             calculateMetrics() {
                 const L = parseFloat(document.getElementById('dim-L').value) || 0;
                 const W = parseFloat(document.getElementById('dim-W').value) || 0;
@@ -695,13 +602,18 @@
                 const sol = L * W;
                 const perim = (L + W) * 2;
                 const mur = perim * H;
-
-                const currentRoom = document.getElementById('lib-target-piece').value;
                 const metrics = { sol, mur, perim, L, W, H };
                 
                 App.state.activeRoomDims = metrics;
-                App.state.roomCache[currentRoom] = metrics; // Salva in memoria
                 
+                // SALVA LE DIMENSIONI NEL PREVENTIVO
+                const currentRoom = document.getElementById('lib-target-piece').value;
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
+                if(!d.roomMetrics) d.roomMetrics = {};
+                d.roomMetrics[currentRoom] = metrics;
+                Store.save();
+
                 App.updateMetricsDisplay(metrics);
             },
 
@@ -711,7 +623,7 @@
                 document.getElementById('res-perim').innerText = m.perim.toFixed(2) + " m";
             },
 
-            // --- NAVIGAZIONE 3 LIVELLI (V7 ORIGINALE) ---
+            // --- NAVIGAZIONE (V7 ORIGINALE) ---
             renderLibraryItems(query) {
                 const cont = document.getElementById('lib-container'); cont.innerHTML = '';
                 const searchTerm = query ? query.toLowerCase() : '';
@@ -742,16 +654,17 @@
                     return;
                 }
 
-                if (App.state.libCategory && App.state.libSubCategory === null) {
+                const activeCat = App.state.libCategory;
+                if (activeCat && App.state.libSubCategory === null) {
                     breadcrumb.style.display = 'block';
-                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
+                    document.getElementById('lib-bc-cat').innerText = activeCat;
                     document.getElementById('lib-bc-sub').innerText = '';
                     let backBtn = document.createElement('div');
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Retour`;
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px;";
                     backBtn.onclick = () => { App.state.libCategory = null; App.renderLibraryItems(''); };
                     cont.appendChild(backBtn);
-                    const subCats = [...new Set(Config.LIB[App.state.libCategory].map(i => i.sub_category))].sort();
+                    const subCats = [...new Set(Config.LIB[activeCat].map(i => i.sub_category))].sort();
                     let grid = document.createElement('div');
                     grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px;";
                     subCats.forEach(sub => {
@@ -765,16 +678,16 @@
                     return;
                 }
 
-                if (App.state.libCategory && App.state.libSubCategory) {
+                if (activeCat && App.state.libSubCategory) {
                     breadcrumb.style.display = 'block';
-                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
+                    document.getElementById('lib-bc-cat').innerText = activeCat;
                     document.getElementById('lib-bc-sub').innerText = App.state.libSubCategory;
                     let backBtn = document.createElement('div');
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Retour`;
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px;";
                     backBtn.onclick = () => { App.state.libSubCategory = null; App.renderLibraryItems(''); };
                     cont.appendChild(backBtn);
-                    const finalItems = Config.LIB[App.state.libCategory].filter(i => i.sub_category === App.state.libSubCategory);
+                    const finalItems = Config.LIB[activeCat].filter(i => i.sub_category === App.state.libSubCategory);
                     App.renderLibItemsList(cont, finalItems);
                 }
             },
@@ -785,55 +698,19 @@
                     const dynamicPrice = App.calculateItemPrice(it);
                     let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
                     div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.95rem;">${it.desc}</div><div class="card-sub" style="color:var(--primary); font-weight:700;">${dynamicPrice.toFixed(2)}€ / ${it.unit} <span style="font-weight:400; color:#64748B; font-size:0.8em;">(T: ${it.labor_time}h)</span></div></div><div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fas fa-plus"></i></div>`; 
-                    div.onclick = () => { App.openQtyPicker(it); }; 
+                    div.onclick = () => { 
+                        // --- CLICK DIRETTO: AGGIUNGI & APRI EDIT MODAL ---
+                        const piece = document.getElementById('lib-target-piece').value;
+                        const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                        const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
+                        const newItem = { id: Date.now(), desc: it.desc, unit: it.unit, time: it.labor_time, material_cost: it.material_cost, price: dynamicPrice, qty: 0, piece: piece }; 
+                        dv.items.push(newItem); Store.save(); 
+                        
+                        App.showToast("Ajouté");
+                        App.editDevisItem(newItem.id); // APRE SUBITO LA SCHEDA DI MODIFICA
+                    }; 
                     container.appendChild(div); 
                 });
-            },
-
-            // --- POPUP QUANTITÀ ---
-            openQtyPicker(item) {
-                App.state.currentItemToAdd = item;
-                const m = App.state.activeRoomDims;
-
-                // Popola i dati nel popup
-                document.getElementById('qp-title').innerText = item.desc.substring(0, 30)+"...";
-                document.getElementById('qp-desc').innerText = `Unit: ${item.unit}`;
-                document.getElementById('qp-sol').innerText = m.sol.toFixed(2);
-                document.getElementById('qp-mur').innerText = m.mur.toFixed(2);
-                document.getElementById('qp-perim').innerText = m.perim.toFixed(2);
-                
-                document.getElementById('qty-overlay').classList.add('open');
-            },
-
-            closeQtyPicker() {
-                document.getElementById('qty-overlay').classList.remove('open');
-                App.state.currentItemToAdd = null;
-            },
-
-            addFromPicker(source) {
-                const item = App.state.currentItemToAdd;
-                const m = App.state.activeRoomDims;
-                let qty = 0;
-
-                if(source === 'sol') qty = m.sol;
-                else if(source === 'mur') qty = m.mur;
-                else if(source === 'perim') qty = m.perim;
-                else if(source === 1) qty = 1;
-                else if(source === 'manual') qty = parseFloat(document.getElementById('qp-manual').value);
-
-                if(!qty || qty <= 0) return alert("Quantité invalide");
-
-                const piece = document.getElementById('lib-target-piece').value;
-                const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
-                const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
-                const price = App.calculateItemPrice(item);
-
-                const newItem = { id: Date.now(), desc: item.desc, unit: item.unit, time: item.labor_time, material_cost: item.material_cost, price: price, qty: qty, piece: piece }; 
-                dv.items.push(newItem); 
-                Store.save(); 
-                App.showToast("Ajouté: " + qty + " " + item.unit);
-                App.closeQtyPicker();
-                App.calcTotals(); App.renderEditorItems(); 
             },
 
             editDevisItem(id) {
@@ -841,8 +718,20 @@
                 document.getElementById('edit-item-idx').value = id; document.getElementById('edit-item-desc').value = item.desc; document.getElementById('edit-item-qty').value = item.qty; 
                 document.getElementById('edit-item-price').value = item.price.toFixed(2); 
                 document.getElementById('edit-item-unit').value = item.unit || 'U'; document.getElementById('edit-item-time').value = item.time || 0;
+                
                 const rooms = new Set(d.items.map(i => i.piece).filter(Boolean)); ['Cuisine','SDB','Salon'].forEach(r=>rooms.add(r)); const sel = document.getElementById('edit-item-piece'); sel.innerHTML = ''; 
                 rooms.forEach(r => { const isSel = r === item.piece ? 'selected' : ''; sel.innerHTML += `<option value="${r}" ${isSel}>${r}</option>`; });
+
+                // --- INIETTA I BOTTONI DELLE SUPERFICI ---
+                const m = App.state.activeRoomDims; // Prende le misure calcolate della stanza attiva
+                const quickDiv = document.getElementById('quick-qty-buttons');
+                quickDiv.innerHTML = '';
+                
+                if (m.sol > 0) quickDiv.innerHTML += `<div class="qty-shortcut" onclick="document.getElementById('edit-item-qty').value='${m.sol}'">Sol: ${m.sol}m²</div>`;
+                if (m.mur > 0) quickDiv.innerHTML += `<div class="qty-shortcut" onclick="document.getElementById('edit-item-qty').value='${m.mur}'">Murs: ${m.mur}m²</div>`;
+                if (m.perim > 0) quickDiv.innerHTML += `<div class="qty-shortcut" onclick="document.getElementById('edit-item-qty').value='${m.perim}'">Perim: ${m.perim}m</div>`;
+                quickDiv.innerHTML += `<div class="qty-shortcut" onclick="document.getElementById('edit-item-qty').value='1'">1 Unité</div>`;
+
                 document.getElementById('modal-edit-item').classList.add('open');
             },
             saveItemChanges() { 
