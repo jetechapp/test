@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.8 - SMART EDIT</title>
+    <title>QOTIA CLOUD V7.9 - FIX DEVIS</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,8 +14,12 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
 
     <style>
-        /* --- STILI CORE --- */
-        :root { --primary: #0F172A; --bg-body: #F8FAFC; --surface: #FFFFFF; --border: #CBD5E1; --text-main: #1E293B; --text-sub: #64748B; --accent: #F59E0B; --danger: #EF4444; --success: #15803d; --time: #3B82F6; --h-header: 65px; --h-nav: 90px; --radius: 14px; --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+        /* --- STILI CORE (V7 STABILE) --- */
+        :root {
+            --primary: #0F172A; --bg-body: #F8FAFC; --surface: #FFFFFF; --border: #CBD5E1;
+            --text-main: #1E293B; --text-sub: #64748B; --accent: #F59E0B; --danger: #EF4444; 
+            --success: #15803d; --time: #3B82F6; --h-header: 65px; --h-nav: 90px; --radius: 14px; --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 15px; height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow: hidden; padding-top: env(safe-area-inset-top); }
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: var(--bg-body); z-index: 10; }
@@ -28,10 +32,41 @@
         #view-editor.active { display: flex; }
         .editor-header-musk { flex-shrink: 0; background: white; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; z-index: 30; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         #editor-list-container { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 140px; }
-        .card-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card); }
+        .card-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .card-info { flex: 1; }
         .card-title { font-weight: 800; font-size: 1.05rem; color: var(--primary); margin-bottom: 4px; }
         .card-sub { font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
+        .home-fixed-area { background: var(--bg-body); padding: 10px 20px 20px 20px; z-index: 40; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .welcome-block { margin-bottom: 15px; }
+        .welcome-name { font-size: 1.8rem; font-weight: 900; color: var(--primary); margin: 0; }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .big-btn { height: 95px; border-radius: 18px; border: 1px solid white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); background: white; color: var(--text-main); }
+        .big-btn span { font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 5px; }
+        .btn-chantier i { color: #D97706; font-size: 1.8rem; margin-bottom: 5px; }
+        .btn-client i { color: #2563EB; font-size: 1.8rem; margin-bottom: 5px; }
+        .room-tag-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 15px 0; -webkit-overflow-scrolling: touch; }
+        .room-tag-btn { background: #F1F5F9; color: var(--primary); border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+        .room-tag-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; align-items: flex-start; padding-top: 14px; padding-bottom: env(safe-area-inset-bottom); }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: transparent; border: none; font-size: 0.7rem; font-weight: 600; gap: 5px; cursor: pointer; }
+        .nav-btn.active { color: var(--primary); }
+        .full-modal { position: fixed; inset: 0; background: #F8FAFC; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5000; }
+        .full-modal.open { transform: translateY(0); }
+        .modal-header { height: 70px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
+        .modal-body { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
+        .modal-footer { padding: 20px; background: white; border-top: 1px solid var(--border); padding-bottom: max(20px, env(safe-area-inset-bottom)); flex-shrink: 0; display:flex; gap:10px; }
+        .app-input { width: 100%; height: 50px; background: #fff; border: 2px solid #E2E8F0; border-radius: 12px; padding: 0 15px; font-size: 1rem; color: var(--primary); margin-bottom: 15px; outline: none; font-weight: 500; appearance: none; }
+        .btn-primary { width: 100%; height: 50px; background: var(--primary); color: white; font-weight: 700; border-radius: 12px; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); }
+
+        /* --- STILI NUOVI (METRICHE) --- */
+        #room-dims-container { background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 12px; padding: 12px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .dim-box { text-align: center; }
+        .dim-label { font-size: 0.65rem; font-weight: 700; color: #0369A1; text-transform: uppercase; margin-bottom: 4px; }
+        .dim-input { width: 100%; text-align: center; padding: 5px; border: 1px solid #BAE6FD; border-radius: 6px; font-weight: 700; color: var(--primary); font-size: 0.9rem; outline: none; }
+        #room-metrics { display: flex; justify-content: space-around; background: #FFF; padding: 8px; border-radius: 8px; margin-top: 8px; grid-column: span 3; border: 1px dashed #BAE6FD; }
+        .metric-val { font-size: 0.8rem; font-weight: 800; color: var(--primary); }
+        .metric-lbl { font-size: 0.65rem; color: #64748B; font-weight: 600; }
+        
         .card-tag { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #E2E8F0; color: #475569; display: inline-block; margin-bottom: 4px; }
         .client-badge { font-size: 0.75rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
         .project-title { font-size: 1.2rem; font-weight: 900; color: var(--primary); margin-top: 2px; }
@@ -43,9 +78,9 @@
         .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; background: #F1F5F9; color: #64748B; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
         .toggle-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(15,23,42,0.2); }
         .piece-section { margin-bottom: 20px; }
-        .piece-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 5px; cursor: pointer; background: #E2E8F0; border-radius: 8px; margin-bottom: 10px; padding: 10px; color: var(--primary); }
+        .piece-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 5px; cursor: pointer; background: #E2E8F0; border-radius: 8px; margin-bottom: 10px; padding: 10px; color: var(--primary); font-weight: 800; }
         .piece-title { font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-        .e-card { background: white; margin: 0 0 10px 0; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 3px solid var(--primary); box-shadow: var(--shadow-card); }
+        .e-card { background: white; margin: 0 0 10px 0; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 3px solid var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .e-card-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
         .e-desc { font-weight: 700; color: var(--text-main); font-size: 0.95rem; width: 70%; line-height: 1.4; }
         .e-loc-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; color: #64748B; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
@@ -54,17 +89,6 @@
         .stat-lbl { font-size: 0.65rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
         .stat-val { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
         .stat-val.time { color: var(--time); }
-        .floating-fab { position: fixed; bottom: 110px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.6rem; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 100; cursor: pointer; transition: transform 0.1s; }
-        .home-fixed-area { background: var(--bg-body); padding: 10px 20px 20px 20px; z-index: 40; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .welcome-block { margin-bottom: 15px; }
-        .welcome-name { font-size: 1.8rem; font-weight: 900; color: var(--primary); margin: 0; }
-        .welcome-date { font-size: 0.9rem; font-weight: 600; color: var(--accent); text-transform: capitalize; }
-        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .big-btn { height: 95px; border-radius: 18px; border: 1px solid white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); background: white; color: var(--text-main); }
-        .big-btn span { font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 5px; }
-        .btn-chantier i { color: #D97706; font-size: 1.8rem; margin-bottom: 5px; }
-        .btn-client i { color: #2563EB; font-size: 1.8rem; margin-bottom: 5px; }
-        .hub-header-card { background: white; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .section-separator { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #E2E8F0; }
         .section-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
         .action-create-btn { background: white; color: var(--primary); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -73,30 +97,9 @@
         .custom-checkbox.checked { background: var(--primary); border-color: var(--primary); }
         .custom-checkbox.checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: white; font-size: 0.8rem; }
         .assigned-badge { background: #DCFCE7; color: #166534; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 5px; display: inline-flex; align-items: center; gap: 4px; }
-        .room-tag-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 15px 0; -webkit-overflow-scrolling: touch; }
-        .room-tag-btn { background: #F1F5F9; color: var(--primary); border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
-        .room-tag-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; align-items: flex-start; padding-top: 14px; padding-bottom: env(safe-area-inset-bottom); }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: transparent; border: none; font-size: 0.7rem; font-weight: 600; gap: 5px; cursor: pointer; }
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn i { font-size: 1.5rem; }
-        .full-modal { position: fixed; inset: 0; background: #F8FAFC; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5000; }
-        .full-modal.open { transform: translateY(0); }
-        .modal-header { height: 70px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
-        .modal-body { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
-        .modal-footer { padding: 20px; background: white; border-top: 1px solid var(--border); padding-bottom: max(20px, env(safe-area-inset-bottom)); flex-shrink: 0; display:flex; gap:10px; }
-        .app-input { width: 100%; height: 50px; background: #fff; border: 2px solid #E2E8F0; border-radius: 12px; padding: 0 15px; font-size: 1rem; color: var(--primary); margin-bottom: 15px; outline: none; font-weight: 500; appearance: none; }
-        .btn-primary { width: 100%; height: 50px; background: var(--primary); color: white; font-weight: 700; border-radius: 12px; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); }
         .type-switch { display: flex; background: #E2E8F0; padding: 5px; border-radius: 14px; margin-bottom: 20px; }
         .type-option { flex: 1; text-align: center; padding: 12px; font-weight: 700; font-size: 0.95rem; color: #64748B; border-radius: 10px; cursor: pointer; }
         .type-option.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-
-        /* --- STILI NUOVI V7.8 --- */
-        #room-selector-widget { background: #FFF; border: 2px dashed var(--border); border-radius: 16px; margin-bottom: 15px; overflow: hidden; transition: all 0.3s; }
-        .dims-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .dims-inputs input { text-align: center; padding: 0; margin-bottom: 5px; font-size: 0.9rem; }
-        .dims-inputs label { font-size: 0.7rem; font-weight: 700; color: var(--text-sub); text-align: center; display: block; }
-        .metric-badge { background: #DCFCE7; border-radius: 6px; padding: 3px 8px; font-size: 0.75rem; font-weight: 700; color: #166534; display: inline-flex; align-items: center; gap: 5px; border:1px solid #86EFAC; margin-right: 5px; margin-top: 5px; }
 
         /* Quick Qty Buttons nella Modale Edit */
         #quick-qty-buttons { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -167,6 +170,10 @@
             <div style="padding: 0 20px 120px 20px;">
                 <div class="section-separator"><span class="section-title">Devis</span><button class="action-create-btn" style="background:var(--primary); color:white;" onclick="App.createNewDevis()"><i class="fas fa-plus"></i> Créer</button></div>
                 <div id="hub-devis-list"></div>
+                
+                <div class="section-separator"><span class="section-title">Opérations</span><button class="action-create-btn" onclick="App.openSelectCDCModal()"><i class="fas fa-tasks"></i> Gérer</button></div>
+                <div id="hub-docs-list"></div>
+                
                 <div class="section-separator"><span class="section-title">Factures</span><button class="action-create-btn" onclick="App.openCreateInvoiceModal()"><i class="fas fa-euro-sign"></i> Facture</button></div>
                 <div id="hub-factures-list"></div>
             </div>
@@ -203,6 +210,7 @@
                 <button class="action-create-btn" onclick="App.renderDocuments('all')">Tous</button>
                 <button class="action-create-btn" onclick="App.renderDocuments('Devis')">Devis</button>
                 <button class="action-create-btn" onclick="App.renderDocuments('Facture')">Factures</button>
+                <button class="action-create-btn" style="border-color:var(--time); color:var(--time);" onclick="App.renderDocuments('CDC')">CDC</button>
             </div>
             <div id="documents-list"></div>
         </div>
@@ -302,7 +310,7 @@
     </div>
 
     <div id="modal-partner" class="full-modal"><div class="modal-header"><h3>Nouveau Partenaire</h3><button class="header-back-container" onclick="App.closeModal('modal-partner')">×</button></div><div class="modal-body"><label style="font-weight:700;">Nom</label><input type="text" id="ptn-name" class="app-input" placeholder="ex: Mario Rossi"><label style="font-weight:700;">Rôle</label><select id="ptn-role" class="app-input"><option value="Collaborateur">Collaborateur</option><option value="Artisan">Artisan</option></select></div><div class="modal-footer"><button class="btn-primary" onclick="App.savePartner()">ENREGISTRER</button></div></div>
-    <div id="modal-select-cdc" class="full-modal"><div class="modal-header"><h3>Opérations Ouvrages</h3><button class="header-back-container" onclick="App.closeModal('modal-select-cdc')">×</button></div><div class="modal-body"><label style="font-weight:700; margin-bottom:10px; display:block;">Source Devis</label><select id="sel-source-devis" class="app-input" onchange="App.renderSelectionList()"></select><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><label style="font-weight:700; color:var(--text-sub);">Sélectionner</label><button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout</button></div><div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden;"></div></div><div class="modal-footer" style="flex-direction:column; gap:10px;"><div style="display:flex; gap:10px; width:100%;"><select id="cdc-assignee" class="app-input" style="flex:1; margin:0; font-size:0.9rem; padding:0 10px;"></select><button class="btn-primary" style="flex:1;" onclick="App.assignCollaborator()"><i class="fas fa-check"></i> Assigner</button></div><button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER DANS LE DOSSIER</button></div></div>
+    <div id="modal-select-cdc" class="full-modal"><div class="modal-header"><h3>Opérations Ouvrages</h3><button class="header-back-container" onclick="App.closeModal('modal-select-cdc')">×</button></div><div class="modal-body"><label style="font-weight:700;">Source Devis</label><select id="sel-source-devis" class="app-input" onchange="App.renderSelectionList()"></select><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><label style="font-weight:700; color:var(--text-sub);">Sélectionner</label><button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout</button></div><div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden;"></div></div><div class="modal-footer" style="flex-direction:column; gap:10px;"><div style="display:flex; gap:10px; width:100%;"><select id="cdc-assignee" class="app-input" style="flex:1; margin:0; font-size:0.9rem; padding:0 10px;"></select><button class="btn-primary" style="flex:1;" onclick="App.assignCollaborator()"><i class="fas fa-check"></i> Assigner</button></div><button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER DANS LE DOSSIER</button></div></div>
     
     <div id="modal-edit-item" class="full-modal"><div class="modal-header"><h3>Modifier Article</h3><button class="header-back-container" onclick="App.closeModal('modal-edit-item')">×</button></div><div class="modal-body"><input type="hidden" id="edit-item-idx"><label style="font-weight:700; color:var(--text-sub);">Pièce</label><select id="edit-item-piece" class="app-input" style="font-weight:700;"></select><label style="font-weight:700; display:block; margin-bottom:8px;">Description</label><input type="text" id="edit-item-desc" class="app-input">
     
@@ -369,13 +377,26 @@
                 if(!libErr && libData) {
                     Config.LIB = {};
                     Config.allItems = [];
+
                     libData.forEach(item => {
                         const cat = item.category || "Altro";
                         if(!Config.LIB[cat]) Config.LIB[cat] = [];
-                        const processedItem = { id: item.id, category: cat, sub_category: item.sub_category || "Général", code: item.ref_code, desc: item.desc, unit: item.unit, labor_time: item.labor_time, material_cost: item.material_cost };
+                        
+                        const processedItem = {
+                            id: item.id,
+                            category: cat,
+                            sub_category: item.sub_category || "Général",
+                            code: item.ref_code,
+                            desc: item.desc, 
+                            unit: item.unit, 
+                            labor_time: item.labor_time, 
+                            material_cost: item.material_cost 
+                        };
+
                         Config.LIB[cat].push(processedItem);
                         Config.allItems.push(processedItem);
                     });
+
                     if(typeof Fuse !== 'undefined') {
                         const options = { includeScore: true, threshold: 0.3, keys: ['desc', 'category', 'sub_category'] };
                         Config.searchIndex = new Fuse(Config.allItems, options);
@@ -385,8 +406,12 @@
                 const { data: userData } = await sbClient.from('app_state').select('data_json').eq('user_id', Auth.user.id).single();
                 if (userData && userData.data_json) {
                     this.data = userData.data_json;
+                    // FIX: Safe array initialization
                     if(!this.data.clients) this.data.clients = [];
                     if(!this.data.chantiers) this.data.chantiers = [];
+                    if(!this.data.appointments) this.data.appointments = [];
+                    if(!this.data.partners) this.data.partners = [];
+                    if(!this.data.settings) this.data.settings = { hourlyRate: 45 };
                 } else {
                     this.seed();
                     setTimeout(() => App.openSetupModal(), 1000);
@@ -395,7 +420,11 @@
             },
 
             seed() {
-                this.data = { clients: [], chantiers: [], appointments: [], partners: [], settings: { hourlyRate: 45 } };
+                this.data.clients = [];
+                this.data.chantiers = [];
+                this.data.appointments = [];
+                this.data.partners = [];
+                this.data.settings = { hourlyRate: 45 }; 
                 this.save();
             },
 
@@ -405,7 +434,7 @@
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, activeRoomDims: {sol:0, mur:0, perim:0}, activeItemToAdd: null },
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, activeRoomDims: {sol:0, mur:0, perim:0}, roomCache: {} },
             
             init() { Auth.init(); },
 
@@ -476,6 +505,7 @@
                 const name = prompt("Nom du devis :", 'Devis #' + (c.devisList.length + 1));
                 if (!name) return;
                 const id = Date.now();
+                // FIX: Inizializza roomMetrics
                 c.devisList.push({ id: id, ref: 'D-'+Math.floor(Math.random()*1000), name: name, status:'Brouillon', items: [], total: 0, totalTime: 0, roomMetrics: {} });
                 Store.save(); App.openEditor(id);
             },
@@ -533,26 +563,32 @@
                 }
             },
 
-            // --- LIBRARY & ROOMS V7.8 (METRIC INTEGRATED) ---
+            // --- LIBRARY & ROOMS V7.8 (METRIC + MEMORY + PICKER ON EDIT) ---
             openLibrary() {
                 const categories = Object.keys(Config.LIB).sort();
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
                 document.getElementById('lib-search').value = '';
                 App.state.libCategory = null; App.state.libSubCategory = null;
                 document.getElementById('lib-breadcrumb').style.display = 'none';
-                
                 const sel = document.getElementById('lib-category-select');
                 sel.innerHTML = '<option value="">-- Tutte le Famiglie --</option>';
                 categories.forEach(cat => sel.innerHTML += `<option value="${cat}">${cat}</option>`);
                 sel.value = ""; 
 
-                // --- RESETTA SELETTORE STANZA (E CALCOLI) ---
-                document.getElementById('lib-target-piece').value = App.state.lastPiece || "Général";
+                // Reset inputs
+                document.getElementById('input-room-name').value = '';
+                document.getElementById('input-room-details').value = '';
+                document.getElementById('room-select-standard').value = ''; 
                 document.getElementById('dim-L').value = '';
                 document.getElementById('dim-W').value = '';
                 document.getElementById('dim-H').value = '2.50';
                 App.state.activeRoomDims = {sol:0, mur:0, perim:0};
                 App.updateMetricsDisplay();
+
+                // Load saved room metrics if returning
+                const currentPiece = App.state.lastPiece || "Général";
+                document.getElementById('lib-target-piece').value = currentPiece;
+                App.loadRoomDimensions(currentPiece);
 
                 const btnContainer = document.getElementById('lib-room-buttons'); btnContainer.innerHTML = '';
                 ['Cuisine', 'SDB', 'Salon', 'Chambre', 'Extérieur'].forEach(r => {
@@ -562,7 +598,7 @@
                         document.getElementById('lib-target-piece').value = r; 
                         document.querySelectorAll('.room-tag-btn').forEach(b => b.classList.remove('active')); 
                         btn.classList.add('active'); 
-                        App.loadRoomDimensions(r); // CARICA LE MISURE SALVATE
+                        App.loadRoomDimensions(r); 
                     };
                     btnContainer.appendChild(btn);
                 });
@@ -571,12 +607,12 @@
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
-            // CARICA LE DIMENSIONI SALVATE NEL PREVENTIVO
             loadRoomDimensions(roomName) {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
                 
-                if(!d.roomMetrics) d.roomMetrics = {}; // Crea oggetto se non esiste
+                // Safe check legacy data
+                if(!d.roomMetrics) d.roomMetrics = {}; 
                 const saved = d.roomMetrics[roomName];
 
                 if(saved) {
@@ -606,7 +642,7 @@
                 
                 App.state.activeRoomDims = metrics;
                 
-                // SALVA LE DIMENSIONI NEL PREVENTIVO
+                // SALVA SUBITO LE DIMENSIONI NEL DATABASE
                 const currentRoom = document.getElementById('lib-target-piece').value;
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
@@ -634,7 +670,8 @@
                     if(!Config.searchIndex) return;
                     const results = Config.searchIndex.search(searchTerm);
                     if(results.length === 0) { cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Aucun résultat</div>`; return; }
-                    App.renderLibItemsList(cont, results.map(r => r.item));
+                    const limitedResults = results.slice(0, 50).map(r => r.item);
+                    App.renderLibItemsList(cont, limitedResults);
                     return;
                 }
 
@@ -699,7 +736,7 @@
                     let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
                     div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.95rem;">${it.desc}</div><div class="card-sub" style="color:var(--primary); font-weight:700;">${dynamicPrice.toFixed(2)}€ / ${it.unit} <span style="font-weight:400; color:#64748B; font-size:0.8em;">(T: ${it.labor_time}h)</span></div></div><div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fas fa-plus"></i></div>`; 
                     div.onclick = () => { 
-                        // --- CLICK DIRETTO: AGGIUNGI & APRI EDIT MODAL ---
+                        // --- DIRECT ADD + OPEN EDIT MODAL ---
                         const piece = document.getElementById('lib-target-piece').value;
                         const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
                         const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
