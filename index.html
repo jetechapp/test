@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.3 - SMART INSERT</title>
+    <title>QOTIA CLOUD V7.4 - SURFACES</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -361,7 +361,21 @@
 
                     <input type="text" id="input-room-name" class="app-input" style="display:none; margin-top:10px;" placeholder="Nom de la pièce...">
                     
-                    <label style="font-size:0.7rem; font-weight:700; margin-top:10px; display:block;">Détails (Option)</label>
+                    <label style="font-size:0.7rem; font-weight:700; margin-top:10px; display:block;">Dimensions (Option)</label>
+                    <div style="display:flex; gap:10px;">
+                        <div style="flex:1;">
+                            <input type="number" id="room-dim-l" class="app-input" placeholder="L (m)" step="0.01" oninput="App.calcRoomArea()">
+                        </div>
+                        <div style="flex:1;">
+                            <input type="number" id="room-dim-w" class="app-input" placeholder="l (m)" step="0.01" oninput="App.calcRoomArea()">
+                        </div>
+                        <div style="flex:1; position:relative;">
+                            <input type="number" id="room-dim-area" class="app-input" placeholder="m²" step="0.01" style="font-weight:800; color:var(--primary);">
+                            <i class="fas fa-calculator" style="position:absolute; right:10px; top:15px; color:#CBD5E1;"></i>
+                        </div>
+                    </div>
+                    
+                    <label style="font-size:0.7rem; font-weight:700; margin-top:5px; display:block;">Détails (Option)</label>
                     <input type="text" id="input-room-details" class="app-input" style="margin-bottom:0;" placeholder="Es. Mur Nord, 1er Etage...">
                     
                     <button class="btn-primary" style="margin-top:15px; height:45px;" onclick="App.confirmRoom()">CONFIRMER</button>
@@ -740,6 +754,9 @@
                 // --- RESETTA SELETTORE STANZA ---
                 document.getElementById('input-room-name').value = '';
                 document.getElementById('input-room-details').value = '';
+                document.getElementById('room-dim-l').value = '';
+                document.getElementById('room-dim-w').value = '';
+                document.getElementById('room-dim-area').value = '';
                 document.getElementById('room-select-standard').value = ''; 
                 document.getElementById('room-display-final').innerText = "Sélectionner une pièce";
                 document.getElementById('room-display-final').style.color = "var(--primary)";
@@ -812,7 +829,8 @@
                 document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
                 document.getElementById('room-selector-widget').style.background = "#F0FDF4";
                 
-                // Per compatibilità col form edit
+                // Per compatibilità col form edit (proviamo a pulire l'area dal nome per l'input)
+                // "Cuisine (12m²)" -> "Cuisine"
                 const parts = roomName.split(' (');
                 document.getElementById('input-room-name').value = parts[0];
             },
@@ -843,6 +861,14 @@
                 }
             },
 
+            calcRoomArea() {
+                const l = parseFloat(document.getElementById('room-dim-l').value);
+                const w = parseFloat(document.getElementById('room-dim-w').value);
+                if(l && w) {
+                    document.getElementById('room-dim-area').value = (l * w).toFixed(2);
+                }
+            },
+
             confirmRoom() {
                 // Recupera nome (o da select o da input custom)
                 let name = document.getElementById('input-room-name').value.trim();
@@ -852,11 +878,13 @@
                 if(selectVal && selectVal !== 'Autre') name = selectVal;
 
                 const details = document.getElementById('input-room-details').value.trim();
+                const area = document.getElementById('room-dim-area').value;
                 
                 if(!name) return alert("Inserisci il nome della stanza!");
 
                 let displayName = name;
-                if(details) displayName += ` (${details})`;
+                if(area) displayName += ` (${area} m²)`;
+                else if(details) displayName += ` (${details})`;
 
                 // Imposta visualmente
                 App.setRoomActiveVisuals(displayName);
