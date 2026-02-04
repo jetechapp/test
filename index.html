@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7 - STABLE ROLLBACK</title>
+    <title>QOTIA CLOUD V7 - STICKY ROOMS</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,7 +29,7 @@
             
             --h-header: 65px;
             --h-nav: 90px;
-            --radius: 14px;
+            --radius: 16px;
             --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
@@ -121,7 +121,7 @@
         /* ROOM QUICK BUTTONS */
         .room-tag-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 15px 0; -webkit-overflow-scrolling: touch; }
         .room-tag-btn { background: #F1F5F9; color: var(--primary); border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
-        .room-tag-btn:active, .room-tag-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 3px 8px rgba(0,0,0,0.1); }
+        .room-tag-btn:active, .room-tag-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; align-items: flex-start; padding-top: 14px; padding-bottom: env(safe-area-inset-bottom); }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: transparent; border: none; font-size: 0.7rem; font-weight: 600; gap: 5px; cursor: pointer; }
@@ -165,7 +165,7 @@
 
     <main id="view-home" class="view-section active">
         <header class="mobile-header">
-            <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA <span style="font-size:0.7em; opacity:0.6; font-weight:400;">v7.0 Stable</span></div>
+            <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA <span style="font-size:0.7em; opacity:0.6; font-weight:400;">v80</span></div>
             <button style="background:none; border:none; font-size:1.2rem;" onclick="App.nav('settings')"><i class="fas fa-cog"></i></button>
         </header>
         <div class="home-fixed-area">
@@ -383,18 +383,13 @@
         const Auth = {
             user: null,
             async init() {
-                try {
-                    const { data, error } = await sbClient.auth.getSession();
-                    if (data && data.session) {
-                        this.user = data.session.user;
-                        document.getElementById('login-overlay').style.display = 'none';
-                        Store.init();
-                    } else {
-                        document.getElementById('login-overlay').style.display = 'flex';
-                    }
-                } catch(e) {
-                    console.error(e);
-                    alert("Erreur Connexion: " + e.message);
+                const { data } = await sbClient.auth.getSession();
+                if (data.session) {
+                    this.user = data.session.user;
+                    document.getElementById('login-overlay').style.display = 'none';
+                    Store.init();
+                } else {
+                    document.getElementById('login-overlay').style.display = 'flex';
                 }
             },
             async login() {
@@ -461,10 +456,12 @@
                         Config.allItems.push(processedItem);
                     });
 
-                    if(typeof Fuse !== 'undefined') {
-                        const options = { includeScore: true, threshold: 0.3, keys: ['desc', 'category', 'sub_category'] };
-                        Config.searchIndex = new Fuse(Config.allItems, options);
-                    }
+                    const options = {
+                        includeScore: true,
+                        threshold: 0.3, 
+                        keys: ['desc', 'category', 'sub_category'] 
+                    };
+                    Config.searchIndex = new Fuse(Config.allItems, options);
                 }
 
                 const { data: userData } = await sbClient
@@ -475,11 +472,6 @@
 
                 if (userData && userData.data_json) {
                     this.data = userData.data_json;
-                    // FIX IMPORTANT: ASSICURO CHE GLI ARRAY ESISTANO SEMPRE
-                    if(!this.data.clients) this.data.clients = [];
-                    if(!this.data.chantiers) this.data.chantiers = [];
-                    if(!this.data.appointments) this.data.appointments = [];
-                    if(!this.data.partners) this.data.partners = [];
                     if(!this.data.settings) this.data.settings = { hourlyRate: 45 };
                 } else {
                     this.seed();
@@ -492,8 +484,6 @@
             seed() {
                 this.data.clients = [];
                 this.data.chantiers = [];
-                this.data.appointments = [];
-                this.data.partners = [];
                 this.data.settings = { hourlyRate: 45 }; 
                 this.save();
             },
@@ -508,7 +498,7 @@
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, activeRoomDims: {sol:0, mur:0, perim:0}, activeItemToAdd: null, roomCache: {} },
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null },
             
             init() { Auth.init(); },
 
@@ -556,13 +546,13 @@
             },
             renderClients(q='') {
                 const l = document.getElementById('clients-list'); l.innerHTML = '';
-                (Store.data.clients || []).forEach(c => {
+                Store.data.clients.forEach(c => {
                     if(c.nom && c.nom.toLowerCase().includes(q.toLowerCase())) {
                         l.innerHTML += `<div class="card-item"><div class="card-info" onclick="App.editClient(${c.id})"><div class="card-title">${c.nom}</div><div class="card-sub">${c.addr || '-'}</div></div></div>`;
                     }
                 });
             },
-            renderProjets() { const l = document.getElementById('projects-list-full'); l.innerHTML = ''; (Store.data.chantiers || []).forEach(c => { const cli = (Store.data.clients || []).find(x=>x.id==c.clientId); l.innerHTML += `<div class="card-item" onclick="App.openHub(${c.id})"><div class="card-info"><span class="card-tag">${c.ref}</span><div class="card-title">${c.name}</div><div class="card-sub"><i class="fas fa-user"></i> ${cli?cli.nom:'?'}</div></div></div>`; }); },
+            renderProjets() { const l = document.getElementById('projects-list-full'); l.innerHTML = ''; Store.data.chantiers.forEach(c => { const cli = Store.data.clients.find(x=>x.id==c.clientId); l.innerHTML += `<div class="card-item" onclick="App.openHub(${c.id})"><div class="card-info"><span class="card-tag">${c.ref}</span><div class="card-title">${c.name}</div><div class="card-sub"><i class="fas fa-user"></i> ${cli?cli.nom:'?'}</div></div></div>`; }); },
             
             renderSettings() {
                 const l = document.getElementById('settings-partners-list'); l.innerHTML = '';
@@ -585,7 +575,7 @@
 
             openHub(id) {
                 Store.data.activeChantierId = id; Store.save();
-                const c = Store.data.chantiers.find(x=>x.id==id); const cli = (Store.data.clients || []).find(x=>x.id==c.clientId);
+                const c = Store.data.chantiers.find(x=>x.id==id); const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 document.getElementById('hub-name').innerText = c.name; document.getElementById('hub-client').innerText = cli ? cli.nom : '?'; document.getElementById('hub-ref').innerText = c.ref;
                 
                 const ld = document.getElementById('hub-devis-list'); ld.innerHTML=''; 
@@ -622,7 +612,7 @@
                     if(found) { Store.data.activeChantierId = found.id; return App.openEditor(did); }
                     return App.nav('projets'); 
                 }
-                const cli = (Store.data.clients || []).find(x=>x.id==c.clientId); const d = c.devisList.find(x=>x.id==did);
+                const cli = Store.data.clients.find(x=>x.id==c.clientId); const d = c.devisList.find(x=>x.id==did);
                 document.getElementById('ed-client-name').innerText = cli ? cli.nom : 'Inconnu';
                 document.getElementById('ed-quote-name').innerText = c.name + " - " + d.name;
                 this.nav('editor'); App.setEditorView('pieces'); App.calcTotals();
@@ -700,10 +690,8 @@
                 document.getElementById('room-selector-widget').style.borderColor = "var(--border)";
                 document.getElementById('room-selector-widget').style.background = "#FFF";
                 
-                // FIX: GENERA I BOTTONI SOLO SE C'E' UN CANTIERE ATTIVO
-                if(Store.data.activeChantierId) {
-                    App.renderUsedRoomButtons();
-                }
+                // GENERA I BOTTONI SOLO PER STANZE GIÀ USATE
+                App.renderUsedRoomButtons();
 
                 // Mostra il selettore "compatto" all'inizio
                 App.toggleRoomEdit(false); 
@@ -712,106 +700,139 @@
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
+            // FUNZIONE CHE CREA I BOTTONI DINAMICI (Con stile "Active")
             renderUsedRoomButtons(activeRoomName = null) {
-                // SAFETY CHECK
-                const cid = Store.data.activeChantierId;
-                const did = Store.data.activeDevisId;
-                if(!cid || !did) return;
-                const ch = Store.data.chantiers.find(x => x.id == cid); 
-                if(!ch) return;
-                const dv = ch.devisList.find(x => x.id == did);
-                if(!dv) return;
-
+                const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId);
                 const container = document.getElementById('room-used-buttons');
                 container.innerHTML = '';
 
-                // Stanze uniche
+                // Trova stanze uniche
                 const usedRooms = new Set();
-                dv.items.forEach(i => { if(i.piece) usedRooms.add(i.piece); });
+                dv.items.forEach(i => {
+                    if(i.piece) usedRooms.add(i.piece);
+                });
+
+                // Se abbiamo appena creato una stanza nuova che non ha ancora articoli, aggiungiamola alla lista
                 const currentInputName = document.getElementById('room-display-final').innerText;
-                if(currentInputName !== "Sélectionner une pièce") usedRooms.add(currentInputName);
+                if(currentInputName !== "Sélectionner une pièce") {
+                    usedRooms.add(currentInputName);
+                }
 
                 if(usedRooms.size === 0) {
-                    container.innerHTML = '<span style="font-size:0.7rem; color:#94A3B8;">Créer une pièce (+)</span>';
+                    container.innerHTML = '<span style="font-size:0.7rem; color:#94A3B8;">Aucune pièce créée. Cliquez sur +</span>';
                     return;
                 }
 
                 usedRooms.forEach(roomName => {
                     const btn = document.createElement('div');
                     btn.className = 'room-tag-btn';
+                    
+                    // Stile attivo se corrisponde alla stanza corrente
                     if (roomName === activeRoomName || roomName === document.getElementById('room-display-final').innerText) {
                         btn.classList.add('active');
+                        // Aggiorna anche visivamente il box principale se non lo è già
                         if(document.getElementById('room-display-final').innerText !== roomName) {
                              App.setRoomActiveVisuals(roomName);
                         }
                     }
+
                     btn.innerText = roomName;
                     btn.onclick = () => {
                         App.setRoomActiveVisuals(roomName);
+                        // Ridisegna i bottoni per aggiornare lo stato "active"
                         App.renderUsedRoomButtons(roomName);
                     };
                     container.appendChild(btn);
                 });
             },
 
+            // Helper per impostare visivamente la stanza attiva
             setRoomActiveVisuals(roomName) {
                 document.getElementById('room-display-final').innerText = roomName;
                 document.getElementById('room-display-final').style.color = "var(--success)";
+                document.getElementById('room-details-final').innerText = ""; 
                 document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
                 document.getElementById('room-selector-widget').style.background = "#F0FDF4";
                 
+                // Per compatibilità col form edit
                 const parts = roomName.split(' (');
                 document.getElementById('input-room-name').value = parts[0];
             },
 
+            // Gestione Widget Stanza
             toggleRoomEdit(show) {
                 const view = document.getElementById('room-view-mode');
                 const edit = document.getElementById('room-edit-mode');
-                if(show) { view.style.display = 'none'; edit.style.display = 'block'; } 
-                else { view.style.display = 'block'; edit.style.display = 'none'; }
+                if(show) {
+                    view.style.display = 'none';
+                    edit.style.display = 'block';
+                } else {
+                    view.style.display = 'block';
+                    edit.style.display = 'none';
+                }
             },
 
             onRoomSelectChange() {
                 const val = document.getElementById('room-select-standard').value;
                 const inputCustom = document.getElementById('input-room-name');
-                if(val === 'Autre') { inputCustom.style.display = 'block'; inputCustom.value = ''; inputCustom.focus(); } 
-                else { inputCustom.style.display = 'none'; inputCustom.value = val; }
+                if(val === 'Autre') {
+                    inputCustom.style.display = 'block';
+                    inputCustom.value = '';
+                    inputCustom.focus();
+                } else {
+                    inputCustom.style.display = 'none';
+                    inputCustom.value = val;
+                }
             },
 
             confirmRoom() {
+                // Recupera nome (o da select o da input custom)
                 let name = document.getElementById('input-room-name').value.trim();
                 const selectVal = document.getElementById('room-select-standard').value;
-                if(!selectVal && !name) return alert("Seleziona una stanza!");
-                if(selectVal && selectVal !== 'Autre') name = selectVal;
                 
+                if(!selectVal && !name) return alert("Seleziona una stanza dal menu!");
+                if(selectVal && selectVal !== 'Autre') name = selectVal;
+
                 const details = document.getElementById('input-room-details').value.trim();
-                if(!name) return alert("Inserisci il nome!");
+                
+                if(!name) return alert("Inserisci il nome della stanza!");
 
                 let displayName = name;
                 if(details) displayName += ` (${details})`;
 
+                // Imposta visualmente
                 App.setRoomActiveVisuals(displayName);
+                
+                // Aggiunge subito il bottone in alto
                 App.renderUsedRoomButtons(displayName);
+
                 App.toggleRoomEdit(false);
             },
 
-            // --- NAV 3 LIVELLI ---
+            // --- NAVIGAZIONE 3 LIVELLI ---
             renderLibraryItems() {
-                const cont = document.getElementById('lib-container'); cont.innerHTML = '';
+                const cont = document.getElementById('lib-container'); 
+                cont.innerHTML = '';
+                
                 const searchTerm = document.getElementById('lib-search').value;
                 const selectedCat = document.getElementById('lib-category-select').value;
                 const breadcrumb = document.getElementById('lib-breadcrumb');
                 
+                // 1. RICERCA ATTIVA
                 if (searchTerm.length > 1) {
                     breadcrumb.style.display = 'none';
-                    if(!Config.searchIndex) return;
                     const results = Config.searchIndex.search(searchTerm);
-                    if(results.length === 0) { cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Aucun résultat</div>`; return; }
+                    if(results.length === 0) {
+                        cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Nessun risultato per "${searchTerm}"</div>`;
+                        return;
+                    }
                     const finalResults = selectedCat ? results.filter(r => r.item.category === selectedCat) : results;
                     App.renderLibItemsList(cont, finalResults.map(r => r.item));
                     return;
                 }
 
+                // 2. LIVELLO RADICE (Famiglie)
                 if (App.state.libCategory === null && !selectedCat) {
                     breadcrumb.style.display = 'none';
                     const categories = Object.keys(Config.LIB).sort();
@@ -820,7 +841,8 @@
                     categories.forEach(cat => {
                         let btn = document.createElement('div');
                         btn.style.cssText = "background:white; border:1px solid var(--border); border-radius:12px; padding:20px 10px; text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;";
-                        btn.innerHTML = `<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i><div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div>`;
+                        let icon = '<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i>';
+                        btn.innerHTML = `${icon}<div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div>`;
                         btn.onclick = () => { App.state.libCategory = cat; document.getElementById('lib-category-select').value = cat; App.renderLibraryItems(); };
                         grid.appendChild(btn);
                     });
@@ -828,6 +850,7 @@
                     return;
                 }
 
+                // 3. LIVELLO INTERMEDIO (Sotto-Famiglie)
                 const activeCat = selectedCat || App.state.libCategory;
                 if (activeCat && App.state.libSubCategory === null) {
                     breadcrumb.style.display = 'block';
@@ -838,7 +861,8 @@
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
                     backBtn.onclick = () => { App.state.libCategory = null; document.getElementById('lib-category-select').value = ""; App.renderLibraryItems(); };
                     cont.appendChild(backBtn);
-                    const subCats = [...new Set(Config.LIB[activeCat].map(i => i.sub_category))].sort();
+                    const allItemsInCat = Config.LIB[activeCat];
+                    const subCats = [...new Set(allItemsInCat.map(i => i.sub_category))].sort();
                     let grid = document.createElement('div');
                     grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px;";
                     subCats.forEach(sub => {
@@ -852,6 +876,7 @@
                     return;
                 }
 
+                // 4. LIVELLO FINALE (Articoli)
                 if (activeCat && App.state.libSubCategory) {
                     breadcrumb.style.display = 'block';
                     document.getElementById('lib-bc-cat').innerText = activeCat;
@@ -867,27 +892,60 @@
             },
 
             renderLibItemsList(container, items) {
-                // FIX PERFORMANCE
-                if(items.length > 500) items = items.slice(0, 500);
-                
                 items.forEach(it => { 
                     const dynamicPrice = App.calculateItemPrice(it);
                     let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
-                    div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.95rem;">${it.desc}</div><div class="card-sub" style="color:var(--primary); font-weight:700;">${dynamicPrice.toFixed(2)}€ / ${it.unit} <span style="font-weight:400; color:#64748B; font-size:0.8em;">(T: ${it.labor_time}h)</span></div></div><div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fas fa-plus"></i></div>`; 
+                    
+                    div.innerHTML = `
+                        <div class="card-info">
+                            <div class="card-title" style="font-size:0.95rem;">${it.desc}</div>
+                            <div class="card-sub" style="color:var(--primary); font-weight:700;">
+                                ${dynamicPrice.toFixed(2)}€ / ${it.unit} 
+                                <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">
+                                    (T: ${it.labor_time}h | M: ${it.material_cost}€)
+                                </span>
+                            </div>
+                        </div>
+                        <div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer;">
+                            <i class="fas fa-plus" style="font-size:0.9rem;"></i>
+                        </div>
+                    `; 
+                    
                     div.onclick = () => { 
+                        // CONTROLLO STANZA
+                        const roomDisplay = document.getElementById('room-display-final');
                         const isConfirmed = document.getElementById('room-selector-widget').style.borderColor === "var(--success)";
-                        if(!isConfirmed) { App.toggleRoomEdit(true); return alert("Sélectionnez une pièce d'abord!"); }
                         
-                        const roomName = document.getElementById('room-display-final').innerText;
+                        if(!isConfirmed) {
+                            App.toggleRoomEdit(true);
+                            return alert("Per favore, seleziona e CONFERMA una stanza prima di aggiungere articoli!");
+                        }
+
+                        const finalPieceName = roomDisplay.innerText;
+
                         const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
                         const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
-                        const newItem = { id: Date.now(), desc: it.desc, unit: it.unit, time: it.labor_time, material_cost: it.material_cost, price: dynamicPrice, qty: 0, piece: roomName }; 
-                        dv.items.push(newItem); Store.save(); 
                         
-                        // MANTIENI LA STANZA (Sticky)
-                        App.renderUsedRoomButtons(roomName);
-
-                        App.showToast("Ajouté: " + it.desc); App.calcTotals(); App.renderEditorItems(); 
+                        const newItem = { 
+                            id: Date.now(), 
+                            desc: it.desc, 
+                            unit: it.unit, 
+                            time: it.labor_time, 
+                            material_cost: it.material_cost, 
+                            price: dynamicPrice, 
+                            qty: 0, 
+                            piece: finalPieceName
+                        }; 
+                        
+                        dv.items.push(newItem); 
+                        Store.save(); 
+                        
+                        // MANTIENI IL FOCUS SULLA STANZA CORRENTE
+                        App.renderUsedRoomButtons(finalPieceName);
+                        
+                        App.showToast("Ajouté: " + it.desc); 
+                        App.calcTotals(); 
+                        App.renderEditorItems(); 
                     }; 
                     container.appendChild(div); 
                 });
@@ -898,6 +956,7 @@
                 document.getElementById('edit-item-idx').value = id; document.getElementById('edit-item-desc').value = item.desc; document.getElementById('edit-item-qty').value = item.qty; 
                 document.getElementById('edit-item-price').value = item.price.toFixed(2); 
                 document.getElementById('edit-item-unit').value = item.unit || 'U'; document.getElementById('edit-item-time').value = item.time || 0;
+                
                 const rooms = new Set(d.items.map(i => i.piece).filter(Boolean)); ['Cuisine','SDB','Salon'].forEach(r=>rooms.add(r)); const sel = document.getElementById('edit-item-piece'); sel.innerHTML = ''; 
                 rooms.forEach(r => { const isSel = r === item.piece ? 'selected' : ''; sel.innerHTML += `<option value="${r}" ${isSel}>${r}</option>`; });
                 document.getElementById('modal-edit-item').classList.add('open');
@@ -920,9 +979,9 @@
             
             openClientModal() { ['cli-id','cli-nom','cli-addr','cli-tel','cli-email','cli-siret'].forEach(k=>document.getElementById(k).value=''); App.toggleClientType('particulier'); document.getElementById('modal-client').classList.add('open'); },
             toggleClientType(type) { App.state.tempClientType = type; document.getElementById('type-particulier').classList.remove('active'); document.getElementById('type-societe').classList.remove('active'); document.getElementById('type-'+type).classList.add('active'); if(type === 'societe') { document.getElementById('field-siret').style.display = 'block'; document.getElementById('cli-nom').placeholder = 'Raison Sociale'; } else { document.getElementById('field-siret').style.display = 'none'; document.getElementById('cli-nom').placeholder = 'Nom et Prénom'; } },
-            saveClient() { const id = document.getElementById('cli-id').value; const type = App.state.tempClientType; const c = { id: id?parseInt(id):Date.now(), type: type, nom: document.getElementById('cli-nom').value, siret: type === 'societe' ? document.getElementById('cli-siret').value : '', addr: document.getElementById('cli-addr').value, tel: document.getElementById('cli-tel').value, email: document.getElementById('cli-email').value }; if(!c.nom) return alert("Nom obligatoire"); if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; } else { Store.data.clients.push(c); } Store.save(); App.closeModal('modal-client'); App.renderClients(); if(document.getElementById('modal-projet').classList.contains('open')) { const s = document.getElementById('prj-cli'); s.innerHTML=''; (Store.data.clients || []).forEach(cl => { let o=document.createElement('option'); o.value=cl.id; o.text=cl.nom; s.appendChild(o); }); s.value = c.id; } },
+            saveClient() { const id = document.getElementById('cli-id').value; const type = App.state.tempClientType; const c = { id: id?parseInt(id):Date.now(), type: type, nom: document.getElementById('cli-nom').value, siret: type === 'societe' ? document.getElementById('cli-siret').value : '', addr: document.getElementById('cli-addr').value, tel: document.getElementById('cli-tel').value, email: document.getElementById('cli-email').value }; if(!c.nom) return alert("Nom obligatoire"); if(id) { const idx = Store.data.clients.findIndex(x=>x.id==id); Store.data.clients[idx]=c; } else { Store.data.clients.push(c); } Store.save(); App.closeModal('modal-client'); App.renderClients(); if(document.getElementById('modal-projet').classList.contains('open')) { const s = document.getElementById('prj-cli'); s.innerHTML=''; Store.data.clients.forEach(cl => { let o=document.createElement('option'); o.value=cl.id; o.text=cl.nom; s.appendChild(o); }); s.value = c.id; } },
             editClient(id) { const c = Store.data.clients.find(x=>x.id==id); document.getElementById('cli-id').value=c.id; document.getElementById('cli-nom').value=c.nom; document.getElementById('cli-addr').value=c.addr; document.getElementById('cli-tel').value=c.tel; document.getElementById('cli-email').value=c.email; document.getElementById('cli-siret').value = c.siret || ''; App.toggleClientType(c.type || 'particulier'); document.getElementById('modal-client').classList.add('open'); },
-            openProjectWizard() { const s=document.getElementById('prj-cli'); s.innerHTML='<option value="">Sélectionner...</option>'; (Store.data.clients || []).forEach(c=>{ let o=document.createElement('option'); o.value=c.id; o.text=c.nom; s.appendChild(o); }); document.getElementById('modal-projet').classList.add('open'); },
+            openProjectWizard() { const s=document.getElementById('prj-cli'); s.innerHTML='<option value="">Sélectionner...</option>'; Store.data.clients.forEach(c=>{ let o=document.createElement('option'); o.value=c.id; o.text=c.nom; s.appendChild(o); }); document.getElementById('modal-projet').classList.add('open'); },
             createProject() { const cid=document.getElementById('prj-cli').value; const nom=document.getElementById('prj-nom').value; const addr=document.getElementById('prj-addr').value; if(cid && nom) { const ch={id:Date.now(), clientId:cid, name:nom, ref:"C-"+Date.now().toString().slice(-4), devisList:[], factures:[], extraDocs:[]}; Store.data.chantiers.unshift(ch); Store.save(); App.showToast("Chantier créé"); App.closeModal('modal-projet'); App.openHub(ch.id); } },
             backToHub() { if(Store.data.activeChantierId) App.openHub(Store.data.activeChantierId); else App.nav('projets'); },
 
@@ -931,15 +990,15 @@
             setInvType(t) { App.state.invType = t; document.getElementById('btn-acompte').style.background = t==='acompte'? 'var(--primary)' : 'white'; document.getElementById('btn-acompte').style.color = t==='acompte'? 'white' : '#64748B'; document.getElementById('btn-solde').style.background = t==='solde'? 'var(--primary)' : 'white'; document.getElementById('btn-solde').style.color = t==='solde'? 'white' : '#64748B'; const inp = document.getElementById('inv-percent'); if(t==='solde') { inp.value = 100; inp.disabled = true; } else { inp.value = 30; inp.disabled = false; } App.calcInvPreview(); },
             calcInvPreview() { const cid = Store.data.activeChantierId; const c = Store.data.chantiers.find(x=>x.id==cid); const did = document.getElementById('inv-devis-select').value; if(!did) return; const d = c.devisList.find(x=>x.id==did); const perc = parseInt(document.getElementById('inv-percent').value) || 0; const amt = d.total * (perc/100); document.getElementById('inv-preview-amount').innerText = amt.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' €'; },
             generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const amtString = document.getElementById('inv-preview-amount').innerText.replace(' €','').replace(/\s/g,'').replace(/\./g,''); c.factures.push({ id: Date.now(), ref: "FAC-"+Date.now().toString().slice(-4), type: App.state.invType, amount: parseFloat(amtString), paid: false }); Store.save(); App.showToast("Facture émise"); App.closeModal('modal-invoice'); App.openHub(c.id); },
-            openAgenda() { const s=document.getElementById('agd-chantier'); s.innerHTML='<option value="">Sélectionner...</option>'; (Store.data.chantiers || []).forEach(c=>{let o=document.createElement('option'); o.value=c.id; o.text=c.name; s.appendChild(o);}); document.getElementById('modal-agenda').classList.add('open'); let l=document.getElementById('agenda-list-view'); l.innerHTML=''; (Store.data.appointments||[]).forEach(a=>{let d=document.createElement('div'); d.className='card-item'; d.innerText=new Date(a.date).toLocaleString()+' - '+a.title; l.appendChild(d);}); },
+            openAgenda() { const s=document.getElementById('agd-chantier'); s.innerHTML='<option value="">Sélectionner...</option>'; Store.data.chantiers.forEach(c=>{let o=document.createElement('option'); o.value=c.id; o.text=c.name; s.appendChild(o);}); document.getElementById('modal-agenda').classList.add('open'); let l=document.getElementById('agenda-list-view'); l.innerHTML=''; (Store.data.appointments||[]).forEach(a=>{let d=document.createElement('div'); d.className='card-item'; d.innerText=new Date(a.date).toLocaleString()+' - '+a.title; l.appendChild(d);}); },
             saveAgendaEvent() { const cid=document.getElementById('agd-chantier').value; const date=document.getElementById('agd-date').value; if(cid&&date){const c=Store.data.chantiers.find(x=>x.id==cid); Store.data.appointments.push({id:Date.now(), date:date, title:"Visite", sub:c.name}); Store.save(); App.showToast("RDV Enregistré"); App.closeModal('modal-agenda'); App.renderHome();} },
-            renderDocuments(filter) { const l=document.getElementById('documents-list'); l.innerHTML=''; let docs=[]; (Store.data.chantiers || []).forEach(c=>{ const cli=(Store.data.clients || []).find(x=>x.id==c.clientId); const cn=cli?cli.nom:'-'; if(c.devisList) c.devisList.forEach(d=>docs.push({type:'Devis', ref:d.ref, client:cn, cid:c.id, obj:d})); if(c.factures) c.factures.forEach(f=>docs.push({type:'Facture', ref:f.ref, client:cn, cid:c.id, obj:f})); if(c.extraDocs) c.extraDocs.forEach(e=>docs.push({type:'CDC', ref:e.ref, client:cn, cid:c.id, obj:e})); }); if(filter&&filter!=='all') docs=docs.filter(d=>d.type===filter||(filter==='CDC'&&d.type==='Etude')); docs.forEach(d=>{ let div=document.createElement('div'); div.className='card-item'; div.innerHTML=`<div class="card-info"><span class="card-tag">${d.type}</span><div class="card-title">${d.ref}</div><div class="card-sub">${d.client}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); ${d.type==='CDC' ? `App.generateCDCPDF('${d.obj.id}')` : `App.generateGlobalPDF('${d.type.toLowerCase()}', ${d.obj.id})`}"></i>`; div.onclick=()=>{ Store.data.activeChantierId=d.cid; if(d.type==='Devis') App.openEditor(d.obj.id); else if(d.type==='CDC') App.viewCahierTable(d.obj); else App.openHub(d.cid); }; l.appendChild(div); }); },
+            renderDocuments(filter) { const l=document.getElementById('documents-list'); l.innerHTML=''; let docs=[]; Store.data.chantiers.forEach(c=>{ const cli=Store.data.clients.find(x=>x.id==c.clientId); const cn=cli?cli.nom:'-'; if(c.devisList) c.devisList.forEach(d=>docs.push({type:'Devis', ref:d.ref, client:cn, cid:c.id, obj:d})); if(c.factures) c.factures.forEach(f=>docs.push({type:'Facture', ref:f.ref, client:cn, cid:c.id, obj:f})); if(c.extraDocs) c.extraDocs.forEach(e=>docs.push({type:'CDC', ref:e.ref, client:cn, cid:c.id, obj:e})); }); if(filter&&filter!=='all') docs=docs.filter(d=>d.type===filter||(filter==='CDC'&&d.type==='Etude')); docs.forEach(d=>{ let div=document.createElement('div'); div.className='card-item'; div.innerHTML=`<div class="card-info"><span class="card-tag">${d.type}</span><div class="card-title">${d.ref}</div><div class="card-sub">${d.client}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); ${d.type==='CDC' ? `App.generateCDCPDF('${d.obj.id}')` : `App.generateGlobalPDF('${d.type.toLowerCase()}', ${d.obj.id})`}"></i>`; div.onclick=()=>{ Store.data.activeChantierId=d.cid; if(d.type==='Devis') App.openEditor(d.obj.id); else if(d.type==='CDC') App.viewCahierTable(d.obj); else App.openHub(d.cid); }; l.appendChild(div); }); },
             viewCahierTable(doc) { document.getElementById('vc-title').innerText = doc.name; const t = document.getElementById('vc-table'); t.innerHTML = '<tr style="background:#f1f5f9; text-align:left;"><th style="padding:10px;">Article</th><th style="padding:10px;">Loc</th><th style="padding:10px;">Ass.</th></tr>'; doc.items.forEach(i => t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${i.desc}</td><td style="padding:10px; border-bottom:1px solid #eee;">${i.piece||'-'}</td><td style="padding:10px; border-bottom:1px solid #eee; color:#15803d; font-weight:bold;">${i.assignedTo||'-'}</td></tr>`); document.getElementById('modal-view-cahier').classList.add('open'); },
-            renderGlobalInvoices() { const l = document.getElementById('global-invoice-list'); l.innerHTML = ''; (Store.data.chantiers || []).forEach(c => { if(c.factures) c.factures.forEach(f => { if(!f.paid) { const cli = (Store.data.clients || []).find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = 'card-item'; div.innerHTML = `<div class="card-info"><div class="card-title">${cli?cli.nom:'?'}</div><div class="card-sub">Ref: ${f.ref}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i><div style="font-weight:800; color:var(--danger)">${f.amount.toLocaleString()} €</div>`; div.onclick = () => App.openHub(c.id); l.appendChild(div); } }); }); },
+            renderGlobalInvoices() { const l = document.getElementById('global-invoice-list'); l.innerHTML = ''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { if(!f.paid) { const cli = Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = 'card-item'; div.innerHTML = `<div class="card-info"><div class="card-title">${cli?cli.nom:'?'}</div><div class="card-sub">Ref: ${f.ref}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i><div style="font-weight:800; color:var(--danger)">${f.amount.toLocaleString()} €</div>`; div.onclick = () => App.openHub(c.id); l.appendChild(div); } }); }); },
 
             generateGlobalPDF(type, id) {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const cli = (Store.data.clients || []).find(x=>x.id==c.clientId);
+                const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 let items, title, ref;
                 if (type === 'devis') {
                     const obj = c.devisList.find(x=>x.id==id);
@@ -955,7 +1014,8 @@
                 }).join('');
                 const html = `<div style="font-family:sans-serif; padding:30px; color:#334155;"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:40px;"><div><h1 style="color:#0f172a; margin:0;">${title}</h1><div style="color:#64748b; font-size:0.9rem;">${ref}</div></div><div style="text-align:right;"><strong>QOTIA ENTREPRISE</strong><br>123 Rue Exemple<br>06000 NICE</div></div><div style="background:#f1f5f9; padding:20px; border-radius:10px; margin-bottom:30px;"><strong>CLIENT:</strong><br><span style="font-size:1.2rem; font-weight:bold; color:#0f172a;">${cli.nom}</span><br>${cli.addr}<br>${cli.tel||''}</div><table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:30px;"><thead style="background:#0f172a; color:white;"><tr><th style="padding:12px; text-align:left;">Description</th><th style="padding:12px; text-align:center;">Qté</th><th style="padding:12px; text-align:center;">Unit</th><th style="padding:12px; text-align:right;">P.U.</th><th style="padding:12px; text-align:right;">Total</th></tr></thead><tbody>${rows}</tbody></table><div style="text-align:right; margin-bottom:50px;"><div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${totalTTC.toLocaleString()} €</div></div></div>`;
                 const opt = { margin: 10, filename: `${title}_${ref}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-                html2pdf().set(opt).from(element).save().then(() => { document.body.removeChild(element); App.showToast("PDF Téléchargé"); });
+                html2pdf().set(opt).from(html).save();
+                App.showToast("PDF Téléchargé");
             },
 
             assignCollaborator() {
