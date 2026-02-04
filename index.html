@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.1 - STICKY ROOMS</title>
+    <title>QOTIA CLOUD V7.2 - CDC & COLLABS</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -111,6 +111,13 @@
         .section-separator { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #E2E8F0; }
         .section-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
         .action-create-btn { background: white; color: var(--primary); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+
+        /* CHECKBOXES & LISTS FOR CDC */
+        .check-container { display: flex; align-items: center; padding: 12px; background: white; border-bottom: 1px solid #F1F5F9; cursor: pointer; }
+        .custom-checkbox { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; margin-right: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+        .custom-checkbox.checked { background: var(--primary); border-color: var(--primary); }
+        .custom-checkbox.checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: white; font-size: 0.8rem; }
+        .assigned-badge { background: #DCFCE7; color: #166534; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 5px; display: inline-flex; align-items: center; gap: 4px; }
 
         /* ROOM QUICK BUTTONS */
         .room-tag-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 15px 0; -webkit-overflow-scrolling: touch; }
@@ -285,18 +292,23 @@
         <div class="modal-body">
             <label style="font-weight:700; margin-bottom:10px; display:block;">Source Devis</label>
             <select id="sel-source-devis" class="app-input" onchange="App.renderSelectionList()"></select>
+            
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <label style="font-weight:700; color:var(--text-sub);">Sélectionner</label>
-                <button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout</button>
+                <label style="font-weight:700; color:var(--text-sub);">Sélectionner les tâches:</label>
+                <button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout cocher</button>
             </div>
-            <div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden;"></div>
+            
+            <div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden; max-height:400px; overflow-y:auto;"></div>
+            
+            <label style="font-weight:700; margin-top:20px; display:block;">Attribuer à:</label>
+            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                <select id="cdc-assignee" class="app-input" style="flex:1; margin:0;"></select>
+                <button class="btn-primary" style="width:100px;" onclick="App.assignCollaborator()">OK</button>
+            </div>
+            
         </div>
-        <div class="modal-footer" style="flex-direction:column; gap:10px;">
-            <div style="display:flex; gap:10px; width:100%;">
-                <select id="cdc-assignee" class="app-input" style="flex:1; margin:0; font-size:0.9rem; padding:0 10px;"></select>
-                <button class="btn-primary" style="flex:1;" onclick="App.assignCollaborator()"><i class="fas fa-check"></i> Assigner</button>
-            </div>
-            <button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER DANS LE DOSSIER</button>
+        <div class="modal-footer">
+            <button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER CDC</button>
         </div>
     </div>
     
@@ -1096,13 +1108,160 @@
                 App.showToast("PDF Téléchargé");
             },
 
+            generateCDCPDF(docId) {
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const doc = c.extraDocs.find(x => x.id == docId);
+                if (!doc) return;
+
+                const items = doc.items;
+                let rows = items.map(i => {
+                    return `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${i.desc}</td><td style="padding:10px; border-bottom:1px solid #eee;">${i.piece||'-'}</td><td style="padding:10px; border-bottom:1px solid #eee; font-weight:bold;">${i.qty} ${i.unit}</td></tr>`;
+                }).join('');
+
+                const html = `
+                    <div style="font-family:sans-serif; padding:30px;">
+                        <h1>${doc.name}</h1>
+                        <h3>Projet: ${c.name} - ${doc.ref}</h3>
+                        <table style="width:100%; border-collapse:collapse; margin-top:20px;">
+                            <thead style="background:#0f172a; color:white;"><tr><th style="padding:10px; text-align:left;">Tâche</th><th style="padding:10px; text-align:left;">Zone</th><th style="padding:10px; text-align:left;">Qté</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+                const opt = { margin: 10, filename: `${doc.name}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+                html2pdf().set(opt).from(html).save();
+            },
+
+            // --- FUNZIONI CAHIER DES CHARGES (CDC) ---
+            openSelectCDCModal() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                if (!c.devisList || c.devisList.length === 0) return alert("Crea prima un devis!");
+                
+                // Popola Devis
+                const s = document.getElementById('sel-source-devis');
+                s.innerHTML = '';
+                c.devisList.forEach(d => {
+                    let o = document.createElement('option');
+                    o.value = d.id; o.text = d.name;
+                    s.appendChild(o);
+                });
+
+                // Popola Partner
+                const pSel = document.getElementById('cdc-assignee');
+                pSel.innerHTML = '<option value="">-- Seleziona Partner --</option>';
+                (Store.data.partners || []).forEach(p => {
+                    let o = document.createElement('option');
+                    o.value = p.name; o.text = `${p.name} (${p.role})`;
+                    pSel.appendChild(o);
+                });
+
+                App.state.selectedItems = new Set();
+                App.renderSelectionList();
+                document.getElementById('modal-select-cdc').classList.add('open');
+            },
+
+            renderSelectionList() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const did = document.getElementById('sel-source-devis').value;
+                if (!did) return;
+                
+                const d = c.devisList.find(x => x.id == did);
+                const cont = document.getElementById('selection-list-container');
+                cont.innerHTML = '';
+
+                d.items.forEach(item => {
+                    const isChecked = App.state.selectedItems.has(item.id) ? 'checked' : '';
+                    const assignedInfo = item.assignedTo 
+                        ? `<span class="assigned-badge"><i class="fas fa-user"></i> ${item.assignedTo}</span>` 
+                        : '';
+                    
+                    const el = document.createElement('div');
+                    el.className = 'check-container';
+                    el.onclick = (e) => App.toggleItemSelection(item.id, el);
+                    el.innerHTML = `
+                        <div class="custom-checkbox ${isChecked}"></div>
+                        <div style="flex:1">
+                            <div style="font-weight:700; font-size:0.9rem;">${item.desc}</div>
+                            <div style="font-size:0.8rem; color:var(--text-sub); display:flex; align-items:center;">
+                                ${item.piece || 'Général'} ${assignedInfo}
+                            </div>
+                        </div>
+                    `;
+                    cont.appendChild(el);
+                });
+            },
+
+            toggleItemSelection(id, el) {
+                if (App.state.selectedItems.has(id)) {
+                    App.state.selectedItems.delete(id);
+                    el.querySelector('.custom-checkbox').classList.remove('checked');
+                } else {
+                    App.state.selectedItems.add(id);
+                    el.querySelector('.custom-checkbox').classList.add('checked');
+                }
+            },
+
+            selectAllItems() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const did = document.getElementById('sel-source-devis').value;
+                const d = c.devisList.find(x => x.id == did);
+                
+                const allSelected = (App.state.selectedItems.size === d.items.length);
+                
+                if (allSelected) {
+                    App.state.selectedItems.clear();
+                } else {
+                    d.items.forEach(i => App.state.selectedItems.add(i.id));
+                }
+                App.renderSelectionList();
+            },
+
             assignCollaborator() {
-                if(App.state.selectedItems.size === 0) return alert("Sélectionnez des articles.");
+                if(App.state.selectedItems.size === 0) return alert("Seleziona almeno un lavoro.");
                 const name = document.getElementById('cdc-assignee').value;
-                if(!name) return alert("Sélectionnez un partenaire.");
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d = c.devisList.find(x=>x.id==document.getElementById('sel-source-devis').value);
-                d.items.forEach(i => { if(App.state.selectedItems.has(i.id)) i.assignedTo = name; });
-                Store.save(); App.showToast("Tâches assignées"); this.renderSelectionList();
+                if(!name) return alert("Seleziona un partner dalla lista.");
+                
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
+                const d = c.devisList.find(x=>x.id==document.getElementById('sel-source-devis').value);
+                
+                let count = 0;
+                d.items.forEach(i => {
+                    if(App.state.selectedItems.has(i.id)) {
+                        i.assignedTo = name;
+                        count++;
+                    }
+                });
+                
+                Store.save();
+                App.showToast(`${count} lavori assegnati a ${name}`);
+                App.renderSelectionList(); // Ricarica la lista per vedere i badge
+            },
+
+            saveCDC() {
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const did = document.getElementById('sel-source-devis').value;
+                const d = c.devisList.find(x => x.id == did);
+                
+                if (App.state.selectedItems.size === 0) return alert("Seleziona gli elementi da includere nel CDC.");
+
+                const selectedItemsList = d.items.filter(i => App.state.selectedItems.has(i.id));
+                const assigneeName = document.getElementById('cdc-assignee').value || "Général";
+                
+                const newDoc = {
+                    id: Date.now(),
+                    name: `CDC - ${assigneeName}`,
+                    ref: `CDC-${Date.now().toString().slice(-4)}`,
+                    date: new Date().toISOString(),
+                    items: JSON.parse(JSON.stringify(selectedItemsList)) // Copia statica
+                };
+
+                if (!c.extraDocs) c.extraDocs = [];
+                c.extraDocs.push(newDoc);
+                Store.save();
+                
+                App.showToast("Documento CDC creato!");
+                App.closeModal('modal-select-cdc');
+                App.openHub(c.id);
             }
         };
 
