@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V4 - FULL LIST</title>
+    <title>QOTIA CLOUD V5 - FINAL</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -307,18 +307,57 @@
         <div class="modal-body">
             
             <div style="position:sticky; top:0; background:#F8FAFC; z-index:10; padding-bottom:5px;">
-                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca articolo (es. Velux, Douche)..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Cerca articolo..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            </div>
+
+            <div id="room-selector-widget" style="background:#FFF; border:2px dashed var(--border); border-radius:12px; margin-bottom:15px; overflow:hidden; transition:all 0.3s;">
+                
+                <div id="room-view-mode" onclick="App.toggleRoomEdit(true)" style="padding:15px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
+                    <div>
+                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); text-transform:uppercase;">Pièce Cible</div>
+                        <div id="room-display-final" style="font-size:1.1rem; font-weight:800; color:var(--primary);">Sélectionner une pièce</div>
+                        <div id="room-details-final" style="font-size:0.8rem; color:var(--accent); font-weight:600;"></div>
+                    </div>
+                    <div style="width:40px; height:40px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                </div>
+
+                <div id="room-edit-mode" style="display:none; padding:15px; background:#F1F5F9; border-top:1px solid var(--border);">
+                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Rapide:</label>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+                        <span class="room-tag-btn" onclick="App.setQuickRoom('Cuisine')">Cuisine</span>
+                        <span class="room-tag-btn" onclick="App.setQuickRoom('SDB')">SDB</span>
+                        <span class="room-tag-btn" onclick="App.setQuickRoom('Salon')">Salon</span>
+                        <span class="room-tag-btn" onclick="App.setQuickRoom('Chambre')">Chambre</span>
+                        <span class="room-tag-btn" onclick="App.setQuickRoom('Couloir')">Couloir</span>
+                        <span class="room-tag-btn" onclick="App.setQuickRoom('Extérieur')">Extérieur</span>
+                    </div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div>
+                            <label style="font-size:0.7rem; font-weight:700;">Nom Pièce</label>
+                            <input type="text" id="input-room-name" class="app-input" style="height:40px; margin-bottom:0;" placeholder="Es. Garage">
+                        </div>
+                        <div>
+                            <label style="font-size:0.7rem; font-weight:700;">Détails (Option)</label>
+                            <input type="text" id="input-room-details" class="app-input" style="height:40px; margin-bottom:0;" placeholder="Es. Mur Nord">
+                        </div>
+                    </div>
+                    <button class="btn-primary" style="margin-top:10px; height:40px;" onclick="App.confirmRoom()">CONFIRMER LA PIÈCE</button>
+                </div>
             </div>
 
             <div id="lib-breadcrumb" style="display:none; font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
                 <span id="lib-bc-cat"></span> <i class="fas fa-chevron-right" style="font-size:0.7em;"></i> <span id="lib-bc-sub" style="color:var(--primary);"></span>
             </div>
-
-            <div style="background:#FFF; border:2px solid var(--primary); padding:10px; border-radius:12px; margin-bottom:15px;">
-                <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Pièce Cible :</label>
-                <div id="lib-room-buttons" class="room-tag-scroll"></div>
-                <input type="text" id="lib-target-piece" class="app-input" style="margin:0; height:40px; font-weight:800; color:var(--primary); text-align:center; border:none; background:#F8FAFC;" readonly>
+            
+            <div style="margin-bottom:10px;">
+                 <select id="lib-category-select" class="app-input" onchange="App.renderLibraryItems()" style="font-weight:700; color:var(--primary); height:40px;">
+                    <option value="">-- Tutte le Famiglie --</option>
+                </select>
             </div>
+
             <div id="lib-container"></div>
         </div>
     </div>
@@ -372,7 +411,6 @@
             }
         };
 
-        // Configurazione globale
         let Config = { LIB: {}, searchIndex: null, allItems: [] }; 
 
         const Store = {
@@ -381,13 +419,13 @@
             async init() {
                 App.showToast("Sync con Cloud...");
                 
-                // --- CARICAMENTO DATI CON SOTTO-CATEGORIE ---
+                // --- CARICAMENTO 3 LIVELLI (Cat -> Sub -> Item) ---
                 const { data: libData, error: libErr } = await sbClient
                     .from('library_items')
                     .select('*')
                     .range(0, 10000)
                     .order('category', { ascending: true })
-                    .order('sub_category', { ascending: true }) // Ordina anche le sotto-cat
+                    .order('sub_category', { ascending: true }) 
                     .order('desc', { ascending: true });
 
                 if(!libErr && libData) {
@@ -401,7 +439,7 @@
                         const processedItem = {
                             id: item.id,
                             category: cat,
-                            sub_category: item.sub_category || "Général", // Gestione sub-category vuota
+                            sub_category: item.sub_category || "Général",
                             code: item.ref_code,
                             desc: item.desc, 
                             unit: item.unit, 
@@ -413,7 +451,7 @@
                         Config.allItems.push(processedItem);
                     });
 
-                    // INIZIALIZZA FUSE.JS (Cerca anche nelle sotto-categorie)
+                    // FUSE.JS con tolleranza errori
                     const options = {
                         includeScore: true,
                         threshold: 0.3, 
@@ -422,7 +460,6 @@
                     Config.searchIndex = new Fuse(Config.allItems, options);
                 }
 
-                // Carica Dati Utente
                 const { data: userData } = await sbClient
                     .from('app_state')
                     .select('data_json')
@@ -457,7 +494,6 @@
         };
 
         const App = {
-            // Aggiunto libSubCategory allo state
             state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null },
             
             init() { Auth.init(); },
@@ -623,46 +659,84 @@
                 }
             },
 
+            // --- NUOVA LOGICA "ROOM SELECTOR" ---
             openLibrary() {
                 const categories = Object.keys(Config.LIB).sort();
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
                 
-                // RESET TOTALE
+                // RESET VARIABILI NAVIGAZIONE
                 document.getElementById('lib-search').value = '';
                 App.state.libCategory = null; 
-                App.state.libSubCategory = null; // Reset anche sotto-categoria
+                App.state.libSubCategory = null;
                 document.getElementById('lib-breadcrumb').style.display = 'none';
-
-                const currentPiece = App.state.lastPiece || "Général";
-                document.getElementById('lib-target-piece').value = currentPiece;
                 
-                // BOTTONI STANZE
-                const btnContainer = document.getElementById('lib-room-buttons'); btnContainer.innerHTML = '';
-                ['Cuisine', 'SDB', 'Salon', 'Chambre', 'Extérieur'].forEach(r => {
-                    const btn = document.createElement('div'); btn.className = `room-tag-btn ${r === currentPiece ? 'active' : ''}`; btn.innerText = r;
-                    btn.onclick = () => { 
-                        App.state.lastPiece = r; 
-                        document.getElementById('lib-target-piece').value = r; 
-                        document.querySelectorAll('.room-tag-btn').forEach(b => b.classList.remove('active')); 
-                        btn.classList.add('active'); 
-                    };
-                    btnContainer.appendChild(btn);
-                });
+                // RESET TENDINA FAMIGLIE
+                const sel = document.getElementById('lib-category-select');
+                sel.innerHTML = '<option value="">-- Tutte le Famiglie --</option>';
+                categories.forEach(cat => sel.innerHTML += `<option value="${cat}">${cat}</option>`);
+                sel.value = ""; 
 
-                // MOSTRA TUTTO
+                // --- RESETTA SELETTORE STANZA (Modalità pulita) ---
+                document.getElementById('input-room-name').value = '';
+                document.getElementById('input-room-details').value = '';
+                document.getElementById('room-display-final').innerText = "Sélectionner une pièce";
+                document.getElementById('room-display-final').style.color = "var(--primary)";
+                document.getElementById('room-details-final').innerText = "";
+                document.getElementById('room-selector-widget').style.borderColor = "var(--border)";
+                document.getElementById('room-selector-widget').style.background = "#FFF";
+                
+                // Mostra il selettore "compatto" all'inizio
+                App.toggleRoomEdit(false); 
+
                 App.renderLibraryItems();
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
-            // --- FUNZIONE DI RICERCA A 3 LIVELLI + FUSE.JS ---
+            // Gestione Widget Stanza
+            toggleRoomEdit(show) {
+                const view = document.getElementById('room-view-mode');
+                const edit = document.getElementById('room-edit-mode');
+                if(show) {
+                    view.style.display = 'none';
+                    edit.style.display = 'block';
+                } else {
+                    view.style.display = 'flex';
+                    edit.style.display = 'none';
+                }
+            },
+
+            setQuickRoom(name) {
+                document.getElementById('input-room-name').value = name;
+            },
+
+            confirmRoom() {
+                const name = document.getElementById('input-room-name').value.trim();
+                const details = document.getElementById('input-room-details').value.trim();
+                
+                if(!name) return alert("Inserisci almeno il nome della stanza!");
+
+                // Aggiorna vista
+                document.getElementById('room-display-final').innerText = name;
+                document.getElementById('room-details-final').innerText = details;
+                
+                // Feedback visivo (verde)
+                document.getElementById('room-display-final').style.color = "var(--success)";
+                document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
+                document.getElementById('room-selector-widget').style.background = "#F0FDF4";
+
+                App.toggleRoomEdit(false);
+            },
+
+            // --- NAVIGAZIONE 3 LIVELLI ---
             renderLibraryItems() {
                 const cont = document.getElementById('lib-container'); 
                 cont.innerHTML = '';
                 
                 const searchTerm = document.getElementById('lib-search').value;
+                const selectedCat = document.getElementById('lib-category-select').value;
                 const breadcrumb = document.getElementById('lib-breadcrumb');
                 
-                // --- SCENARIO 1: C'È UNA RICERCA ATTIVA (Bypassa tutto) ---
+                // 1. RICERCA ATTIVA (Bypassa navigazione)
                 if (searchTerm.length > 1) {
                     breadcrumb.style.display = 'none';
                     const results = Config.searchIndex.search(searchTerm);
@@ -671,12 +745,17 @@
                         cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Nessun risultato per "${searchTerm}"</div>`;
                         return;
                     }
-                    App.renderLibItemsList(cont, results.map(r => r.item));
+                    // Filtra anche per la tendina se usata
+                    const finalResults = selectedCat 
+                        ? results.filter(r => r.item.category === selectedCat)
+                        : results;
+
+                    App.renderLibItemsList(cont, finalResults.map(r => r.item));
                     return;
                 }
 
-                // --- SCENARIO 2: LIVELLO RADICE (Mostra FAMIGLIE) ---
-                if (App.state.libCategory === null) {
+                // 2. LIVELLO RADICE (Famiglie)
+                if (App.state.libCategory === null && !selectedCat) {
                     breadcrumb.style.display = 'none';
                     const categories = Object.keys(Config.LIB).sort();
                     
@@ -690,6 +769,7 @@
                         btn.innerHTML = `${icon}<div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div>`;
                         btn.onclick = () => { 
                             App.state.libCategory = cat; 
+                            document.getElementById('lib-category-select').value = cat; // Sync tendina
                             App.renderLibraryItems(); 
                         };
                         grid.appendChild(btn);
@@ -698,21 +778,26 @@
                     return;
                 }
 
-                // --- SCENARIO 3: FAMIGLIA SELEZIONATA (Mostra SOTTO-FAMIGLIE) ---
-                if (App.state.libCategory && App.state.libSubCategory === null) {
+                // 3. LIVELLO INTERMEDIO (Sotto-Famiglie)
+                const activeCat = selectedCat || App.state.libCategory;
+                
+                if (activeCat && App.state.libSubCategory === null) {
                     breadcrumb.style.display = 'block';
-                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
+                    document.getElementById('lib-bc-cat').innerText = activeCat;
                     document.getElementById('lib-bc-sub').innerText = '';
 
                     // Pulsante Indietro
                     let backBtn = document.createElement('div');
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
-                    backBtn.onclick = () => { App.state.libCategory = null; App.renderLibraryItems(); };
+                    backBtn.onclick = () => { 
+                        App.state.libCategory = null; 
+                        document.getElementById('lib-category-select').value = ""; 
+                        App.renderLibraryItems(); 
+                    };
                     cont.appendChild(backBtn);
 
-                    // Estrai Sotto-Categorie uniche
-                    const allItemsInCat = Config.LIB[App.state.libCategory];
+                    const allItemsInCat = Config.LIB[activeCat];
                     const subCats = [...new Set(allItemsInCat.map(i => i.sub_category))].sort();
 
                     let grid = document.createElement('div');
@@ -732,37 +817,79 @@
                     return;
                 }
 
-                // --- SCENARIO 4: SOTTO-FAMIGLIA SELEZIONATA (Mostra ARTICOLI) ---
-                if (App.state.libCategory && App.state.libSubCategory) {
+                // 4. LIVELLO FINALE (Articoli)
+                if (activeCat && App.state.libSubCategory) {
                     breadcrumb.style.display = 'block';
-                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
+                    document.getElementById('lib-bc-cat').innerText = activeCat;
                     document.getElementById('lib-bc-sub').innerText = App.state.libSubCategory;
 
-                    // Pulsante Indietro
                     let backBtn = document.createElement('div');
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
                     backBtn.onclick = () => { App.state.libSubCategory = null; App.renderLibraryItems(); };
                     cont.appendChild(backBtn);
 
-                    // Filtra articoli
-                    const finalItems = Config.LIB[App.state.libCategory].filter(i => i.sub_category === App.state.libSubCategory);
+                    const finalItems = Config.LIB[activeCat].filter(i => i.sub_category === App.state.libSubCategory);
                     App.renderLibItemsList(cont, finalItems);
                 }
             },
 
             renderLibItemsList(container, items) {
-                // --- RIMOSSO LIMITE DI 50 ARTICOLI PER MOSTRARE TUTTO ---
+                // NESSUN LIMITE DI VISUALIZZAZIONE
                 items.forEach(it => { 
                     const dynamicPrice = App.calculateItemPrice(it);
                     let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
-                    div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.95rem;">${it.desc}</div><div class="card-sub" style="color:var(--primary); font-weight:700;">${dynamicPrice.toFixed(2)}€ / ${it.unit} <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">(T: ${it.labor_time}h | M: ${it.material_cost}€)</span></div></div><div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer;"><i class="fas fa-plus" style="font-size:0.9rem;"></i></div>`; 
+                    
+                    div.innerHTML = `
+                        <div class="card-info">
+                            <div class="card-title" style="font-size:0.95rem;">${it.desc}</div>
+                            <div class="card-sub" style="color:var(--primary); font-weight:700;">
+                                ${dynamicPrice.toFixed(2)}€ / ${it.unit} 
+                                <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">
+                                    (T: ${it.labor_time}h | M: ${it.material_cost}€)
+                                </span>
+                            </div>
+                        </div>
+                        <div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); cursor:pointer;">
+                            <i class="fas fa-plus" style="font-size:0.9rem;"></i>
+                        </div>
+                    `; 
+                    
                     div.onclick = () => { 
-                        const piece = document.getElementById('lib-target-piece').value;
+                        // CONTROLLA SE LA STANZA È STATA CONFERMATA
+                        let roomName = document.getElementById('input-room-name').value.trim();
+                        let roomDet = document.getElementById('input-room-details').value.trim();
+                        
+                        // Controllo Visivo: se il box non è "verde" (confermato), avvisa l'utente
+                        const isConfirmed = document.getElementById('room-selector-widget').style.borderColor === "var(--success)";
+                        
+                        if(!roomName || !isConfirmed) {
+                            App.toggleRoomEdit(true);
+                            return alert("Per favore, seleziona e CONFERMA una stanza prima di aggiungere articoli!");
+                        }
+
+                        let finalPieceName = roomName;
+                        if(roomDet) finalPieceName += ` (${roomDet})`;
+
                         const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
                         const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
-                        const newItem = { id: Date.now(), desc: it.desc, unit: it.unit, time: it.labor_time, material_cost: it.material_cost, price: dynamicPrice, qty: 0, piece: piece }; 
-                        dv.items.push(newItem); Store.save(); App.showToast("Ag: " + it.desc); App.calcTotals(); App.renderEditorItems(); 
+                        
+                        const newItem = { 
+                            id: Date.now(), 
+                            desc: it.desc, 
+                            unit: it.unit, 
+                            time: it.labor_time, 
+                            material_cost: it.material_cost, 
+                            price: dynamicPrice, 
+                            qty: 0, 
+                            piece: finalPieceName
+                        }; 
+                        
+                        dv.items.push(newItem); 
+                        Store.save(); 
+                        App.showToast("Ajouté: " + it.desc); 
+                        App.calcTotals(); 
+                        App.renderEditorItems(); 
                     }; 
                     container.appendChild(div); 
                 });
