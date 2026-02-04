@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.6 - CALCULATOR</title>
+    <title>QOTIA CLOUD V7.7 - SMART QUANTITY</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,119 +14,42 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
 
     <style>
-        /* --- STILI CORE (V7 ORIGINALE - INTATTI) --- */
+        /* --- STILI CORE (V7 STABILE) --- */
         :root {
-            --primary: #0F172A;        
-            --bg-body: #F8FAFC;        
-            --surface: #FFFFFF;
-            --border: #CBD5E1;
-            --text-main: #1E293B;        
-            --text-sub: #64748B;
-            --accent: #F59E0B;
-            --danger: #EF4444; 
-            --success: #15803d;
-            --time: #3B82F6;
-            --h-header: 65px;
-            --h-nav: 90px;
-            --radius: 14px;
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --primary: #0F172A; --bg-body: #F8FAFC; --surface: #FFFFFF; --border: #CBD5E1;
+            --text-main: #1E293B; --text-sub: #64748B; --accent: #F59E0B; --danger: #EF4444; 
+            --success: #15803d; --time: #3B82F6; --h-header: 65px; --h-nav: 90px;
         }
-
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        
-        body { 
-            margin: 0; padding: 0; 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg-body); color: var(--text-main); 
-            font-size: 15px; 
-            height: 100vh; width: 100vw;
-            display: flex; flex-direction: column; overflow: hidden;
-            padding-top: env(safe-area-inset-top);
-        }
-
-        /* LAYOUT */
+        body { margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-body); color: var(--text-main); font-size: 15px; height: 100vh; width: 100vw; display: flex; flex-direction: column; overflow: hidden; padding-top: env(safe-area-inset-top); }
         .view-section { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: var(--bg-body); z-index: 10; }
         .view-section.active { display: flex; z-index: 20; }
-        
-        /* HEADER */
         .mobile-header { flex-shrink: 0; height: var(--h-header); background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; position: sticky; top: 0; z-index: 50; }
         .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .header-action-btn { background: var(--primary); color: white; border: none; border-radius: 30px; padding: 8px 18px; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2); }
         .header-back-container { display: flex; align-items: center; gap: 5px; background: transparent; border: none; cursor: pointer; color: var(--primary); font-weight: 700; font-size: 0.9rem; padding: 10px 0; }
-        .header-back-container i { font-size: 1.2rem; }
-
         .scroll-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; -webkit-overflow-scrolling: touch; }
-
-        /* EDITOR FIXED LAYOUT */
         #view-editor { display: none; flex-direction: column; height: 100%; background: #F8FAFC; }
         #view-editor.active { display: flex; }
         .editor-header-musk { flex-shrink: 0; background: white; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; z-index: 30; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         #editor-list-container { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 140px; }
-
-        /* COMPONENTS */
-        .client-badge { font-size: 0.75rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
-        .project-title { font-size: 1.2rem; font-weight: 900; color: var(--primary); margin-top: 2px; }
-        .kpi-row { display: flex; gap: 15px; margin-top: 10px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
-        .kpi-box { flex: 1; background: #F8FAFC; padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #E2E8F0; }
-        .kpi-label { font-size: 0.65rem; color: #64748B; font-weight: 700; text-transform: uppercase; }
-        .kpi-val { font-size: 1.1rem; font-weight: 800; }
-        .view-toggle { display: flex; padding: 10px 20px; gap: 10px; background: white; }
-        .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; background: #F1F5F9; color: #64748B; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-        .toggle-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(15,23,42,0.2); }
-
-        .piece-section { margin-bottom: 20px; }
-        .piece-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 5px; cursor: pointer; background: #E2E8F0; border-radius: 8px; margin-bottom: 10px; padding: 10px; color: var(--primary); }
-        .piece-title { font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-        
-        .e-card { background: white; margin: 0 0 10px 0; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 3px solid var(--primary); box-shadow: var(--shadow-card); }
-        .e-card-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .e-desc { font-weight: 700; color: var(--text-main); font-size: 0.95rem; width: 70%; line-height: 1.4; }
-        .e-loc-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; color: #64748B; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
-        .e-stats { display: flex; gap: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; }
-        .stat-box { flex: 1; text-align: center; }
-        .stat-lbl { font-size: 0.65rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
-        .stat-val { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
-        .stat-val.time { color: var(--time); }
-        
-        .floating-fab { position: fixed; bottom: 110px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.6rem; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 100; cursor: pointer; transition: transform 0.1s; }
-
-        .card-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-card); }
+        .card-item { background: white; padding: 18px; margin-bottom: 12px; border-radius: 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
         .card-info { flex: 1; }
         .card-title { font-weight: 800; font-size: 1.05rem; color: var(--primary); margin-bottom: 4px; }
         .card-sub { font-size: 0.9rem; color: var(--text-sub); display: flex; align-items: center; gap: 6px; }
-        .card-tag { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #E2E8F0; color: #475569; display: inline-block; margin-bottom: 4px; }
-        
         .home-fixed-area { background: var(--bg-body); padding: 10px 20px 20px 20px; z-index: 40; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .welcome-block { margin-bottom: 15px; }
         .welcome-name { font-size: 1.8rem; font-weight: 900; color: var(--primary); margin: 0; }
-        .welcome-date { font-size: 0.9rem; font-weight: 600; color: var(--accent); text-transform: capitalize; }
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .big-btn { height: 95px; border-radius: 18px; border: 1px solid white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); background: white; color: var(--text-main); }
         .big-btn span { font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 5px; }
         .btn-chantier i { color: #D97706; font-size: 1.8rem; margin-bottom: 5px; }
         .btn-client i { color: #2563EB; font-size: 1.8rem; margin-bottom: 5px; }
-
-        .hub-header-card { background: white; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-        .section-separator { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #E2E8F0; }
-        .section-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
-        .action-create-btn { background: white; color: var(--primary); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
-
-        .check-container { display: flex; align-items: center; padding: 12px; background: white; border-bottom: 1px solid #F1F5F9; cursor: pointer; }
-        .custom-checkbox { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; margin-right: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-        .custom-checkbox.checked { background: var(--primary); border-color: var(--primary); }
-        .custom-checkbox.checked::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: white; font-size: 0.8rem; }
-        .assigned-badge { background: #DCFCE7; color: #166534; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 5px; display: inline-flex; align-items: center; gap: 4px; }
-
-        /* ROOM QUICK BUTTONS */
         .room-tag-scroll { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 15px 0; -webkit-overflow-scrolling: touch; }
         .room-tag-btn { background: #F1F5F9; color: var(--primary); border: 1px solid var(--border); padding: 8px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
-        .room-tag-btn:active, .room-tag-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
+        .room-tag-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: var(--h-nav); background: white; border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 1000; align-items: flex-start; padding-top: 14px; padding-bottom: env(safe-area-inset-bottom); }
         .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94A3B8; background: transparent; border: none; font-size: 0.7rem; font-weight: 600; gap: 5px; cursor: pointer; }
         .nav-btn.active { color: var(--primary); }
-        .nav-btn i { font-size: 1.5rem; }
-
         .full-modal { position: fixed; inset: 0; background: #F8FAFC; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5000; }
         .full-modal.open { transform: translateY(0); }
         .modal-header { height: 70px; background: white; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-weight: 800; font-size: 1.2rem; flex-shrink: 0; }
@@ -135,21 +58,29 @@
         .app-input { width: 100%; height: 50px; background: #fff; border: 2px solid #E2E8F0; border-radius: 12px; padding: 0 15px; font-size: 1rem; color: var(--primary); margin-bottom: 15px; outline: none; font-weight: 500; appearance: none; }
         .btn-primary { width: 100%; height: 50px; background: var(--primary); color: white; font-weight: 700; border-radius: 12px; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); }
 
-        .type-switch { display: flex; background: #E2E8F0; padding: 5px; border-radius: 14px; margin-bottom: 20px; }
-        .type-option { flex: 1; text-align: center; padding: 12px; font-weight: 700; font-size: 0.95rem; color: #64748B; border-radius: 10px; cursor: pointer; }
-        .type-option.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* --- NUOVI STILI PER IL MODULO MISURE & QUANTITÀ --- */
+        #room-dims-container { background: #F0F9FF; border: 1px solid #BAE6FD; border-radius: 12px; padding: 12px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .dim-box { text-align: center; }
+        .dim-label { font-size: 0.65rem; font-weight: 700; color: #0369A1; text-transform: uppercase; margin-bottom: 4px; }
+        .dim-input { width: 100%; text-align: center; padding: 5px; border: 1px solid #BAE6FD; border-radius: 6px; font-weight: 700; color: var(--primary); font-size: 0.9rem; outline: none; }
+        
+        #room-metrics { display: flex; justify-content: space-around; background: #FFF; padding: 8px; border-radius: 8px; margin-top: 8px; grid-column: span 3; border: 1px dashed #BAE6FD; }
+        .metric-val { font-size: 0.8rem; font-weight: 800; color: var(--primary); }
+        .metric-lbl { font-size: 0.65rem; color: #64748B; font-weight: 600; }
 
-        #modal-client { z-index: 6000 !important; }
-        #modal-projet { z-index: 5000; }
-
-        /* --- STILI NUOVI PER IL CALCOLATORE (MODULO V7.5) --- */
-        .calculator-block { background: #F1F5F9; padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px; }
-        .calc-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .calc-input { text-align: center; padding: 0 5px; font-size: 0.9rem; }
-        .calc-label { font-size: 0.7rem; font-weight: 700; text-align: center; display: block; color: var(--text-sub); margin-bottom: 2px; }
-        .metrics-display { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
-        .metric-tag { background: #DCFCE7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid #86EFAC; display:none; }
-        .metric-tag.visible { display: inline-block; }
+        /* POPUP QUANTITÀ */
+        #qty-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 6000; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(3px); }
+        #qty-overlay.open { display: flex; animation: slideUp 0.25s ease-out; }
+        .qty-card { background: white; width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+        .qty-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 5px; color: var(--primary); }
+        .qty-desc { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 20px; }
+        .qty-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .qty-option { background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .qty-option:active { border-color: var(--primary); background: #E0F2FE; }
+        .qty-option strong { display: block; font-size: 1.4rem; color: var(--primary); }
+        .qty-option span { font-size: 0.75rem; font-weight: 700; color: #64748B; text-transform: uppercase; }
+        
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         #toast-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); z-index: 9000; pointer-events: none; width: 85%; }
         .toast { background: #1E293B; color: white; padding: 14px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; opacity: 0; transform: translateY(20px); transition: all 0.3s; margin-top: 10px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
@@ -173,7 +104,7 @@
 
     <main id="view-home" class="view-section active">
         <header class="mobile-header">
-            <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA <span style="font-size:0.7em; opacity:0.6; font-weight:400;">v7.5</span></div>
+            <div class="logo-text"><i class="fas fa-hammer"></i> QOTIA <span style="font-size:0.7em; opacity:0.6; font-weight:400;">v7.7</span></div>
             <button style="background:none; border:none; font-size:1.2rem;" onclick="App.nav('settings')"><i class="fas fa-cog"></i></button>
         </header>
         <div class="home-fixed-area">
@@ -320,19 +251,31 @@
 
             <div style="background:#FFF; border:2px solid var(--primary); padding:10px; border-radius:12px; margin-bottom:15px;">
                 <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Pièce Cible :</label>
+                
                 <div id="lib-room-buttons" class="room-tag-scroll"></div>
+                
                 <input type="text" id="lib-target-piece" class="app-input" style="margin:0; height:40px; font-weight:800; color:var(--primary); text-align:center; border:none; background:#F8FAFC;" readonly>
                 
-                <div class="calculator-block">
-                    <div class="calc-row">
-                        <div><label class="calc-label">Long (L)</label><input type="number" id="calc-L" class="app-input calc-input" placeholder="0" oninput="App.calculateMetrics()"></div>
-                        <div><label class="calc-label">Larg (l)</label><input type="number" id="calc-W" class="app-input calc-input" placeholder="0" oninput="App.calculateMetrics()"></div>
-                        <div><label class="calc-label">Haut (H)</label><input type="number" id="calc-H" class="app-input calc-input" placeholder="2.50" value="2.50" oninput="App.calculateMetrics()"></div>
+                <div id="room-dims-container">
+                    <div class="dim-box">
+                        <label class="dim-label">Long (L)</label>
+                        <input type="number" id="dim-L" class="dim-input" placeholder="0" oninput="App.calculateMetrics()">
                     </div>
-                    <div class="metrics-display">
-                        <span id="metric-sol" class="metric-tag"><i class="fas fa-vector-square"></i> Sol: 0m²</span>
-                        <span id="metric-mur" class="metric-tag"><i class="fas fa-paint-roller"></i> Mur: 0m²</span>
-                        <span id="metric-perim" class="metric-tag"><i class="fas fa-ruler"></i> Perim: 0m</span>
+                    <div class="dim-box">
+                        <label class="dim-label">Larg (l)</label>
+                        <input type="number" id="dim-W" class="dim-input" placeholder="0" oninput="App.calculateMetrics()">
+                    </div>
+                    <div class="dim-box">
+                        <label class="dim-label">Haut (H)</label>
+                        <input type="number" id="dim-H" class="dim-input" placeholder="2.50" value="2.50" oninput="App.calculateMetrics()">
+                    </div>
+                    
+                    <div id="room-metrics">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                            <span class="metric-val" id="res-sol">0</span> <span class="metric-lbl">Sol(m²)</span>
+                            <span class="metric-val" id="res-mur" style="color:var(--accent)">0</span> <span class="metric-lbl">Mur(m²)</span>
+                            <span class="metric-val" id="res-perim" style="color:var(--success)">0</span> <span class="metric-lbl">Périm(m)</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -340,14 +283,40 @@
             <div id="lib-breadcrumb" style="display:none; font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
                 <span id="lib-bc-cat"></span> <i class="fas fa-chevron-right" style="font-size:0.7em;"></i> <span id="lib-bc-sub" style="color:var(--primary);"></span>
             </div>
-            
-            <div style="margin-bottom:10px;">
-                 <select id="lib-category-select" class="app-input" onchange="App.renderLibraryItems()" style="font-weight:700; color:var(--primary); height:40px;">
-                    <option value="">-- Tutte le Famiglie --</option>
-                </select>
-            </div>
 
             <div id="lib-container"></div>
+        </div>
+    </div>
+
+    <div id="qty-overlay">
+        <div class="qty-card">
+            <div class="qty-title" id="qp-title">Article</div>
+            <div class="qty-desc" id="qp-desc">...</div>
+            
+            <div class="qty-grid">
+                <div class="qty-option" onclick="App.addFromPicker('sol')">
+                    <strong id="qp-sol">0</strong>
+                    <span>SOL (m²)</span>
+                </div>
+                <div class="qty-option" onclick="App.addFromPicker('mur')">
+                    <strong id="qp-mur">0</strong>
+                    <span>MUR (m²)</span>
+                </div>
+                <div class="qty-option" onclick="App.addFromPicker('perim')">
+                    <strong id="qp-perim">0</strong>
+                    <span>PLINTHES (m)</span>
+                </div>
+                <div class="qty-option" onclick="App.addFromPicker(1)">
+                    <strong>1</strong>
+                    <span>UNITÉ</span>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="qp-manual" class="app-input" style="margin:0;" placeholder="Manuel...">
+                <button class="btn-primary" style="width:100px;" onclick="App.addFromPicker('manual')">OK</button>
+            </div>
+             <button onclick="App.closeQtyPicker()" style="width:100%; padding:10px; border:none; background:none; color:#64748B; margin-top:10px;">Annuler</button>
         </div>
     </div>
 
@@ -366,7 +335,6 @@
         const Auth = {
             user: null,
             async init() {
-                // ADDED TRY-CATCH FOR SAFETY
                 try {
                     const { data, error } = await sbClient.auth.getSession();
                     if (data && data.session) {
@@ -376,7 +344,10 @@
                     } else {
                         document.getElementById('login-overlay').style.display = 'flex';
                     }
-                } catch(e) { console.error(e); }
+                } catch(e) {
+                    console.error(e);
+                    alert("Erreur Connexion: " + e.message);
+                }
             },
             async login() {
                 const email = document.getElementById('login-email').value;
@@ -456,7 +427,6 @@
 
                 if (userData && userData.data_json) {
                     this.data = userData.data_json;
-                    // FIX: INITIALIZATION CHECKS
                     if(!this.data.clients) this.data.clients = [];
                     if(!this.data.chantiers) this.data.chantiers = [];
                     if(!this.data.appointments) this.data.appointments = [];
@@ -489,7 +459,7 @@
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, calculatedMetrics: {sol:0, mur:0, perim:0} },
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, roomCache: {}, activeRoomDims: {sol:0, mur:0, perim:0}, currentItemToAdd: null },
             
             init() { Auth.init(); },
 
@@ -654,93 +624,109 @@
                 }
             },
 
-            // --- LIBRARY & ROOMS V7.5 (MODULO CALCOLATORE AGGIUNTO) ---
+            // --- LIBRARY & METRIC MODULE V7.7 ---
             openLibrary() {
                 const categories = Object.keys(Config.LIB).sort();
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
                 
-                // RESET UI
+                // RESET
                 document.getElementById('lib-search').value = '';
                 App.state.libCategory = null; 
                 App.state.libSubCategory = null;
                 document.getElementById('lib-breadcrumb').style.display = 'none';
                 
-                // RESET TENDINA FAMIGLIE
-                const sel = document.getElementById('lib-category-select');
-                sel.innerHTML = '<option value="">-- Tutte le Famiglie --</option>';
-                categories.forEach(cat => sel.innerHTML += `<option value="${cat}">${cat}</option>`);
-                sel.value = ""; 
+                const currentPiece = App.state.lastPiece || "Général";
+                document.getElementById('lib-target-piece').value = currentPiece;
+                
+                // MEMORIA: RECUPERA DIMENSIONI DELLA STANZA CORRENTE
+                const cachedDims = App.state.roomCache[currentPiece];
+                if(cachedDims) {
+                    document.getElementById('dim-L').value = cachedDims.L;
+                    document.getElementById('dim-W').value = cachedDims.W;
+                    document.getElementById('dim-H').value = cachedDims.H;
+                    App.state.activeRoomDims = cachedDims;
+                    App.updateMetricsDisplay(cachedDims);
+                } else {
+                    document.getElementById('dim-L').value = '';
+                    document.getElementById('dim-W').value = '';
+                    document.getElementById('dim-H').value = '2.50';
+                    App.state.activeRoomDims = {sol:0, mur:0, perim:0};
+                    App.updateMetricsDisplay({sol:0, mur:0, perim:0});
+                }
 
-                // --- RESETTA SELETTORE STANZA (E CALCOLI) ---
-                document.getElementById('lib-target-piece').value = App.state.lastPiece || "Général";
-                // Reset inputs calcolatore
-                document.getElementById('calc-L').value = '';
-                document.getElementById('calc-W').value = '';
-                document.getElementById('calc-H').value = '2.50';
-                App.state.calculatedMetrics = {sol:0, mur:0, perim:0};
-                App.updateMetricsDisplay();
-
-                // BOTTONI STANZE
                 const btnContainer = document.getElementById('lib-room-buttons'); btnContainer.innerHTML = '';
                 ['Cuisine', 'SDB', 'Salon', 'Chambre', 'Extérieur'].forEach(r => {
-                    const btn = document.createElement('div'); btn.className = `room-tag-btn ${r === App.state.lastPiece ? 'active' : ''}`; btn.innerText = r;
+                    const btn = document.createElement('div'); btn.className = `room-tag-btn ${r === currentPiece ? 'active' : ''}`; btn.innerText = r;
                     btn.onclick = () => { 
                         App.state.lastPiece = r; 
                         document.getElementById('lib-target-piece').value = r; 
                         document.querySelectorAll('.room-tag-btn').forEach(b => b.classList.remove('active')); 
                         btn.classList.add('active'); 
+                        
+                        // Switch Room -> Switch Memory
+                        const saved = App.state.roomCache[r];
+                        if(saved) {
+                             document.getElementById('dim-L').value = saved.L;
+                             document.getElementById('dim-W').value = saved.W;
+                             document.getElementById('dim-H').value = saved.H;
+                             App.state.activeRoomDims = saved;
+                             App.updateMetricsDisplay(saved);
+                        } else {
+                             document.getElementById('dim-L').value = '';
+                             document.getElementById('dim-W').value = '';
+                             document.getElementById('dim-H').value = '2.50';
+                             App.state.activeRoomDims = {sol:0, mur:0, perim:0};
+                             App.updateMetricsDisplay({sol:0, mur:0, perim:0});
+                        }
                     };
                     btnContainer.appendChild(btn);
                 });
 
-                App.renderLibraryItems();
+                App.renderLibraryItems('');
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
-            // CALCOLA LE METRICHE IN TEMPO REALE
+            // CALCOLO METRICO IN TEMPO REALE
             calculateMetrics() {
-                const L = parseFloat(document.getElementById('calc-L').value) || 0;
-                const W = parseFloat(document.getElementById('calc-W').value) || 0;
-                const H = parseFloat(document.getElementById('calc-H').value) || 0;
+                const L = parseFloat(document.getElementById('dim-L').value) || 0;
+                const W = parseFloat(document.getElementById('dim-W').value) || 0;
+                const H = parseFloat(document.getElementById('dim-H').value) || 0;
 
                 const sol = L * W;
                 const perim = (L + W) * 2;
                 const mur = perim * H;
 
-                App.state.calculatedMetrics = { sol, mur, perim };
-                App.updateMetricsDisplay();
-            },
-
-            updateMetricsDisplay() {
-                const m = App.state.calculatedMetrics;
-                document.getElementById('metric-sol').innerHTML = `<i class="fas fa-vector-square"></i> Sol: ${m.sol.toFixed(2)}m²`;
-                document.getElementById('metric-mur').innerHTML = `<i class="fas fa-paint-roller"></i> Mur: ${m.mur.toFixed(2)}m²`;
-                document.getElementById('metric-perim').innerHTML = `<i class="fas fa-ruler"></i> Perim: ${m.perim.toFixed(2)}m`;
+                const currentRoom = document.getElementById('lib-target-piece').value;
+                const metrics = { sol, mur, perim, L, W, H };
                 
-                // Mostra i badge solo se > 0
-                document.getElementById('metric-sol').classList.toggle('visible', m.sol > 0);
-                document.getElementById('metric-mur').classList.toggle('visible', m.mur > 0);
-                document.getElementById('metric-perim').classList.toggle('visible', m.perim > 0);
+                App.state.activeRoomDims = metrics;
+                App.state.roomCache[currentRoom] = metrics; // Salva in memoria
+                
+                App.updateMetricsDisplay(metrics);
             },
 
-            // --- NAV 3 LIVELLI ---
-            renderLibraryItems() {
+            updateMetricsDisplay(m) {
+                document.getElementById('res-sol').innerText = m.sol.toFixed(2) + " m²";
+                document.getElementById('res-mur').innerText = m.mur.toFixed(2) + " m²";
+                document.getElementById('res-perim').innerText = m.perim.toFixed(2) + " m";
+            },
+
+            // --- NAVIGAZIONE 3 LIVELLI (V7 ORIGINALE) ---
+            renderLibraryItems(query) {
                 const cont = document.getElementById('lib-container'); cont.innerHTML = '';
-                const searchTerm = document.getElementById('lib-search').value;
-                const selectedCat = document.getElementById('lib-category-select').value;
+                const searchTerm = query ? query.toLowerCase() : '';
                 const breadcrumb = document.getElementById('lib-breadcrumb');
-                
+
                 if (searchTerm.length > 1) {
                     breadcrumb.style.display = 'none';
                     if(!Config.searchIndex) return;
                     const results = Config.searchIndex.search(searchTerm);
                     if(results.length === 0) { cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Aucun résultat</div>`; return; }
-                    const limitedResults = results.slice(0, 50).map(r => r.item);
-                    App.renderLibItemsList(cont, limitedResults);
+                    App.renderLibItemsList(cont, results.map(r => r.item));
                     return;
                 }
 
-                if (App.state.libCategory === null && !selectedCat) {
+                if (App.state.libCategory === null) {
                     breadcrumb.style.display = 'none';
                     const categories = Object.keys(Config.LIB).sort();
                     let grid = document.createElement('div');
@@ -748,48 +734,47 @@
                     categories.forEach(cat => {
                         let btn = document.createElement('div');
                         btn.style.cssText = "background:white; border:1px solid var(--border); border-radius:12px; padding:20px 10px; text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;";
-                        btn.innerHTML = `<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i><div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div>`;
-                        btn.onclick = () => { App.state.libCategory = cat; document.getElementById('lib-category-select').value = cat; App.renderLibraryItems(); };
+                        btn.innerHTML = `<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i><div style="font-weight:700; color:var(--primary); font-size:0.9rem;">${cat}</div>`;
+                        btn.onclick = () => { App.state.libCategory = cat; App.renderLibraryItems(''); };
                         grid.appendChild(btn);
                     });
                     cont.appendChild(grid);
                     return;
                 }
 
-                const activeCat = selectedCat || App.state.libCategory;
-                if (activeCat && App.state.libSubCategory === null) {
+                if (App.state.libCategory && App.state.libSubCategory === null) {
                     breadcrumb.style.display = 'block';
-                    document.getElementById('lib-bc-cat').innerText = activeCat;
+                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
                     document.getElementById('lib-bc-sub').innerText = '';
                     let backBtn = document.createElement('div');
-                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
-                    backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
-                    backBtn.onclick = () => { App.state.libCategory = null; document.getElementById('lib-category-select').value = ""; App.renderLibraryItems(); };
+                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Retour`;
+                    backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px;";
+                    backBtn.onclick = () => { App.state.libCategory = null; App.renderLibraryItems(''); };
                     cont.appendChild(backBtn);
-                    const subCats = [...new Set(Config.LIB[activeCat].map(i => i.sub_category))].sort();
+                    const subCats = [...new Set(Config.LIB[App.state.libCategory].map(i => i.sub_category))].sort();
                     let grid = document.createElement('div');
                     grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px;";
                     subCats.forEach(sub => {
                         let btn = document.createElement('div');
                         btn.style.cssText = "background:#F8FAFC; border:1px solid var(--border); border-radius:12px; padding:15px 10px; text-align:center; cursor:pointer; font-weight:600; color:var(--text-main);";
                         btn.innerText = sub;
-                        btn.onclick = () => { App.state.libSubCategory = sub; App.renderLibraryItems(); };
+                        btn.onclick = () => { App.state.libSubCategory = sub; App.renderLibraryItems(''); };
                         grid.appendChild(btn);
                     });
                     cont.appendChild(grid);
                     return;
                 }
 
-                if (activeCat && App.state.libSubCategory) {
+                if (App.state.libCategory && App.state.libSubCategory) {
                     breadcrumb.style.display = 'block';
-                    document.getElementById('lib-bc-cat').innerText = activeCat;
+                    document.getElementById('lib-bc-cat').innerText = App.state.libCategory;
                     document.getElementById('lib-bc-sub').innerText = App.state.libSubCategory;
                     let backBtn = document.createElement('div');
-                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
-                    backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
-                    backBtn.onclick = () => { App.state.libSubCategory = null; App.renderLibraryItems(); };
+                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Retour`;
+                    backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px;";
+                    backBtn.onclick = () => { App.state.libSubCategory = null; App.renderLibraryItems(''); };
                     cont.appendChild(backBtn);
-                    const finalItems = Config.LIB[activeCat].filter(i => i.sub_category === App.state.libSubCategory);
+                    const finalItems = Config.LIB[App.state.libCategory].filter(i => i.sub_category === App.state.libSubCategory);
                     App.renderLibItemsList(cont, finalItems);
                 }
             },
@@ -800,29 +785,55 @@
                     const dynamicPrice = App.calculateItemPrice(it);
                     let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
                     div.innerHTML = `<div class="card-info"><div class="card-title" style="font-size:0.95rem;">${it.desc}</div><div class="card-sub" style="color:var(--primary); font-weight:700;">${dynamicPrice.toFixed(2)}€ / ${it.unit} <span style="font-weight:400; color:#64748B; font-size:0.8em;">(T: ${it.labor_time}h)</span></div></div><div style="background:var(--accent); color:white; width:35px; height:35px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer;"><i class="fas fa-plus"></i></div>`; 
-                    div.onclick = () => { 
-                        // --- NUOVA LOGICA "SMART QUANTITY" ---
-                        const m = App.state.calculatedMetrics;
-                        let qty = 0;
-                        
-                        // Se ci sono metriche, chiediamo all'utente
-                        if (m.sol > 0 || m.mur > 0) {
-                            // Semplice confirm per ora, per stabilità
-                            if (confirm(`Uso il calcolo metrico?\n\n- Sol: ${m.sol}m²\n- Murs: ${m.mur}m²\n\nOK = Usa Sol (${m.sol})\nAnnulla = Usa 0`)) {
-                                qty = m.sol;
-                            }
-                        }
-
-                        const piece = document.getElementById('lib-target-piece').value;
-                        const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
-                        const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
-                        const newItem = { id: Date.now(), desc: it.desc, unit: it.unit, time: it.labor_time, material_cost: it.material_cost, price: dynamicPrice, qty: qty, piece: piece }; 
-                        dv.items.push(newItem); Store.save(); 
-                        App.showToast("Ajouté: " + qty + " " + it.unit); 
-                        App.calcTotals(); App.renderEditorItems(); 
-                    }; 
+                    div.onclick = () => { App.openQtyPicker(it); }; 
                     container.appendChild(div); 
                 });
+            },
+
+            // --- POPUP QUANTITÀ ---
+            openQtyPicker(item) {
+                App.state.currentItemToAdd = item;
+                const m = App.state.activeRoomDims;
+
+                // Popola i dati nel popup
+                document.getElementById('qp-title').innerText = item.desc.substring(0, 30)+"...";
+                document.getElementById('qp-desc').innerText = `Unit: ${item.unit}`;
+                document.getElementById('qp-sol').innerText = m.sol.toFixed(2);
+                document.getElementById('qp-mur').innerText = m.mur.toFixed(2);
+                document.getElementById('qp-perim').innerText = m.perim.toFixed(2);
+                
+                document.getElementById('qty-overlay').classList.add('open');
+            },
+
+            closeQtyPicker() {
+                document.getElementById('qty-overlay').classList.remove('open');
+                App.state.currentItemToAdd = null;
+            },
+
+            addFromPicker(source) {
+                const item = App.state.currentItemToAdd;
+                const m = App.state.activeRoomDims;
+                let qty = 0;
+
+                if(source === 'sol') qty = m.sol;
+                else if(source === 'mur') qty = m.mur;
+                else if(source === 'perim') qty = m.perim;
+                else if(source === 1) qty = 1;
+                else if(source === 'manual') qty = parseFloat(document.getElementById('qp-manual').value);
+
+                if(!qty || qty <= 0) return alert("Quantité invalide");
+
+                const piece = document.getElementById('lib-target-piece').value;
+                const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
+                const price = App.calculateItemPrice(item);
+
+                const newItem = { id: Date.now(), desc: item.desc, unit: item.unit, time: item.labor_time, material_cost: item.material_cost, price: price, qty: qty, piece: piece }; 
+                dv.items.push(newItem); 
+                Store.save(); 
+                App.showToast("Ajouté: " + qty + " " + item.unit);
+                App.closeQtyPicker();
+                App.calcTotals(); App.renderEditorItems(); 
             },
 
             editDevisItem(id) {
