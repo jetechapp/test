@@ -351,7 +351,7 @@
     </div>
 
     <div id="modal-partner" class="full-modal"><div class="modal-header"><h3>Nouveau Partenaire</h3><button class="header-back-container" onclick="App.closeModal('modal-partner')">×</button></div><div class="modal-body"><label style="font-weight:700;">Nom</label><input type="text" id="ptn-name" class="app-input" placeholder="ex: Mario Rossi"><label style="font-weight:700;">Rôle</label><select id="ptn-role" class="app-input"><option value="Collaborateur">Collaborateur</option><option value="Artisan">Artisan</option></select></div><div class="modal-footer"><button class="btn-primary" onclick="App.savePartner()">ENREGISTRER</button></div></div>
-    <div id="modal-select-cdc" class="full-modal"><div class="modal-header"><h3>Opérations Ouvrages</h3><button class="header-back-container" onclick="App.closeModal('modal-select-cdc')">×</button></div><div class="modal-body"><label style="font-weight:700; margin-bottom:10px; display:block;">Source Devis</label><select id="sel-source-devis" class="app-input" onchange="App.renderSelectionList()"></select><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><label style="font-weight:700; color:var(--text-sub);">Sélectionner</label><button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout</button></div><div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden;"></div></div><div class="modal-footer" style="flex-direction:column; gap:10px;"><div style="display:flex; gap:10px; width:100%;"><select id="cdc-assignee" class="app-input" style="flex:1; margin:0; font-size:0.9rem; padding:0 10px;"></select><button class="btn-primary" style="flex:1;" onclick="App.assignCollaborator()"><i class="fas fa-check"></i> Assigner</button></div><button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER DANS LE DOSSIER</button></div></div>
+    <div id="modal-select-cdc" class="full-modal"><div class="modal-header"><h3>Opérations Ouvrages</h3><button class="header-back-container" onclick="App.closeModal('modal-select-cdc')">×</button></div><div class="modal-body"><label style="font-weight:700;">Source Devis</label><select id="sel-source-devis" class="app-input" onchange="App.renderSelectionList()"></select><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><label style="font-weight:700; color:var(--text-sub);">Sélectionner</label><button style="border:none; background:none; color:var(--primary); font-weight:700;" onclick="App.selectAllItems()">Tout</button></div><div id="selection-list-container" style="background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden;"></div></div><div class="modal-footer" style="flex-direction:column; gap:10px;"><div style="display:flex; gap:10px; width:100%;"><select id="cdc-assignee" class="app-input" style="flex:1; margin:0; font-size:0.9rem; padding:0 10px;"></select><button class="btn-primary" style="flex:1;" onclick="App.assignCollaborator()"><i class="fas fa-check"></i> Assigner</button></div><button class="btn-primary" style="background:#FFF; color:var(--primary); border:2px solid var(--primary); width:100%;" onclick="App.saveCDC()"><i class="fas fa-save"></i> ENREGISTRER DANS LE DOSSIER</button></div></div>
     <div id="modal-edit-item" class="full-modal"><div class="modal-header"><h3>Modifier Article</h3><button class="header-back-container" onclick="App.closeModal('modal-edit-item')">×</button></div><div class="modal-body"><input type="hidden" id="edit-item-idx"><label style="font-weight:700; color:var(--text-sub);">Pièce</label><select id="edit-item-piece" class="app-input" style="font-weight:700;"></select><label style="font-weight:700; display:block; margin-bottom:8px;">Description</label><input type="text" id="edit-item-desc" class="app-input"><div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Qté</label><input type="number" id="edit-item-qty" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Unit.</label><input type="text" id="edit-item-unit" class="app-input" disabled style="background:#f1f5f9;"></div></div><div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Prix U.</label><input type="number" id="edit-item-price" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px; color:#3B82F6;">Temps U.</label><input type="number" id="edit-item-time" class="app-input" style="border-color:#3B82F6; color:#3B82F6;"></div></div><button class="btn-primary" style="background:#fee2e2; color:#dc2626; margin-top:20px;" onclick="App.deleteItem()">SUPPRIMER LIGNE</button></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItemChanges()">CONFIRMER</button></div></div>
     <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-back-container" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body"><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="prj-cli" class="app-input" style="flex:1; margin:0;"></select><button onclick="App.openClientModal()" style="width:55px; border-radius:12px; border:2px solid var(--border); background:white; font-size:1.2rem;">+</button></div><input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Lieu"></div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER</button></div></div>
     <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Nouveau RDV</h3><button class="header-back-container" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><select id="agd-chantier" class="app-input"></select><input type="datetime-local" id="agd-date" class="app-input"><button class="btn-primary" onclick="App.saveAgendaEvent()">ENREGISTRER</button><div style="margin-top:30px; font-weight:800;">Prochains Événements</div><div id="agenda-list-view" style="margin-top:10px;"></div></div></div>
@@ -458,7 +458,7 @@
 
                 if (userData && userData.data_json) {
                     this.data = userData.data_json;
-                    // FIX: SAFE CHECK (Crea array vuoti se mancano per evitare crash)
+                    // FIX IMPORTANT: ASSICURO CHE GLI ARRAY ESISTANO SEMPRE
                     if(!this.data.clients) this.data.clients = [];
                     if(!this.data.chantiers) this.data.chantiers = [];
                     if(!this.data.appointments) this.data.appointments = [];
@@ -721,10 +721,8 @@
                 usedRooms.forEach(roomName => {
                     const btn = document.createElement('div');
                     btn.className = 'room-tag-btn';
-                    
                     if (roomName === activeRoomName || roomName === document.getElementById('room-display-final').innerText) {
                         btn.classList.add('active');
-                        // Se clicco un bottone e non è già attivo, imposto la visuale
                         if(document.getElementById('room-display-final').innerText !== roomName) {
                              App.setRoomActiveVisuals(roomName);
                         }
@@ -842,7 +840,6 @@
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
                     backBtn.onclick = () => { App.state.libCategory = null; document.getElementById('lib-category-select').value = ""; App.renderLibraryItems(); };
                     cont.appendChild(backBtn);
-
                     const subCats = [...new Set(Config.LIB[activeCat].map(i => i.sub_category))].sort();
                     let grid = document.createElement('div');
                     grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px;";
@@ -866,7 +863,6 @@
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
                     backBtn.onclick = () => { App.state.libSubCategory = null; App.renderLibraryItems(); };
                     cont.appendChild(backBtn);
-
                     const finalItems = Config.LIB[activeCat].filter(i => i.sub_category === App.state.libSubCategory);
                     App.renderLibItemsList(cont, finalItems);
                 }
@@ -894,14 +890,11 @@
             openQtyPicker(item) {
                 App.state.activeItemToAdd = item;
                 const dims = App.state.activeRoomDims;
-                
                 document.getElementById('qp-title').innerText = item.desc.substring(0, 35) + "...";
                 document.getElementById('qp-desc').innerText = `Prix: ${App.calculateItemPrice(item).toFixed(2)}€ / ${item.unit}`;
-                
                 document.getElementById('qp-val-sol').innerText = dims.sol > 0 ? dims.sol.toFixed(2) : "0";
                 document.getElementById('qp-val-mur').innerText = dims.mur > 0 ? dims.mur.toFixed(2) : "0";
                 document.getElementById('qp-val-perim').innerText = dims.perim > 0 ? dims.perim.toFixed(2) : "0";
-                
                 document.getElementById('qty-picker-overlay').classList.add('open');
             },
 
@@ -952,7 +945,6 @@
                 document.getElementById('edit-item-idx').value = id; document.getElementById('edit-item-desc').value = item.desc; document.getElementById('edit-item-qty').value = item.qty; 
                 document.getElementById('edit-item-price').value = item.price.toFixed(2); 
                 document.getElementById('edit-item-unit').value = item.unit || 'U'; document.getElementById('edit-item-time').value = item.time || 0;
-                
                 const rooms = new Set(d.items.map(i => i.piece).filter(Boolean)); ['Cuisine','SDB','Salon'].forEach(r=>rooms.add(r)); const sel = document.getElementById('edit-item-piece'); sel.innerHTML = ''; 
                 rooms.forEach(r => { const isSel = r === item.piece ? 'selected' : ''; sel.innerHTML += `<option value="${r}" ${isSel}>${r}</option>`; });
                 document.getElementById('modal-edit-item').classList.add('open');
