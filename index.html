@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.5 - FULL DIMENSIONS</title>
+    <title>QOTIA CLOUD V7.6 - CLEANUP</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -333,8 +333,13 @@
                             <div id="room-display-final" style="font-size:1.1rem; font-weight:800; color:var(--primary);">Sélectionner...</div>
                             <div id="room-details-final" style="font-size:0.8rem; color:var(--accent); font-weight:600;"></div>
                         </div>
-                        <div onclick="App.toggleRoomEdit(true)" style="width:40px; height:40px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer;">
-                            <i class="fas fa-plus"></i>
+                        <div style="display:flex; gap:10px;">
+                            <div id="btn-delete-room" onclick="App.deleteRoom()" style="display:none; width:40px; height:40px; background:#FEE2E2; color:#DC2626; border-radius:50%; align-items:center; justify-content:center; cursor:pointer;">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                            <div onclick="App.toggleRoomEdit(true)" style="width:40px; height:40px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer;">
+                                <i class="fas fa-plus"></i>
+                            </div>
                         </div>
                     </div>
                     
@@ -655,13 +660,13 @@
                 
                 const ld = document.getElementById('hub-devis-list'); ld.innerHTML=''; 
                 c.devisList.forEach(d => { 
-                    ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${(d.total||0).toLocaleString()} €</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; 
+                    ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${(d.total||0).toLocaleString()} €</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-trash" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.deleteDevis(${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; 
                 });
 
                 const lcdc = document.getElementById('hub-docs-list'); lcdc.innerHTML = '';
                 if(c.extraDocs) {
                     c.extraDocs.forEach(doc => {
-                        lcdc.innerHTML += `<div class="card-item" style="border-left:4px solid var(--time)"><div class="card-info"><div class="card-title">${doc.name}</div><div class="card-sub">${doc.ref}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateCDCPDF('${doc.id}')"></i></div>`;
+                        lcdc.innerHTML += `<div class="card-item" style="border-left:4px solid var(--time)"><div class="card-info"><div class="card-title">${doc.name}</div><div class="card-sub">${doc.ref}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateCDCPDF('${doc.id}')"></i><i class="fas fa-trash" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.deleteCDC('${doc.id}')"></i></div>`;
                     });
                 }
 
@@ -671,6 +676,63 @@
                 });
                 this.nav('hub');
             },
+            
+            // --- FUNZIONI DI ELIMINAZIONE ---
+            deleteDevis(did) {
+                if(!confirm("Eliminare definitivamente questo preventivo?")) return;
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                c.devisList = c.devisList.filter(d => d.id !== did);
+                Store.save();
+                App.openHub(c.id);
+            },
+
+            deleteCDC(docId) {
+                if(!confirm("Eliminare questo documento CDC?")) return;
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                // docId può essere stringa o numero, usiamo !=
+                c.extraDocs = c.extraDocs.filter(d => d.id != docId);
+                Store.save();
+                App.openHub(c.id);
+            },
+
+            deleteRoom() {
+                const roomName = document.getElementById('room-display-final').innerText;
+                if(roomName === "Sélectionner une pièce") return;
+
+                // Controlla se la stanza è usata
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                const dv = c.devisList.find(x => x.id == Store.data.activeDevisId);
+                
+                // Cerca se esiste un articolo con questa stanza (matching esatto o parziale con split)
+                // Usiamo il nome visualizzato (es "Cuisine (12m)") per sicurezza
+                const isUsed = dv.items.some(i => i.piece === roomName);
+
+                if(isUsed) {
+                    alert("Impossibile eliminare: questa stanza contiene degli articoli. Rimuovi prima gli articoli.");
+                    return;
+                }
+
+                if(!confirm("Rimuovere la stanza '" + roomName + "' dalla lista rapida?")) return;
+
+                // Reset visuale
+                document.getElementById('input-room-name').value = '';
+                document.getElementById('input-room-details').value = '';
+                document.getElementById('room-dim-l').value = '';
+                document.getElementById('room-dim-w').value = '';
+                document.getElementById('room-dim-h').value = '';
+                document.getElementById('room-calc-sol').innerText = '0';
+                document.getElementById('room-calc-murs').innerText = '0';
+                document.getElementById('room-select-standard').value = ''; 
+                document.getElementById('room-display-final').innerText = "Sélectionner une pièce";
+                document.getElementById('room-display-final').style.color = "var(--primary)";
+                document.getElementById('room-details-final').innerText = "";
+                document.getElementById('room-selector-widget').style.borderColor = "var(--border)";
+                document.getElementById('room-selector-widget').style.background = "#FFF";
+                
+                // Rigenera i bottoni (la stanza sparirà perché non è usata e non è più nel display)
+                App.renderUsedRoomButtons();
+            },
+
             createNewDevis() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const name = prompt("Nom du devis :", 'Devis #' + (c.devisList.length + 1));
@@ -769,6 +831,7 @@
                 document.getElementById('room-details-final').innerText = "";
                 document.getElementById('room-selector-widget').style.borderColor = "var(--border)";
                 document.getElementById('room-selector-widget').style.background = "#FFF";
+                document.getElementById('btn-delete-room').style.display = 'none'; // Nascondi cestino all'inizio
                 
                 // GENERA I BOTTONI SOLO PER STANZE GIÀ USATE
                 App.renderUsedRoomButtons();
@@ -835,8 +898,10 @@
                 document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
                 document.getElementById('room-selector-widget').style.background = "#F0FDF4";
                 
-                // Per compatibilità col form edit (proviamo a pulire l'area dal nome per l'input)
-                // "Cuisine (S: 12m²...)" -> "Cuisine"
+                // Mostra il cestino se una stanza è selezionata
+                document.getElementById('btn-delete-room').style.display = 'flex';
+
+                // Per compatibilità col form edit
                 const parts = roomName.split(' (');
                 document.getElementById('input-room-name').value = parts[0];
             },
