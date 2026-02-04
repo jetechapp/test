@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.2 - CDC & COLLABS</title>
+    <title>QOTIA CLOUD V7.3 - SMART INSERT</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -143,6 +143,8 @@
 
         #modal-client { z-index: 6000 !important; }
         #modal-projet { z-index: 5000; }
+        /* Aumentiamo z-index per stare SOPRA la libreria */
+        #modal-edit-item { z-index: 7000 !important; }
 
         #toast-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); z-index: 9000; pointer-events: none; width: 85%; }
         .toast { background: #1E293B; color: white; padding: 14px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; opacity: 0; transform: translateY(20px); transition: all 0.3s; margin-top: 10px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
@@ -381,7 +383,50 @@
     </div>
 
     <div id="modal-client" class="full-modal"><div class="modal-header"><h3>Nouveau Client</h3><button class="header-back-container" onclick="App.closeModal('modal-client')">×</button></div><div class="modal-body"><input type="hidden" id="cli-id"><div class="type-switch"><div class="type-option active" id="type-particulier" onclick="App.toggleClientType('particulier')">Particulier</div><div class="type-option" id="type-societe" onclick="App.toggleClientType('societe')">Société</div></div><input type="text" id="cli-nom" class="app-input" placeholder="Nom Complet"><div id="field-siret" style="display:none;"><input type="text" id="cli-siret" class="app-input" placeholder="TVA / SIRET"></div><input type="text" id="cli-addr" class="app-input" placeholder="Adresse"><input type="tel" id="cli-tel" class="app-input" placeholder="Téléphone"><input type="email" id="cli-email" class="app-input" placeholder="Email"></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveClient()">ENREGISTRER</button></div></div>
-    <div id="modal-edit-item" class="full-modal"><div class="modal-header"><h3>Modifier Article</h3><button class="header-back-container" onclick="App.closeModal('modal-edit-item')">×</button></div><div class="modal-body"><input type="hidden" id="edit-item-idx"><label style="font-weight:700; color:var(--text-sub);">Pièce</label><select id="edit-item-piece" class="app-input" style="font-weight:700;"></select><label style="font-weight:700; display:block; margin-bottom:8px;">Description</label><input type="text" id="edit-item-desc" class="app-input"><div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Qté</label><input type="number" id="edit-item-qty" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Unit.</label><input type="text" id="edit-item-unit" class="app-input" disabled style="background:#f1f5f9;"></div></div><div style="display:flex; gap:15px;"><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px;">Prix U.</label><input type="number" id="edit-item-price" class="app-input"></div><div style="flex:1"><label style="font-weight:700; display:block; margin-bottom:8px; color:#3B82F6;">Temps U.</label><input type="number" id="edit-item-time" class="app-input" style="border-color:#3B82F6; color:#3B82F6;"></div></div><button class="btn-primary" style="background:#fee2e2; color:#dc2626; margin-top:20px;" onclick="App.deleteItem()">SUPPRIMER LIGNE</button></div><div class="modal-footer"><button class="btn-primary" onclick="App.saveItemChanges()">CONFIRMER</button></div></div>
+    
+    <div id="modal-edit-item" class="full-modal">
+        <div class="modal-header">
+            <h3 id="edit-item-title">Article</h3>
+            <button class="header-back-container" onclick="App.closeModal('modal-edit-item')">×</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-item-idx">
+            
+            <label style="font-weight:700; color:var(--text-sub);">Pièce</label>
+            <select id="edit-item-piece" class="app-input" style="font-weight:700;"></select>
+            
+            <label style="font-weight:700; display:block; margin-bottom:8px;">Description</label>
+            <input type="text" id="edit-item-desc" class="app-input">
+            
+            <div style="display:flex; gap:15px;">
+                <div style="flex:1">
+                    <label style="font-weight:700; display:block; margin-bottom:8px;">Qté</label>
+                    <input type="number" id="edit-item-qty" class="app-input">
+                </div>
+                <div style="flex:1">
+                    <label style="font-weight:700; display:block; margin-bottom:8px;">Unit.</label>
+                    <input type="text" id="edit-item-unit" class="app-input" disabled style="background:#f1f5f9;">
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:15px;">
+                <div style="flex:1">
+                    <label style="font-weight:700; display:block; margin-bottom:8px;">Prix U.</label>
+                    <input type="number" id="edit-item-price" class="app-input">
+                </div>
+                <div style="flex:1">
+                    <label style="font-weight:700; display:block; margin-bottom:8px; color:#3B82F6;">Temps U.</label>
+                    <input type="number" id="edit-item-time" class="app-input" style="border-color:#3B82F6; color:#3B82F6;">
+                </div>
+            </div>
+            
+            <button id="btn-delete-item" class="btn-primary" style="background:#fee2e2; color:#dc2626; margin-top:20px;" onclick="App.deleteItem()">SUPPRIMER LIGNE</button>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" onclick="App.saveItemChanges()">CONFIRMER</button>
+        </div>
+    </div>
+
     <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-back-container" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body"><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="prj-cli" class="app-input" style="flex:1; margin:0;"></select><button onclick="App.openClientModal()" style="width:55px; border-radius:12px; border:2px solid var(--border); background:white; font-size:1.2rem;">+</button></div><input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Lieu"></div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER</button></div></div>
     <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Nouveau RDV</h3><button class="header-back-container" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><select id="agd-chantier" class="app-input"></select><input type="datetime-local" id="agd-date" class="app-input"><button class="btn-primary" onclick="App.saveAgendaEvent()">ENREGISTRER</button><div style="margin-top:30px; font-weight:800;">Prochains Événements</div><div id="agenda-list-view" style="margin-top:10px;"></div></div></div>
     <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Créer Facture</h3><button class="header-back-container" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label style="font-weight:700;">Depuis Devis:</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="background:#F1F5F9; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem; color:#64748B">Montant Devis</div><div style="font-size:1.4rem; font-weight:900;" id="inv-total-quote">0€</div></div><div style="display:flex; gap:10px; margin-bottom:15px;"><button id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Acompte %</button><button id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; margin-top:20px;"><div>Montant Facture</div><div style="font-size:2rem; font-weight:900; color:var(--primary);" id="inv-preview-amount">0€</div></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
@@ -510,7 +555,7 @@
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null },
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, isEditing: false, tempLibItem: null },
             
             init() { Auth.init(); },
 
@@ -934,54 +979,97 @@
                         }
 
                         const finalPieceName = roomDisplay.innerText;
-
-                        const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
-                        const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
                         
-                        const newItem = { 
-                            id: Date.now(), 
-                            desc: it.desc, 
-                            unit: it.unit, 
-                            time: it.labor_time, 
-                            material_cost: it.material_cost, 
-                            price: dynamicPrice, 
-                            qty: 0, 
-                            piece: finalPieceName
-                        }; 
-                        
-                        dv.items.push(newItem); 
-                        Store.save(); 
-                        
-                        // MANTIENI IL FOCUS SULLA STANZA CORRENTE
-                        App.renderUsedRoomButtons(finalPieceName);
-                        
-                        App.showToast("Ajouté: " + it.desc); 
-                        App.calcTotals(); 
-                        App.renderEditorItems(); 
+                        // APRE IL MODALE DI INSERIMENTO (Invece di salvare subito)
+                        App.openAddItemModal(it, finalPieceName);
                     }; 
                     container.appendChild(div); 
                 });
             },
 
+            openAddItemModal(item, room) {
+                App.state.isEditing = false;
+                App.state.tempLibItem = item;
+                
+                document.getElementById('edit-item-title').innerText = "Nouvel Article";
+                document.getElementById('edit-item-desc').value = item.desc;
+                document.getElementById('edit-item-qty').value = 1;
+                document.getElementById('edit-item-unit').value = item.unit;
+                document.getElementById('edit-item-price').value = App.calculateItemPrice(item).toFixed(2);
+                document.getElementById('edit-item-time').value = item.labor_time || 0;
+                document.getElementById('btn-delete-item').style.display = 'none'; // Nascondi tasto delete in inserimento
+
+                // Gestione Select Stanza
+                const sel = document.getElementById('edit-item-piece');
+                sel.innerHTML = '';
+                // Aggiunge la stanza selezionata se non c'è
+                let o = document.createElement('option');
+                o.value = room; o.text = room; o.selected = true;
+                sel.appendChild(o);
+                
+                document.getElementById('modal-edit-item').classList.add('open');
+            },
+
             editDevisItem(id) {
+                App.state.isEditing = true;
+                document.getElementById('edit-item-title').innerText = "Modifier Article";
+                document.getElementById('btn-delete-item').style.display = 'block';
+
                 const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const item=d.items.find(x=>x.id==id);
                 document.getElementById('edit-item-idx').value = id; document.getElementById('edit-item-desc').value = item.desc; document.getElementById('edit-item-qty').value = item.qty; 
                 document.getElementById('edit-item-price').value = item.price.toFixed(2); 
                 document.getElementById('edit-item-unit').value = item.unit || 'U'; document.getElementById('edit-item-time').value = item.time || 0;
                 
-                const rooms = new Set(d.items.map(i => i.piece).filter(Boolean)); ['Cuisine','SDB','Salon'].forEach(r=>rooms.add(r)); const sel = document.getElementById('edit-item-piece'); sel.innerHTML = ''; 
+                const rooms = new Set(d.items.map(i => i.piece).filter(Boolean)); 
+                // Aggiungi la stanza sticky corrente alla lista
+                const currentSticky = document.getElementById('room-display-final').innerText;
+                if(currentSticky !== "Sélectionner une pièce") rooms.add(currentSticky);
+
+                const sel = document.getElementById('edit-item-piece'); sel.innerHTML = ''; 
                 rooms.forEach(r => { const isSel = r === item.piece ? 'selected' : ''; sel.innerHTML += `<option value="${r}" ${isSel}>${r}</option>`; });
                 document.getElementById('modal-edit-item').classList.add('open');
             },
+
             saveItemChanges() { 
-                const id=parseInt(document.getElementById('edit-item-idx').value); const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const item=d.items.find(x=>x.id==id); 
-                item.desc=document.getElementById('edit-item-desc').value; 
-                item.qty=parseFloat(document.getElementById('edit-item-qty').value)||0; 
-                item.price=parseFloat(document.getElementById('edit-item-price').value)||0; 
-                item.time=parseFloat(document.getElementById('edit-item-time').value)||0; 
-                item.piece=document.getElementById('edit-item-piece').value; 
-                Store.save(); App.closeModal('modal-edit-item'); App.calcTotals(); App.renderEditorItems(); 
+                const desc = document.getElementById('edit-item-desc').value;
+                const qty = parseFloat(document.getElementById('edit-item-qty').value)||0;
+                const price = parseFloat(document.getElementById('edit-item-price').value)||0;
+                const time = parseFloat(document.getElementById('edit-item-time').value)||0;
+                const piece = document.getElementById('edit-item-piece').value;
+                
+                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); 
+                const d = c.devisList.find(x=>x.id==Store.data.activeDevisId); 
+
+                if (App.state.isEditing) {
+                    // MODIFICA ESISTENTE
+                    const id = parseInt(document.getElementById('edit-item-idx').value); 
+                    const item = d.items.find(x=>x.id==id); 
+                    item.desc = desc; item.qty = qty; item.price = price; item.time = time; item.piece = piece;
+                } else {
+                    // NUOVO INSERIMENTO
+                    const newItem = { 
+                        id: Date.now(), 
+                        desc: desc, 
+                        unit: document.getElementById('edit-item-unit').value, 
+                        time: time, 
+                        material_cost: App.state.tempLibItem ? App.state.tempLibItem.material_cost : 0, 
+                        price: price, 
+                        qty: qty, 
+                        piece: piece
+                    };
+                    d.items.push(newItem);
+                    App.showToast("Ajouté: " + desc);
+                    
+                    // Se stiamo usando lo sticky widget, aggiorniamo i bottoni
+                    App.renderUsedRoomButtons(piece);
+                }
+
+                Store.save(); 
+                App.closeModal('modal-edit-item'); 
+                App.calcTotals(); 
+                App.renderEditorItems(); 
             },
+
             deleteItem() { if(confirm("Supprimer ?")) { const id=parseInt(document.getElementById('edit-item-idx').value); const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); d.items=d.items.filter(x=>x.id!==id); Store.save(); App.closeModal('modal-edit-item'); App.calcTotals(); App.renderEditorItems(); } },
             
             closeModal(id) { document.getElementById(id).classList.remove('open'); },
