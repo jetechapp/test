@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.4 - SURFACES</title>
+    <title>QOTIA CLOUD V7.5 - FULL DIMENSIONS</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -361,17 +361,21 @@
 
                     <input type="text" id="input-room-name" class="app-input" style="display:none; margin-top:10px;" placeholder="Nom de la pièce...">
                     
-                    <label style="font-size:0.7rem; font-weight:700; margin-top:10px; display:block;">Dimensions (Option)</label>
-                    <div style="display:flex; gap:10px;">
-                        <div style="flex:1;">
-                            <input type="number" id="room-dim-l" class="app-input" placeholder="L (m)" step="0.01" oninput="App.calcRoomArea()">
+                    <label style="font-size:0.7rem; font-weight:700; margin-top:10px; display:block;">Dimensions</label>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <input type="number" id="room-dim-l" class="app-input" placeholder="L (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
+                        <input type="number" id="room-dim-w" class="app-input" placeholder="l (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
+                        <input type="number" id="room-dim-h" class="app-input" placeholder="H (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
+                    </div>
+                    
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1; background:white; border:1px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:0.65rem; color:#64748B; font-weight:700; text-transform:uppercase;">Sol (m²)</div>
+                            <div id="room-calc-sol" style="font-weight:800; color:var(--primary);">0</div>
                         </div>
-                        <div style="flex:1;">
-                            <input type="number" id="room-dim-w" class="app-input" placeholder="l (m)" step="0.01" oninput="App.calcRoomArea()">
-                        </div>
-                        <div style="flex:1; position:relative;">
-                            <input type="number" id="room-dim-area" class="app-input" placeholder="m²" step="0.01" style="font-weight:800; color:var(--primary);">
-                            <i class="fas fa-calculator" style="position:absolute; right:10px; top:15px; color:#CBD5E1;"></i>
+                        <div style="flex:1; background:white; border:1px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
+                            <div style="font-size:0.65rem; color:#64748B; font-weight:700; text-transform:uppercase;">Murs (m²)</div>
+                            <div id="room-calc-murs" style="font-weight:800; color:var(--accent);">0</div>
                         </div>
                     </div>
                     
@@ -756,7 +760,9 @@
                 document.getElementById('input-room-details').value = '';
                 document.getElementById('room-dim-l').value = '';
                 document.getElementById('room-dim-w').value = '';
-                document.getElementById('room-dim-area').value = '';
+                document.getElementById('room-dim-h').value = '';
+                document.getElementById('room-calc-sol').innerText = '0';
+                document.getElementById('room-calc-murs').innerText = '0';
                 document.getElementById('room-select-standard').value = ''; 
                 document.getElementById('room-display-final').innerText = "Sélectionner une pièce";
                 document.getElementById('room-display-final').style.color = "var(--primary)";
@@ -830,7 +836,7 @@
                 document.getElementById('room-selector-widget').style.background = "#F0FDF4";
                 
                 // Per compatibilità col form edit (proviamo a pulire l'area dal nome per l'input)
-                // "Cuisine (12m²)" -> "Cuisine"
+                // "Cuisine (S: 12m²...)" -> "Cuisine"
                 const parts = roomName.split(' (');
                 document.getElementById('input-room-name').value = parts[0];
             },
@@ -862,11 +868,23 @@
             },
 
             calcRoomArea() {
-                const l = parseFloat(document.getElementById('room-dim-l').value);
-                const w = parseFloat(document.getElementById('room-dim-w').value);
-                if(l && w) {
-                    document.getElementById('room-dim-area').value = (l * w).toFixed(2);
+                const l = parseFloat(document.getElementById('room-dim-l').value) || 0;
+                const w = parseFloat(document.getElementById('room-dim-w').value) || 0;
+                const h = parseFloat(document.getElementById('room-dim-h').value) || 0;
+                
+                let areaSol = 0;
+                let areaMurs = 0;
+
+                if(l > 0 && w > 0) {
+                    areaSol = l * w;
+                    if(h > 0) {
+                        const perimetro = (l + w) * 2;
+                        areaMurs = perimetro * h;
+                    }
                 }
+
+                document.getElementById('room-calc-sol').innerText = areaSol > 0 ? areaSol.toFixed(2) : "0";
+                document.getElementById('room-calc-murs').innerText = areaMurs > 0 ? areaMurs.toFixed(2) : "0";
             },
 
             confirmRoom() {
@@ -878,13 +896,23 @@
                 if(selectVal && selectVal !== 'Autre') name = selectVal;
 
                 const details = document.getElementById('input-room-details').value.trim();
-                const area = document.getElementById('room-dim-area').value;
+                
+                // Leggi valori calcolati
+                const sol = parseFloat(document.getElementById('room-calc-sol').innerText);
+                const murs = parseFloat(document.getElementById('room-calc-murs').innerText);
                 
                 if(!name) return alert("Inserisci il nome della stanza!");
 
                 let displayName = name;
-                if(area) displayName += ` (${area} m²)`;
-                else if(details) displayName += ` (${details})`;
+                
+                // Logica Etichetta Intelligente
+                if (sol > 0 && murs > 0) {
+                    displayName += ` (S: ${sol}m² | M: ${murs}m²)`;
+                } else if (sol > 0) {
+                    displayName += ` (S: ${sol}m²)`;
+                } else if (details) {
+                    displayName += ` (${details})`;
+                }
 
                 // Imposta visualmente
                 App.setRoomActiveVisuals(displayName);
