@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V6 - SMART ROOMS</title>
+    <title>QOTIA CLOUD V7 - STICKY ROOMS</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -663,7 +663,7 @@
                 }
             },
 
-            // --- NUOVA LOGICA "ROOM SELECTOR" V6 ---
+            // --- NUOVA LOGICA "ROOM SELECTOR" V7 (STICKY & SMART) ---
             openLibrary() {
                 const categories = Object.keys(Config.LIB).sort();
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
@@ -700,8 +700,8 @@
                 document.getElementById('modal-library').classList.add('open'); 
             },
 
-            // FUNZIONE CHE CREA I BOTTONI DINAMICI
-            renderUsedRoomButtons() {
+            // FUNZIONE CHE CREA I BOTTONI DINAMICI (Con stile "Active")
+            renderUsedRoomButtons(activeRoomName = null) {
                 const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
                 const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId);
                 const container = document.getElementById('room-used-buttons');
@@ -713,6 +713,12 @@
                     if(i.piece) usedRooms.add(i.piece);
                 });
 
+                // Se abbiamo appena creato una stanza nuova che non ha ancora articoli, aggiungiamola alla lista
+                const currentInputName = document.getElementById('room-display-final').innerText;
+                if(currentInputName !== "Sélectionner une pièce") {
+                    usedRooms.add(currentInputName);
+                }
+
                 if(usedRooms.size === 0) {
                     container.innerHTML = '<span style="font-size:0.7rem; color:#94A3B8;">Aucune pièce créée. Cliquez sur +</span>';
                     return;
@@ -721,21 +727,37 @@
                 usedRooms.forEach(roomName => {
                     const btn = document.createElement('div');
                     btn.className = 'room-tag-btn';
+                    
+                    // Stile attivo se corrisponde alla stanza corrente
+                    if (roomName === activeRoomName || roomName === document.getElementById('room-display-final').innerText) {
+                        btn.classList.add('active');
+                        // Aggiorna anche visivamente il box principale se non lo è già
+                        if(document.getElementById('room-display-final').innerText !== roomName) {
+                             App.setRoomActiveVisuals(roomName);
+                        }
+                    }
+
                     btn.innerText = roomName;
                     btn.onclick = () => {
-                        // Seleziona questa stanza
-                        document.getElementById('room-display-final').innerText = roomName;
-                        document.getElementById('room-display-final').style.color = "var(--success)";
-                        document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
-                        document.getElementById('room-selector-widget').style.background = "#F0FDF4";
-                        
-                        // Per compatibilità col form edit (opzionale)
-                        const parts = roomName.split(' (');
-                        const mainName = parts[0];
-                        document.getElementById('input-room-name').value = mainName;
+                        App.setRoomActiveVisuals(roomName);
+                        // Ridisegna i bottoni per aggiornare lo stato "active"
+                        App.renderUsedRoomButtons(roomName);
                     };
                     container.appendChild(btn);
                 });
+            },
+
+            // Helper per impostare visivamente la stanza attiva
+            setRoomActiveVisuals(roomName) {
+                document.getElementById('room-display-final').innerText = roomName;
+                document.getElementById('room-display-final').style.color = "var(--success)";
+                document.getElementById('room-details-final').innerText = ""; 
+                document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
+                document.getElementById('room-selector-widget').style.background = "#F0FDF4";
+                
+                // Per compatibilità col form edit
+                const parts = roomName.split(' (');
+                document.getElementById('input-room-name').value = parts[0];
             },
 
             // Gestione Widget Stanza
@@ -779,18 +801,13 @@
                 let displayName = name;
                 if(details) displayName += ` (${details})`;
 
-                // Aggiorna vista
-                document.getElementById('room-display-final').innerText = displayName;
-                document.getElementById('room-details-final').innerText = ""; // Già incluso nel nome
+                // Imposta visualmente
+                App.setRoomActiveVisuals(displayName);
                 
-                // Feedback visivo (verde)
-                document.getElementById('room-display-final').style.color = "var(--success)";
-                document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
-                document.getElementById('room-selector-widget').style.background = "#F0FDF4";
+                // Aggiunge subito il bottone in alto
+                App.renderUsedRoomButtons(displayName);
 
                 App.toggleRoomEdit(false);
-                // Aggiorna i bottoni in alto (anche se tecnicamente non è ancora salvata nel DB, la mostriamo come attiva)
-                // In realtà meglio aggiornare DOPO aver aggiunto un articolo, ma per UX va bene così.
             },
 
             // --- NAVIGAZIONE 3 LIVELLI ---
@@ -923,8 +940,8 @@
                         dv.items.push(newItem); 
                         Store.save(); 
                         
-                        // AGGIORNA I BOTTONI STANZA (Così appare subito in alto)
-                        App.renderUsedRoomButtons();
+                        // MANTIENI IL FOCUS SULLA STANZA CORRENTE
+                        App.renderUsedRoomButtons(finalPieceName);
                         
                         App.showToast("Ajouté: " + it.desc); 
                         App.calcTotals(); 
