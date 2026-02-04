@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.6 - CLEANUP</title>
+    <title>QOTIA CLOUD V7.7 - GRAVATS MANAGER</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,6 +26,7 @@
             --danger: #EF4444; 
             --success: #15803d;
             --time: #3B82F6;
+            --rubble: #78716c; /* Stone color for Gravats */
             
             --h-header: 65px;
             --h-nav: 90px;
@@ -67,7 +68,7 @@
         /* COMPONENTS */
         .client-badge { font-size: 0.75rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; }
         .project-title { font-size: 1.2rem; font-weight: 900; color: var(--primary); margin-top: 2px; }
-        .kpi-row { display: flex; gap: 15px; margin-top: 10px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+        .kpi-row { display: flex; gap: 10px; margin-top: 10px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
         .kpi-box { flex: 1; background: #F8FAFC; padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #E2E8F0; }
         .kpi-label { font-size: 0.65rem; color: #64748B; font-weight: 700; text-transform: uppercase; }
         .kpi-val { font-size: 1.1rem; font-weight: 800; }
@@ -235,6 +236,7 @@
                 <div class="kpi-row">
                     <div class="kpi-box"><div class="kpi-label">Total €</div><div class="kpi-val" id="ed-total-price" style="color:var(--primary);">0 €</div></div>
                     <div class="kpi-box"><div class="kpi-label">Temps (H)</div><div class="kpi-val" id="ed-total-time" style="color:var(--time);">0h</div></div>
+                    <div class="kpi-box"><div class="kpi-label">Gravats</div><div class="kpi-val" id="ed-total-rubble" style="color:var(--rubble);">0</div></div>
                 </div>
             </div>
             <div class="view-toggle">
@@ -442,6 +444,9 @@
                     <input type="number" id="edit-item-time" class="app-input" style="border-color:#3B82F6; color:#3B82F6;">
                 </div>
             </div>
+
+            <label style="font-weight:700; display:block; margin-bottom:8px; color:var(--rubble);">Gravats U. (m3)</label>
+            <input type="number" id="edit-item-rubble" class="app-input" step="0.01" style="border-color:var(--border); color:var(--rubble); font-weight:700;">
             
             <button id="btn-delete-item" class="btn-primary" style="background:#fee2e2; color:#dc2626; margin-top:20px;" onclick="App.deleteItem()">SUPPRIMER LIGNE</button>
         </div>
@@ -529,7 +534,8 @@
                             desc: item.desc, 
                             unit: item.unit, 
                             labor_time: item.labor_time, 
-                            material_cost: item.material_cost 
+                            material_cost: item.material_cost,
+                            gravats: item.dechet || 0 // MAPPING DECHET FROM DB
                         };
 
                         Config.LIB[cat].push(processedItem);
@@ -689,7 +695,6 @@
             deleteCDC(docId) {
                 if(!confirm("Eliminare questo documento CDC?")) return;
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
-                // docId può essere stringa o numero, usiamo !=
                 c.extraDocs = c.extraDocs.filter(d => d.id != docId);
                 Store.save();
                 App.openHub(c.id);
@@ -699,12 +704,8 @@
                 const roomName = document.getElementById('room-display-final').innerText;
                 if(roomName === "Sélectionner une pièce") return;
 
-                // Controlla se la stanza è usata
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
                 const dv = c.devisList.find(x => x.id == Store.data.activeDevisId);
-                
-                // Cerca se esiste un articolo con questa stanza (matching esatto o parziale con split)
-                // Usiamo il nome visualizzato (es "Cuisine (12m)") per sicurezza
                 const isUsed = dv.items.some(i => i.piece === roomName);
 
                 if(isUsed) {
@@ -714,7 +715,6 @@
 
                 if(!confirm("Rimuovere la stanza '" + roomName + "' dalla lista rapida?")) return;
 
-                // Reset visuale
                 document.getElementById('input-room-name').value = '';
                 document.getElementById('input-room-details').value = '';
                 document.getElementById('room-dim-l').value = '';
@@ -728,8 +728,8 @@
                 document.getElementById('room-details-final').innerText = "";
                 document.getElementById('room-selector-widget').style.borderColor = "var(--border)";
                 document.getElementById('room-selector-widget').style.background = "#FFF";
+                document.getElementById('btn-delete-room').style.display = 'none'; 
                 
-                // Rigenera i bottoni (la stanza sparirà perché non è usata e non è più nel display)
                 App.renderUsedRoomButtons();
             },
 
@@ -738,7 +738,7 @@
                 const name = prompt("Nom du devis :", 'Devis #' + (c.devisList.length + 1));
                 if (!name) return;
                 const id = Date.now();
-                c.devisList.push({ id: id, ref: 'D-'+Math.floor(Math.random()*1000), name: name, status:'Brouillon', items: [], total: 0, totalTime: 0 });
+                c.devisList.push({ id: id, ref: 'D-'+Math.floor(Math.random()*1000), name: name, status:'Brouillon', items: [], total: 0, totalTime: 0, totalGravats: 0 });
                 Store.save(); App.openEditor(id);
             },
             openEditor(did) { 
@@ -763,11 +763,16 @@
             calcTotals() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const d = c.devisList.find(x=>x.id==Store.data.activeDevisId);
-                let totP = 0; let totT = 0;
-                d.items.forEach(i => { totP += i.qty * i.price; totT += i.qty * (i.time || 0); });
-                d.total = totP; d.totalTime = totT; Store.save();
+                let totP = 0; let totT = 0; let totG = 0;
+                d.items.forEach(i => { 
+                    totP += i.qty * i.price; 
+                    totT += i.qty * (i.time || 0); 
+                    totG += i.qty * (i.gravats || 0); // CALCOLO GRAVATS
+                });
+                d.total = totP; d.totalTime = totT; d.totalGravats = totG; Store.save();
                 document.getElementById('ed-total-price').innerText = Math.round(totP).toLocaleString() + ' €';
                 document.getElementById('ed-total-time').innerText = totT.toFixed(1) + ' h';
+                document.getElementById('ed-total-rubble').innerText = totG.toFixed(2) + ' m³';
             },
             renderEditorItems() {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
@@ -1118,7 +1123,8 @@
                 document.getElementById('edit-item-unit').value = item.unit;
                 document.getElementById('edit-item-price').value = App.calculateItemPrice(item).toFixed(2);
                 document.getElementById('edit-item-time').value = item.labor_time || 0;
-                document.getElementById('btn-delete-item').style.display = 'none'; // Nascondi tasto delete in inserimento
+                document.getElementById('edit-item-rubble').value = item.gravats || 0; // Load default Gravats
+                document.getElementById('btn-delete-item').style.display = 'none'; 
 
                 // Gestione Select Stanza
                 const sel = document.getElementById('edit-item-piece');
@@ -1140,6 +1146,7 @@
                 document.getElementById('edit-item-idx').value = id; document.getElementById('edit-item-desc').value = item.desc; document.getElementById('edit-item-qty').value = item.qty; 
                 document.getElementById('edit-item-price').value = item.price.toFixed(2); 
                 document.getElementById('edit-item-unit').value = item.unit || 'U'; document.getElementById('edit-item-time').value = item.time || 0;
+                document.getElementById('edit-item-rubble').value = item.gravats || 0;
                 
                 const rooms = new Set(d.items.map(i => i.piece).filter(Boolean)); 
                 // Aggiungi la stanza sticky corrente alla lista
@@ -1156,6 +1163,7 @@
                 const qty = parseFloat(document.getElementById('edit-item-qty').value)||0;
                 const price = parseFloat(document.getElementById('edit-item-price').value)||0;
                 const time = parseFloat(document.getElementById('edit-item-time').value)||0;
+                const gravats = parseFloat(document.getElementById('edit-item-rubble').value)||0;
                 const piece = document.getElementById('edit-item-piece').value;
                 
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); 
@@ -1165,7 +1173,7 @@
                     // MODIFICA ESISTENTE
                     const id = parseInt(document.getElementById('edit-item-idx').value); 
                     const item = d.items.find(x=>x.id==id); 
-                    item.desc = desc; item.qty = qty; item.price = price; item.time = time; item.piece = piece;
+                    item.desc = desc; item.qty = qty; item.price = price; item.time = time; item.piece = piece; item.gravats = gravats;
                 } else {
                     // NUOVO INSERIMENTO
                     const newItem = { 
@@ -1176,7 +1184,8 @@
                         material_cost: App.state.tempLibItem ? App.state.tempLibItem.material_cost : 0, 
                         price: price, 
                         qty: qty, 
-                        piece: piece
+                        piece: piece,
+                        gravats: gravats
                     };
                     d.items.push(newItem);
                     App.showToast("Ajouté: " + desc);
@@ -1258,6 +1267,14 @@
                     `;
                 }
 
+                // Add Gravats Summary to CDC
+                let gravatsInfo = "";
+                if(d.totalGravats > 0) {
+                    gravatsInfo = `<div style="background:#FEE2E2; color:#B91C1C; padding:15px; border-radius:8px; margin-bottom:20px; font-weight:bold; border:1px solid #FECACA;">
+                        <i class="fas fa-truck-loading"></i> Volume Total Gravats Estimé : ${d.totalGravats.toFixed(2)} m³
+                    </div>`;
+                }
+
                 const html = `
                     <div style="font-family: 'Plus Jakarta Sans', sans-serif; padding: 30px; color: #1E293B;">
                         <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #0F172A; padding-bottom: 20px; margin-bottom: 30px;">
@@ -1275,6 +1292,8 @@
                             <strong>Client :</strong> ${cli ? cli.nom : 'Non spécifié'}<br>
                             <strong>Adresse :</strong> ${c.addr || 'Voir fiche projet'}
                         </div>
+
+                        ${gravatsInfo}
 
                         ${roomsHtml}
 
@@ -1298,20 +1317,26 @@
             generateGlobalPDF(type, id) {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
-                let items, title, ref;
+                let items, title, ref, extraInfo = "";
+                
                 if (type === 'devis') {
                     const obj = c.devisList.find(x=>x.id==id);
                     items = obj.items; title = "DEVIS"; ref = obj.ref;
+                    if(obj.totalGravats > 0) {
+                        extraInfo = `<div style="text-align:right; margin-top:10px; font-size:0.9rem; color:#64748B;">Volume Gravats Estimé: <strong>${obj.totalGravats.toFixed(2)} m³</strong></div>`;
+                    }
                 } else {
                     const obj = c.factures.find(x=>x.id==id);
                     title = "FACTURE"; ref = obj.ref; items = [{desc: `Facture selon avancement (${obj.type})`, qty: 1, unit:'U', price: obj.amount}];
                 }
+                
                 let totalTTC = 0;
                 let rows = items.map(i => {
                     const rowT = i.qty * i.price; totalTTC += rowT;
                     return `<tr style="border-bottom:1px solid #eee;"><td style="padding:10px;">${i.desc}</td><td style="padding:10px; text-align:center;">${i.qty}</td><td style="padding:10px; text-align:center;">${i.unit||'U'}</td><td style="padding:10px; text-align:right;">${i.price.toFixed(2)}€</td><td style="padding:10px; text-align:right; font-weight:bold;">${rowT.toFixed(2)}€</td></tr>`;
                 }).join('');
-                const html = `<div style="font-family:sans-serif; padding:30px; color:#334155;"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:40px;"><div><h1 style="color:#0f172a; margin:0;">${title}</h1><div style="color:#64748b; font-size:0.9rem;">${ref}</div></div><div style="text-align:right;"><strong>QOTIA ENTREPRISE</strong><br>123 Rue Exemple<br>06000 NICE</div></div><div style="background:#f1f5f9; padding:20px; border-radius:10px; margin-bottom:30px;"><strong>CLIENT:</strong><br><span style="font-size:1.2rem; font-weight:bold; color:#0f172a;">${cli.nom}</span><br>${cli.addr}<br>${cli.tel||''}</div><table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:30px;"><thead style="background:#0f172a; color:white;"><tr><th style="padding:12px; text-align:left;">Description</th><th style="padding:12px; text-align:center;">Qté</th><th style="padding:12px; text-align:center;">Unit</th><th style="padding:12px; text-align:right;">P.U.</th><th style="padding:12px; text-align:right;">Total</th></tr></thead><tbody>${rows}</tbody></table><div style="text-align:right; margin-bottom:50px;"><div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${totalTTC.toLocaleString()} €</div></div></div>`;
+                
+                const html = `<div style="font-family:sans-serif; padding:30px; color:#334155;"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:40px;"><div><h1 style="color:#0f172a; margin:0;">${title}</h1><div style="color:#64748b; font-size:0.9rem;">${ref}</div></div><div style="text-align:right;"><strong>QOTIA ENTREPRISE</strong><br>123 Rue Exemple<br>06000 NICE</div></div><div style="background:#f1f5f9; padding:20px; border-radius:10px; margin-bottom:30px;"><strong>CLIENT:</strong><br><span style="font-size:1.2rem; font-weight:bold; color:#0f172a;">${cli.nom}</span><br>${cli.addr}<br>${cli.tel||''}</div><table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:30px;"><thead style="background:#0f172a; color:white;"><tr><th style="padding:12px; text-align:left;">Description</th><th style="padding:12px; text-align:center;">Qté</th><th style="padding:12px; text-align:center;">Unit</th><th style="padding:12px; text-align:right;">P.U.</th><th style="padding:12px; text-align:right;">Total</th></tr></thead><tbody>${rows}</tbody></table><div style="text-align:right; margin-bottom:50px;"><div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${totalTTC.toLocaleString()} €</div>${extraInfo}</div></div></div>`;
                 const opt = { margin: 10, filename: `${title}_${ref}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
                 html2pdf().set(opt).from(html).save();
                 App.showToast("PDF Téléchargé");
@@ -1323,9 +1348,18 @@
                 if (!doc) return;
 
                 const items = doc.items;
+                
+                // Calculate Gravats for this specific CDC
+                let cdcGravats = 0;
                 let rows = items.map(i => {
+                    cdcGravats += i.qty * (i.gravats || 0);
                     return `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${i.desc}</td><td style="padding:10px; border-bottom:1px solid #eee;">${i.piece||'-'}</td><td style="padding:10px; border-bottom:1px solid #eee; font-weight:bold;">${i.qty} ${i.unit}</td></tr>`;
                 }).join('');
+
+                let gravatsInfo = "";
+                if(cdcGravats > 0) {
+                    gravatsInfo = `<div style="margin-top:20px; padding:10px; background:#f1f5f9; border-radius:5px;"><strong>Volume Gravats pour ces travaux:</strong> ${cdcGravats.toFixed(2)} m³</div>`;
+                }
 
                 const html = `
                     <div style="font-family:sans-serif; padding:30px;">
@@ -1335,6 +1369,7 @@
                             <thead style="background:#0f172a; color:white;"><tr><th style="padding:10px; text-align:left;">Tâche</th><th style="padding:10px; text-align:left;">Zone</th><th style="padding:10px; text-align:left;">Qté</th></tr></thead>
                             <tbody>${rows}</tbody>
                         </table>
+                        ${gravatsInfo}
                     </div>
                 `;
                 const opt = { margin: 10, filename: `${doc.name}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
