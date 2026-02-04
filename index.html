@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V5 - FINAL</title>
+    <title>QOTIA CLOUD V6 - SMART ROOMS</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -312,39 +312,45 @@
 
             <div id="room-selector-widget" style="background:#FFF; border:2px dashed var(--border); border-radius:12px; margin-bottom:15px; overflow:hidden; transition:all 0.3s;">
                 
-                <div id="room-view-mode" onclick="App.toggleRoomEdit(true)" style="padding:15px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;">
-                    <div>
-                        <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); text-transform:uppercase;">Pièce Cible</div>
-                        <div id="room-display-final" style="font-size:1.1rem; font-weight:800; color:var(--primary);">Sélectionner une pièce</div>
-                        <div id="room-details-final" style="font-size:0.8rem; color:var(--accent); font-weight:600;"></div>
+                <div id="room-view-mode" style="padding:15px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                        <div>
+                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); text-transform:uppercase;">Pièce Cible</div>
+                            <div id="room-display-final" style="font-size:1.1rem; font-weight:800; color:var(--primary);">Sélectionner...</div>
+                            <div id="room-details-final" style="font-size:0.8rem; color:var(--accent); font-weight:600;"></div>
+                        </div>
+                        <div onclick="App.toggleRoomEdit(true)" style="width:40px; height:40px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer;">
+                            <i class="fas fa-plus"></i>
+                        </div>
                     </div>
-                    <div style="width:40px; height:40px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2);">
-                        <i class="fas fa-plus"></i>
-                    </div>
+                    
+                    <div id="room-used-buttons" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
                 </div>
 
                 <div id="room-edit-mode" style="display:none; padding:15px; background:#F1F5F9; border-top:1px solid var(--border);">
-                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Rapide:</label>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-                        <span class="room-tag-btn" onclick="App.setQuickRoom('Cuisine')">Cuisine</span>
-                        <span class="room-tag-btn" onclick="App.setQuickRoom('SDB')">SDB</span>
-                        <span class="room-tag-btn" onclick="App.setQuickRoom('Salon')">Salon</span>
-                        <span class="room-tag-btn" onclick="App.setQuickRoom('Chambre')">Chambre</span>
-                        <span class="room-tag-btn" onclick="App.setQuickRoom('Couloir')">Couloir</span>
-                        <span class="room-tag-btn" onclick="App.setQuickRoom('Extérieur')">Extérieur</span>
-                    </div>
+                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Nouvelle Pièce:</label>
                     
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div>
-                            <label style="font-size:0.7rem; font-weight:700;">Nom Pièce</label>
-                            <input type="text" id="input-room-name" class="app-input" style="height:40px; margin-bottom:0;" placeholder="Es. Garage">
-                        </div>
-                        <div>
-                            <label style="font-size:0.7rem; font-weight:700;">Détails (Option)</label>
-                            <input type="text" id="input-room-details" class="app-input" style="height:40px; margin-bottom:0;" placeholder="Es. Mur Nord">
-                        </div>
-                    </div>
-                    <button class="btn-primary" style="margin-top:10px; height:40px;" onclick="App.confirmRoom()">CONFIRMER LA PIÈCE</button>
+                    <select id="room-select-standard" class="app-input" onchange="App.onRoomSelectChange()">
+                        <option value="">-- Choisir --</option>
+                        <option value="Cuisine">Cuisine</option>
+                        <option value="Salon">Salon</option>
+                        <option value="SDB">SDB</option>
+                        <option value="Chambre">Chambre</option>
+                        <option value="Entrée">Entrée</option>
+                        <option value="Couloir">Couloir</option>
+                        <option value="WC">WC</option>
+                        <option value="Extérieur">Extérieur</option>
+                        <option value="Cave">Cave</option>
+                        <option value="Garage">Garage</option>
+                        <option value="Autre">Autre (Personnalisé)</option>
+                    </select>
+
+                    <input type="text" id="input-room-name" class="app-input" style="display:none; margin-top:10px;" placeholder="Nom de la pièce...">
+                    
+                    <label style="font-size:0.7rem; font-weight:700; margin-top:10px; display:block;">Détails (Option)</label>
+                    <input type="text" id="input-room-details" class="app-input" style="margin-bottom:0;" placeholder="Es. Mur Nord, 1er Etage...">
+                    
+                    <button class="btn-primary" style="margin-top:15px; height:45px;" onclick="App.confirmRoom()">CONFIRMER</button>
                 </div>
             </div>
 
@@ -419,7 +425,6 @@
             async init() {
                 App.showToast("Sync con Cloud...");
                 
-                // --- CARICAMENTO 3 LIVELLI (Cat -> Sub -> Item) ---
                 const { data: libData, error: libErr } = await sbClient
                     .from('library_items')
                     .select('*')
@@ -451,7 +456,6 @@
                         Config.allItems.push(processedItem);
                     });
 
-                    // FUSE.JS con tolleranza errori
                     const options = {
                         includeScore: true,
                         threshold: 0.3, 
@@ -659,12 +663,12 @@
                 }
             },
 
-            // --- NUOVA LOGICA "ROOM SELECTOR" ---
+            // --- NUOVA LOGICA "ROOM SELECTOR" V6 ---
             openLibrary() {
                 const categories = Object.keys(Config.LIB).sort();
                 if(categories.length === 0) return App.showToast("Caricamento biblioteca...");
                 
-                // RESET VARIABILI NAVIGAZIONE
+                // RESET VARIABILI
                 document.getElementById('lib-search').value = '';
                 App.state.libCategory = null; 
                 App.state.libSubCategory = null;
@@ -676,20 +680,62 @@
                 categories.forEach(cat => sel.innerHTML += `<option value="${cat}">${cat}</option>`);
                 sel.value = ""; 
 
-                // --- RESETTA SELETTORE STANZA (Modalità pulita) ---
+                // --- RESETTA SELETTORE STANZA ---
                 document.getElementById('input-room-name').value = '';
                 document.getElementById('input-room-details').value = '';
+                document.getElementById('room-select-standard').value = ''; 
                 document.getElementById('room-display-final').innerText = "Sélectionner une pièce";
                 document.getElementById('room-display-final').style.color = "var(--primary)";
                 document.getElementById('room-details-final').innerText = "";
                 document.getElementById('room-selector-widget').style.borderColor = "var(--border)";
                 document.getElementById('room-selector-widget').style.background = "#FFF";
                 
+                // GENERA I BOTTONI SOLO PER STANZE GIÀ USATE
+                App.renderUsedRoomButtons();
+
                 // Mostra il selettore "compatto" all'inizio
                 App.toggleRoomEdit(false); 
 
                 App.renderLibraryItems();
                 document.getElementById('modal-library').classList.add('open'); 
+            },
+
+            // FUNZIONE CHE CREA I BOTTONI DINAMICI
+            renderUsedRoomButtons() {
+                const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
+                const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId);
+                const container = document.getElementById('room-used-buttons');
+                container.innerHTML = '';
+
+                // Trova stanze uniche
+                const usedRooms = new Set();
+                dv.items.forEach(i => {
+                    if(i.piece) usedRooms.add(i.piece);
+                });
+
+                if(usedRooms.size === 0) {
+                    container.innerHTML = '<span style="font-size:0.7rem; color:#94A3B8;">Aucune pièce créée. Cliquez sur +</span>';
+                    return;
+                }
+
+                usedRooms.forEach(roomName => {
+                    const btn = document.createElement('div');
+                    btn.className = 'room-tag-btn';
+                    btn.innerText = roomName;
+                    btn.onclick = () => {
+                        // Seleziona questa stanza
+                        document.getElementById('room-display-final').innerText = roomName;
+                        document.getElementById('room-display-final').style.color = "var(--success)";
+                        document.getElementById('room-selector-widget').style.borderColor = "var(--success)";
+                        document.getElementById('room-selector-widget').style.background = "#F0FDF4";
+                        
+                        // Per compatibilità col form edit (opzionale)
+                        const parts = roomName.split(' (');
+                        const mainName = parts[0];
+                        document.getElementById('input-room-name').value = mainName;
+                    };
+                    container.appendChild(btn);
+                });
             },
 
             // Gestione Widget Stanza
@@ -700,24 +746,42 @@
                     view.style.display = 'none';
                     edit.style.display = 'block';
                 } else {
-                    view.style.display = 'flex';
+                    view.style.display = 'block';
                     edit.style.display = 'none';
                 }
             },
 
-            setQuickRoom(name) {
-                document.getElementById('input-room-name').value = name;
+            onRoomSelectChange() {
+                const val = document.getElementById('room-select-standard').value;
+                const inputCustom = document.getElementById('input-room-name');
+                if(val === 'Autre') {
+                    inputCustom.style.display = 'block';
+                    inputCustom.value = '';
+                    inputCustom.focus();
+                } else {
+                    inputCustom.style.display = 'none';
+                    inputCustom.value = val;
+                }
             },
 
             confirmRoom() {
-                const name = document.getElementById('input-room-name').value.trim();
+                // Recupera nome (o da select o da input custom)
+                let name = document.getElementById('input-room-name').value.trim();
+                const selectVal = document.getElementById('room-select-standard').value;
+                
+                if(!selectVal && !name) return alert("Seleziona una stanza dal menu!");
+                if(selectVal && selectVal !== 'Autre') name = selectVal;
+
                 const details = document.getElementById('input-room-details').value.trim();
                 
-                if(!name) return alert("Inserisci almeno il nome della stanza!");
+                if(!name) return alert("Inserisci il nome della stanza!");
+
+                let displayName = name;
+                if(details) displayName += ` (${details})`;
 
                 // Aggiorna vista
-                document.getElementById('room-display-final').innerText = name;
-                document.getElementById('room-details-final').innerText = details;
+                document.getElementById('room-display-final').innerText = displayName;
+                document.getElementById('room-details-final').innerText = ""; // Già incluso nel nome
                 
                 // Feedback visivo (verde)
                 document.getElementById('room-display-final').style.color = "var(--success)";
@@ -725,6 +789,8 @@
                 document.getElementById('room-selector-widget').style.background = "#F0FDF4";
 
                 App.toggleRoomEdit(false);
+                // Aggiorna i bottoni in alto (anche se tecnicamente non è ancora salvata nel DB, la mostriamo come attiva)
+                // In realtà meglio aggiornare DOPO aver aggiunto un articolo, ma per UX va bene così.
             },
 
             // --- NAVIGAZIONE 3 LIVELLI ---
@@ -736,20 +802,15 @@
                 const selectedCat = document.getElementById('lib-category-select').value;
                 const breadcrumb = document.getElementById('lib-breadcrumb');
                 
-                // 1. RICERCA ATTIVA (Bypassa navigazione)
+                // 1. RICERCA ATTIVA
                 if (searchTerm.length > 1) {
                     breadcrumb.style.display = 'none';
                     const results = Config.searchIndex.search(searchTerm);
-                    
                     if(results.length === 0) {
                         cont.innerHTML = `<div style="text-align:center; padding:30px; color:#94A3B8;">Nessun risultato per "${searchTerm}"</div>`;
                         return;
                     }
-                    // Filtra anche per la tendina se usata
-                    const finalResults = selectedCat 
-                        ? results.filter(r => r.item.category === selectedCat)
-                        : results;
-
+                    const finalResults = selectedCat ? results.filter(r => r.item.category === selectedCat) : results;
                     App.renderLibItemsList(cont, finalResults.map(r => r.item));
                     return;
                 }
@@ -758,20 +819,14 @@
                 if (App.state.libCategory === null && !selectedCat) {
                     breadcrumb.style.display = 'none';
                     const categories = Object.keys(Config.LIB).sort();
-                    
                     let grid = document.createElement('div');
                     grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px; padding-top:10px;";
-                    
                     categories.forEach(cat => {
                         let btn = document.createElement('div');
                         btn.style.cssText = "background:white; border:1px solid var(--border); border-radius:12px; padding:20px 10px; text-align:center; cursor:pointer; box-shadow:0 2px 4px rgba(0,0,0,0.02); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;";
                         let icon = '<i class="fas fa-folder" style="font-size:1.5rem; color:#CBD5E1;"></i>';
                         btn.innerHTML = `${icon}<div style="font-weight:700; color:var(--primary); font-size:0.9rem; word-break:break-word;">${cat}</div>`;
-                        btn.onclick = () => { 
-                            App.state.libCategory = cat; 
-                            document.getElementById('lib-category-select').value = cat; // Sync tendina
-                            App.renderLibraryItems(); 
-                        };
+                        btn.onclick = () => { App.state.libCategory = cat; document.getElementById('lib-category-select').value = cat; App.renderLibraryItems(); };
                         grid.appendChild(btn);
                     });
                     cont.appendChild(grid);
@@ -780,37 +835,24 @@
 
                 // 3. LIVELLO INTERMEDIO (Sotto-Famiglie)
                 const activeCat = selectedCat || App.state.libCategory;
-                
                 if (activeCat && App.state.libSubCategory === null) {
                     breadcrumb.style.display = 'block';
                     document.getElementById('lib-bc-cat').innerText = activeCat;
                     document.getElementById('lib-bc-sub').innerText = '';
-
-                    // Pulsante Indietro
                     let backBtn = document.createElement('div');
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
-                    backBtn.onclick = () => { 
-                        App.state.libCategory = null; 
-                        document.getElementById('lib-category-select').value = ""; 
-                        App.renderLibraryItems(); 
-                    };
+                    backBtn.onclick = () => { App.state.libCategory = null; document.getElementById('lib-category-select').value = ""; App.renderLibraryItems(); };
                     cont.appendChild(backBtn);
-
                     const allItemsInCat = Config.LIB[activeCat];
                     const subCats = [...new Set(allItemsInCat.map(i => i.sub_category))].sort();
-
                     let grid = document.createElement('div');
                     grid.style.cssText = "display:grid; grid-template-columns: 1fr 1fr; gap:12px;";
-
                     subCats.forEach(sub => {
                         let btn = document.createElement('div');
                         btn.style.cssText = "background:#F8FAFC; border:1px solid var(--border); border-radius:12px; padding:15px 10px; text-align:center; cursor:pointer; font-weight:600; color:var(--text-main);";
                         btn.innerText = sub;
-                        btn.onclick = () => { 
-                            App.state.libSubCategory = sub; 
-                            App.renderLibraryItems(); 
-                        };
+                        btn.onclick = () => { App.state.libSubCategory = sub; App.renderLibraryItems(); };
                         grid.appendChild(btn);
                     });
                     cont.appendChild(grid);
@@ -822,20 +864,17 @@
                     breadcrumb.style.display = 'block';
                     document.getElementById('lib-bc-cat').innerText = activeCat;
                     document.getElementById('lib-bc-sub').innerText = App.state.libSubCategory;
-
                     let backBtn = document.createElement('div');
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Indietro`;
                     backBtn.style.cssText = "padding:10px; color:var(--primary); font-weight:700; cursor:pointer; margin-bottom:10px; display:inline-block;";
                     backBtn.onclick = () => { App.state.libSubCategory = null; App.renderLibraryItems(); };
                     cont.appendChild(backBtn);
-
                     const finalItems = Config.LIB[activeCat].filter(i => i.sub_category === App.state.libSubCategory);
                     App.renderLibItemsList(cont, finalItems);
                 }
             },
 
             renderLibItemsList(container, items) {
-                // NESSUN LIMITE DI VISUALIZZAZIONE
                 items.forEach(it => { 
                     const dynamicPrice = App.calculateItemPrice(it);
                     let div = document.createElement('div'); div.className = 'card-item'; div.style.marginBottom = "8px"; 
@@ -856,20 +895,16 @@
                     `; 
                     
                     div.onclick = () => { 
-                        // CONTROLLA SE LA STANZA È STATA CONFERMATA
-                        let roomName = document.getElementById('input-room-name').value.trim();
-                        let roomDet = document.getElementById('input-room-details').value.trim();
-                        
-                        // Controllo Visivo: se il box non è "verde" (confermato), avvisa l'utente
+                        // CONTROLLO STANZA
+                        const roomDisplay = document.getElementById('room-display-final');
                         const isConfirmed = document.getElementById('room-selector-widget').style.borderColor === "var(--success)";
                         
-                        if(!roomName || !isConfirmed) {
+                        if(!isConfirmed) {
                             App.toggleRoomEdit(true);
                             return alert("Per favore, seleziona e CONFERMA una stanza prima di aggiungere articoli!");
                         }
 
-                        let finalPieceName = roomName;
-                        if(roomDet) finalPieceName += ` (${roomDet})`;
+                        const finalPieceName = roomDisplay.innerText;
 
                         const ch = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId); 
                         const dv = ch.devisList.find(x => x.id == Store.data.activeDevisId); 
@@ -887,6 +922,10 @@
                         
                         dv.items.push(newItem); 
                         Store.save(); 
+                        
+                        // AGGIORNA I BOTTONI STANZA (Così appare subito in alto)
+                        App.renderUsedRoomButtons();
+                        
                         App.showToast("Ajouté: " + it.desc); 
                         App.calcTotals(); 
                         App.renderEditorItems(); 
@@ -962,60 +1001,6 @@
                 App.showToast("PDF Téléchargé");
             },
 
-            openSelectCDCModal() {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const s = document.getElementById('sel-source-devis'); s.innerHTML='';
-                if(!c.devisList || c.devisList.length===0) return alert("Aucun devis disponible");
-                c.devisList.forEach(d => { s.innerHTML += `<option value="${d.id}">${d.name}</option>`; });
-                
-                const sa = document.getElementById('cdc-assignee'); sa.innerHTML = '<option value="">Choisir un partenaire...</option>';
-                if(Store.data.partners) Store.data.partners.forEach(p => sa.innerHTML += `<option value="${p.name}">${p.name} (${p.role})</option>`);
-
-                App.state.selectedItems.clear(); document.getElementById('modal-select-cdc').classList.add('open'); this.renderSelectionList();
-            },
-            renderSelectionList() {
-                const cid = Store.data.activeChantierId; const did = document.getElementById('sel-source-devis').value;
-                const c = Store.data.chantiers.find(x=>x.id==cid); const d = c.devisList.find(x=>x.id==did);
-                const con = document.getElementById('selection-list-container'); con.innerHTML = '';
-                d.items.forEach(i => {
-                    const isChecked = App.state.selectedItems.has(i.id) ? 'checked' : '';
-                    const assignedHtml = i.assignedTo ? `<span class="assigned-badge"><i class="fas fa-user"></i> ${i.assignedTo}</span>` : '';
-                    const row = document.createElement('div'); row.className = 'check-container';
-                    row.onclick = () => { if(App.state.selectedItems.has(i.id)) App.state.selectedItems.delete(i.id); else App.state.selectedItems.add(i.id); App.renderSelectionList(); };
-                    row.innerHTML = `<div class="custom-checkbox ${isChecked}"></div><div style="flex:1;"><div style="font-weight:700; color:var(--primary); font-size:0.95rem;">${i.desc} ${assignedHtml}</div></div>`;
-                    con.appendChild(row);
-                });
-            },
-            selectAllItems() {
-                const cid = Store.data.activeChantierId; const did = document.getElementById('sel-source-devis').value;
-                const c = Store.data.chantiers.find(x=>x.id==cid); const d = c.devisList.find(x=>x.id==did);
-                if(App.state.selectedItems.size === d.items.length) App.state.selectedItems.clear(); else d.items.forEach(i => App.state.selectedItems.add(i.id));
-                this.renderSelectionList();
-            },
-            saveCDC() {
-                if(App.state.selectedItems.size === 0) return alert("Sélectionnez au moins un ouvrage.");
-                const cid = Store.data.activeChantierId; const did = document.getElementById('sel-source-devis').value;
-                const c = Store.data.chantiers.find(x=>x.id==cid); const d = c.devisList.find(x=>x.id==did); 
-                const itemsToPrint = d.items.filter(i => App.state.selectedItems.has(i.id));
-                const newDoc = { id: Date.now(), ref: "CDC-"+Date.now().toString().slice(-4), name: "Cahier Charges", type: 'Etude', items: itemsToPrint };
-                if(!c.extraDocs) c.extraDocs = []; c.extraDocs.push(newDoc); Store.save();
-                App.closeModal('modal-select-cdc'); App.openHub(c.id); App.showToast("Enregistré dans le dossier");
-            },
-            generateCDCPDF(docId) {
-                const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
-                const doc = c.extraDocs.find(x=>x.id==docId);
-                const cli = Store.data.clients.find(x=>x.id==c.clientId);
-                let totalTime = 0;
-                let rows = doc.items.map(i => { 
-                    const rowTime = (i.time || 0) * i.qty; totalTime += rowTime;
-                    const assigned = i.assignedTo ? `<br><span style="font-size:0.7em; color:#15803d; font-weight:bold;">Assigné: ${i.assignedTo}</span>` : '';
-                    return `<tr style="border-bottom:1px solid #eee;"><td style="padding:10px;">${i.desc} ${assigned}</td><td style="padding:10px;">${i.piece || '-'}</td><td style="padding:10px; text-align:center;">${i.qty}</td><td style="padding:10px; text-align:center;">${i.unit}</td><td style="padding:10px; text-align:right;">${i.time || 0} h</td><td style="padding:10px; text-align:right; font-weight:bold;">${rowTime.toFixed(1)} h</td></tr>`; 
-                }).join('');
-                const html = `<div style="font-family:sans-serif; padding:20px; color:#1e293b;"><h2 style="color:#0f172a; margin-bottom:5px;">CAHIER DES CHARGES</h2><div style="font-size:0.9rem; color:#64748b; margin-bottom:20px;">${doc.ref} - Document Technique</div><div style="display:flex; justify-content:space-between; margin-bottom:30px; background:#f8fafc; padding:15px; border-radius:8px;"><div><strong>Chantier:</strong> ${c.name}<br><strong>Client:</strong> ${cli ? cli.nom : '-'}<br><strong>Date:</strong> ${new Date().toLocaleDateString()}</div><div style="text-align:right;"><strong>Estimation Temps Total:</strong><br><span style="font-size:1.4rem; font-weight:800; color:#3B82F6;">${totalTime.toFixed(1)} Heures</span></div></div><table style="width:100%; border-collapse:collapse; font-size:0.9rem;"><thead style="background:#0f172a; color:white;"><tr><th style="padding:10px; text-align:left;">Description</th><th style="padding:10px; text-align:left;">Loc.</th><th style="padding:10px; text-align:center;">Qté</th><th style="padding:10px; text-align:center;">Unit.</th><th style="padding:10px; text-align:right;">T. Unit</th><th style="padding:10px; text-align:right;">T. Total</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-                const element = document.createElement('div'); element.innerHTML = html; document.body.appendChild(element);
-                const opt = { margin: 10, filename: `CDC_${doc.ref}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-                html2pdf().set(opt).from(element).save().then(() => { document.body.removeChild(element); App.showToast("CDC Généré"); });
-            },
             assignCollaborator() {
                 if(App.state.selectedItems.size === 0) return alert("Sélectionnez des articles.");
                 const name = document.getElementById('cdc-assignee').value;
