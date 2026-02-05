@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.8 - GRAVATS & MATERIAL MANAGER</title>
+    <title>QOTIA CLOUD V7.9 - PRO CALC</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,8 +26,8 @@
             --danger: #EF4444; 
             --success: #15803d;
             --time: #3B82F6;
-            --rubble: #78716c; /* Stone color for Gravats */
-            --material: #7c3aed; /* Purple for Material Cost */
+            --rubble: #78716c; 
+            --material: #7c3aed; 
             
             --h-header: 65px;
             --h-nav: 90px;
@@ -73,13 +73,6 @@
         .kpi-box { flex: 1; background: #F8FAFC; padding: 8px; border-radius: 8px; text-align: center; border: 1px solid #E2E8F0; }
         .kpi-label { font-size: 0.65rem; color: #64748B; font-weight: 700; text-transform: uppercase; }
         .kpi-val { font-size: 1.1rem; font-weight: 800; }
-        .view-toggle { display: flex; padding: 10px 20px; gap: 10px; background: white; }
-        .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; background: #F1F5F9; color: #64748B; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-        .toggle-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(15,23,42,0.2); }
-
-        .piece-section { margin-bottom: 20px; }
-        .piece-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 5px; cursor: pointer; background: #E2E8F0; border-radius: 8px; margin-bottom: 10px; padding: 10px; color: var(--primary); }
-        .piece-title { font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
         
         .e-card { background: white; margin: 0 0 10px 0; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 3px solid var(--primary); box-shadow: var(--shadow-card); }
         .e-card-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
@@ -106,15 +99,12 @@
         .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .big-btn { height: 95px; border-radius: 18px; border: 1px solid white; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); background: white; color: var(--text-main); }
         .big-btn span { font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; margin-top: 5px; }
-        .btn-chantier i { color: #D97706; font-size: 1.8rem; margin-bottom: 5px; }
-        .btn-client i { color: #2563EB; font-size: 1.8rem; margin-bottom: 5px; }
-
+        
         .hub-header-card { background: white; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
         .section-separator { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #E2E8F0; }
         .section-title { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
         .action-create-btn { background: white; color: var(--primary); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer; }
 
-        /* CHECKBOXES & LISTS FOR CDC */
         .check-container { display: flex; align-items: center; padding: 12px; background: white; border-bottom: 1px solid #F1F5F9; cursor: pointer; }
         .custom-checkbox { width: 24px; height: 24px; border: 2px solid var(--border); border-radius: 6px; margin-right: 15px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
         .custom-checkbox.checked { background: var(--primary); border-color: var(--primary); }
@@ -139,13 +129,19 @@
         .app-input { width: 100%; height: 50px; background: #fff; border: 2px solid #E2E8F0; border-radius: 12px; padding: 0 15px; font-size: 1rem; color: var(--primary); margin-bottom: 15px; outline: none; font-weight: 500; appearance: none; }
         .btn-primary { width: 100%; height: 50px; background: var(--primary); color: white; font-weight: 700; border-radius: 12px; border: none; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3); }
 
+        .piece-section { margin-bottom: 20px; }
+        .piece-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 5px; cursor: pointer; background: #E2E8F0; border-radius: 8px; margin-bottom: 10px; padding: 10px; color: var(--primary); }
+        .piece-title { font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        .view-toggle { display: flex; padding: 10px 20px; gap: 10px; background: white; }
+        .toggle-btn { flex: 1; padding: 10px; border-radius: 8px; border: none; background: #F1F5F9; color: #64748B; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .toggle-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 5px rgba(15,23,42,0.2); }
+
         .type-switch { display: flex; background: #E2E8F0; padding: 5px; border-radius: 14px; margin-bottom: 20px; }
         .type-option { flex: 1; text-align: center; padding: 12px; font-weight: 700; font-size: 0.95rem; color: #64748B; border-radius: 10px; cursor: pointer; }
         .type-option.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
         #modal-client { z-index: 6000 !important; }
         #modal-projet { z-index: 5000; }
-        /* Aumentiamo z-index per stare SOPRA la libreria */
         #modal-edit-item { z-index: 7000 !important; }
 
         #toast-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); z-index: 9000; pointer-events: none; width: 85%; }
@@ -427,7 +423,7 @@
             <div style="display:flex; gap:15px;">
                 <div style="flex:1">
                     <label style="font-weight:700; display:block; margin-bottom:8px;">Qté</label>
-                    <input type="number" id="edit-item-qty" class="app-input">
+                    <input type="number" id="edit-item-qty" class="app-input" oninput="App.calcEditPrice()">
                 </div>
                 <div style="flex:1">
                     <label style="font-weight:700; display:block; margin-bottom:8px;">Unit.</label>
@@ -438,7 +434,7 @@
             <div style="background:#F1F5F9; padding:12px; border-radius:12px; margin-bottom:15px; border:1px dashed var(--border);">
                  <div style="font-size:0.75rem; font-weight:700; color:var(--text-sub); text-transform:uppercase; margin-bottom:5px;">Composition du Prix</div>
                  
-                 <div style="display:flex; gap:10px;">
+                 <div style="display:flex; gap:10px; margin-bottom:10px;">
                     <div style="flex:1">
                         <label style="font-size:0.8rem; font-weight:700; color:#3B82F6;">Temps U. (h)</label>
                         <input type="number" id="edit-item-time" class="app-input" step="0.1" style="border-color:#3B82F6; color:#3B82F6;" oninput="App.calcEditPrice()">
@@ -448,10 +444,19 @@
                         <input type="number" id="edit-item-mat" class="app-input" step="0.01" style="border-color:var(--material); color:var(--material);" oninput="App.calcEditPrice()">
                     </div>
                  </div>
+                 
+                 <div style="text-align:center; font-size:0.85rem; color:#475569; font-weight:600;" id="edit-item-split-display">
+                     Manodopera: 0€ + Materiale: 0€
+                 </div>
             </div>
 
             <label style="font-weight:700; display:block; margin-bottom:8px;">Prix U. (Calculé)</label>
-            <input type="number" id="edit-item-price" class="app-input" step="0.01" style="font-weight:800;">
+            <input type="number" id="edit-item-price" class="app-input" step="0.01" style="font-weight:800;" readonly>
+            
+            <div style="background:#ecfccb; padding:15px; border-radius:12px; margin-bottom:20px; text-align:center; border:2px solid #84cc16;">
+                <div style="font-size:0.7rem; color:#365314; font-weight:700; text-transform:uppercase;">(P.U. x Qté) = TOTALE RIGA</div>
+                <div id="edit-item-total-row" style="font-size:1.8rem; font-weight:900; color:#365314;">0.00 €</div>
+            </div>
             
             <label style="font-weight:700; display:block; margin-bottom:8px; color:var(--rubble);">Gravats U. (m3)</label>
             <input type="number" id="edit-item-rubble" class="app-input" step="0.01" style="border-color:var(--border); color:var(--rubble); font-weight:700;">
@@ -1147,6 +1152,9 @@
                 sel.appendChild(o);
                 
                 document.getElementById('modal-edit-item').classList.add('open');
+                
+                // Trigger calc initial
+                App.calcEditPrice();
             },
 
             editDevisItem(id) {
@@ -1172,17 +1180,32 @@
                 const sel = document.getElementById('edit-item-piece'); sel.innerHTML = ''; 
                 rooms.forEach(r => { const isSel = r === item.piece ? 'selected' : ''; sel.innerHTML += `<option value="${r}" ${isSel}>${r}</option>`; });
                 document.getElementById('modal-edit-item').classList.add('open');
+                
+                // Trigger calc initial
+                App.calcEditPrice();
             },
 
             // CALCULATION LOGIC IN MODAL
             calcEditPrice() {
+                const qty = parseFloat(document.getElementById('edit-item-qty').value) || 0;
                 const t = parseFloat(document.getElementById('edit-item-time').value) || 0;
                 const m = parseFloat(document.getElementById('edit-item-mat').value) || 0;
                 const rate = Store.data.settings.hourlyRate || 45;
                 
-                // FORMULA: (Time * Rate) + Material
-                const final = (t * rate) + m;
-                document.getElementById('edit-item-price').value = final.toFixed(2);
+                // COST BREAKDOWN
+                const laborCost = t * rate;
+                
+                // UPDATE BREAKDOWN DISPLAY
+                document.getElementById('edit-item-split-display').innerText = 
+                    `Manodopera: ${laborCost.toFixed(2)}€ + Materiale: ${m.toFixed(2)}€`;
+
+                // UNIT PRICE FORMULA: (Time * Rate) + Material
+                const unitPrice = laborCost + m;
+                document.getElementById('edit-item-price').value = unitPrice.toFixed(2);
+                
+                // TOTAL ROW CALCULATION
+                const totalRow = unitPrice * qty;
+                document.getElementById('edit-item-total-row').innerText = totalRow.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €';
             },
 
             saveItemChanges() { 
@@ -1349,6 +1372,7 @@
             generateGlobalPDF(type, id) {
                 const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId);
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
+                const rate = Store.data.settings.hourlyRate || 45;
                 let items, title, ref, extraInfo = "";
                 
                 if (type === 'devis') {
@@ -1359,16 +1383,62 @@
                     }
                 } else {
                     const obj = c.factures.find(x=>x.id==id);
-                    title = "FACTURE"; ref = obj.ref; items = [{desc: `Facture selon avancement (${obj.type})`, qty: 1, unit:'U', price: obj.amount}];
+                    title = "FACTURE"; ref = obj.ref; items = [{desc: `Facture selon avancement (${obj.type})`, qty: 1, unit:'U', price: obj.amount, time:0, material_cost:0}];
                 }
                 
                 let totalTTC = 0;
                 let rows = items.map(i => {
                     const rowT = i.qty * i.price; totalTTC += rowT;
-                    return `<tr style="border-bottom:1px solid #eee;"><td style="padding:10px;">${i.desc}</td><td style="padding:10px; text-align:center;">${i.qty}</td><td style="padding:10px; text-align:center;">${i.unit||'U'}</td><td style="padding:10px; text-align:right;">${i.price.toFixed(2)}€</td><td style="padding:10px; text-align:right; font-weight:bold;">${rowT.toFixed(2)}€</td></tr>`;
+                    
+                    // Calc single costs
+                    const costLabor = (i.time || 0) * rate;
+                    const costMat = (i.material_cost || 0);
+
+                    return `
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:10px;">${i.desc}</td>
+                            <td style="padding:10px; text-align:center;">${i.qty}</td>
+                            <td style="padding:10px; text-align:center; font-size:0.85rem; color:#64748b;">${costLabor > 0 ? costLabor.toFixed(2)+'€' : '-'}</td>
+                            <td style="padding:10px; text-align:center; font-size:0.85rem; color:#64748b;">${costMat > 0 ? costMat.toFixed(2)+'€' : '-'}</td>
+                            <td style="padding:10px; text-align:right;">${i.price.toFixed(2)}€</td>
+                            <td style="padding:10px; text-align:right; font-weight:bold;">${rowT.toFixed(2)}€</td>
+                        </tr>`;
                 }).join('');
                 
-                const html = `<div style="font-family:sans-serif; padding:30px; color:#334155;"><div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:40px;"><div><h1 style="color:#0f172a; margin:0;">${title}</h1><div style="color:#64748b; font-size:0.9rem;">${ref}</div></div><div style="text-align:right;"><strong>QOTIA ENTREPRISE</strong><br>123 Rue Exemple<br>06000 NICE</div></div><div style="background:#f1f5f9; padding:20px; border-radius:10px; margin-bottom:30px;"><strong>CLIENT:</strong><br><span style="font-size:1.2rem; font-weight:bold; color:#0f172a;">${cli.nom}</span><br>${cli.addr}<br>${cli.tel||''}</div><table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:30px;"><thead style="background:#0f172a; color:white;"><tr><th style="padding:12px; text-align:left;">Description</th><th style="padding:12px; text-align:center;">Qté</th><th style="padding:12px; text-align:center;">Unit</th><th style="padding:12px; text-align:right;">P.U.</th><th style="padding:12px; text-align:right;">Total</th></tr></thead><tbody>${rows}</tbody></table><div style="text-align:right; margin-bottom:50px;"><div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${totalTTC.toLocaleString()} €</div>${extraInfo}</div></div></div>`;
+                const html = `
+                    <div style="font-family:sans-serif; padding:30px; color:#334155;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:40px;">
+                            <div>
+                                <h1 style="color:#0f172a; margin:0;">${title}</h1>
+                                <div style="color:#64748b; font-size:0.9rem;">${ref}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <strong>QOTIA ENTREPRISE</strong><br>123 Rue Exemple<br>06000 NICE
+                            </div>
+                        </div>
+                        <div style="background:#f1f5f9; padding:20px; border-radius:10px; margin-bottom:30px;">
+                            <strong>CLIENT:</strong><br>
+                            <span style="font-size:1.2rem; font-weight:bold; color:#0f172a;">${cli.nom}</span><br>
+                            ${cli.addr}<br>${cli.tel||''}
+                        </div>
+                        <table style="width:100%; border-collapse:collapse; font-size:0.9rem; margin-bottom:30px;">
+                            <thead style="background:#0f172a; color:white;">
+                                <tr>
+                                    <th style="padding:12px; text-align:left;">Description</th>
+                                    <th style="padding:12px; text-align:center;">Qté</th>
+                                    <th style="padding:12px; text-align:center;">M.O. (U)</th>
+                                    <th style="padding:12px; text-align:center;">Mat. (U)</th>
+                                    <th style="padding:12px; text-align:right;">P.U.</th>
+                                    <th style="padding:12px; text-align:right;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                        <div style="text-align:right; margin-bottom:50px;">
+                            <div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${totalTTC.toLocaleString()} €</div>
+                            ${extraInfo}
+                        </div>
+                    </div>`;
                 const opt = { margin: 10, filename: `${title}_${ref}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
                 html2pdf().set(opt).from(html).save();
                 App.showToast("PDF Téléchargé");
