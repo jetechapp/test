@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.13 - PDF PERFECT</title>
+    <title>QOTIA CLOUD V7.14 - UI UPDATE</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -212,7 +212,7 @@
                 <div id="hub-devis-list"></div>
                 
                 <div class="section-separator">
-                    <span class="section-title">Opérations</span>
+                    <span class="section-title">Cahier des Charges</span>
                     <div style="display:flex; gap:5px;">
                         <button class="action-create-btn" onclick="App.generateRoomReportPDF()" style="border-color: #3B82F6; color: #3B82F6;"><i class="fas fa-map-marked-alt"></i> Zones PDF</button>
                         <button class="action-create-btn" onclick="App.openSelectCDCModal()"><i class="fas fa-tasks"></i> Gérer</button>
@@ -230,7 +230,7 @@
         <div class="editor-header-musk">
             <div style="padding:10px 20px 0 20px; display:flex; justify-content:space-between; align-items:center;">
                 <button class="header-back-container" onclick="App.backToHub()"><i class="fas fa-chevron-left"></i> Retour</button>
-                <div style="font-weight:900; color:var(--primary);">ÉDITEUR</div>
+                <div style="font-weight:900; color:var(--primary);">RÉDACTION DEVIS</div>
                 <button onclick="App.generateGlobalPDF('devis', Store.data.activeDevisId)" style="border:none; background:none; color:#DC2626; font-size:1.3rem; cursor:pointer;"><i class="fas fa-file-pdf"></i></button>
             </div>
             <div style="padding: 10px 20px;">
@@ -270,7 +270,7 @@
     </main>
 
     <main id="view-projets" class="view-section">
-        <header class="mobile-header"><div class="logo-text">CHANTIERS</div><button class="header-action-btn" onclick="App.openProjectWizard()">+</button></header>
+        <header class="mobile-header"><div class="logo-text">LISTE CHANTIERS</div><button class="header-action-btn" onclick="App.openProjectWizard()">+</button></header>
         <div class="scroll-content" id="projects-list-full"></div>
     </main>
 
@@ -337,89 +337,80 @@
 
     <div id="modal-library" class="full-modal">
         <div class="modal-header"><h3>Bibliothèque</h3><button class="header-back-container" onclick="App.closeModal('modal-library')">×</button></div>
-        <div class="modal-body">
+        <div class="modal-body" style="padding-top: 0;">
             
-            <div style="position:sticky; top:0; background:#F8FAFC; z-index:10; padding-bottom:5px;">
-                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Rechercher..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-            </div>
-
-            <div id="room-selector-widget" style="background:#FFF; border:2px dashed var(--border); border-radius:12px; margin-bottom:15px; overflow:hidden; transition:all 0.3s;">
+            <div style="position:sticky; top:0; z-index:50; background:#F8FAFC; padding-top:20px; padding-bottom:10px; border-bottom:1px solid #E2E8F0; margin-bottom:15px;">
                 
-                <div id="room-view-mode" style="padding:15px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-                        <div>
-                            <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); text-transform:uppercase;">Pièce Cible</div>
-                            <div id="room-display-final" style="font-size:1.1rem; font-weight:800; color:var(--primary);">Sélectionner...</div>
-                            <div id="room-details-final" style="font-size:0.8rem; color:var(--accent); font-weight:600;"></div>
-                        </div>
-                        <div style="display:flex; gap:10px;">
-                            <div id="btn-delete-room" onclick="App.deleteRoom()" style="display:none; width:40px; height:40px; background:#FEE2E2; color:#DC2626; border-radius:50%; align-items:center; justify-content:center; cursor:pointer;">
-                                <i class="fas fa-trash"></i>
+                <input type="text" id="lib-search" class="app-input" placeholder="🔍 Rechercher..." onkeyup="App.renderLibraryItems()" style="box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 10px;">
+
+                <div id="room-selector-widget" style="background:#FFF; border:2px dashed var(--border); border-radius:12px; margin-bottom:10px; overflow:hidden; transition:all 0.3s;">
+                    <div id="room-view-mode" style="padding:15px;">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                            <div>
+                                <div style="font-size:0.7rem; font-weight:700; color:var(--text-sub); text-transform:uppercase;">Pièce Cible</div>
+                                <div id="room-display-final" style="font-size:1.1rem; font-weight:800; color:var(--primary);">Sélectionner...</div>
+                                <div id="room-details-final" style="font-size:0.8rem; color:var(--accent); font-weight:600;"></div>
                             </div>
-                            <div onclick="App.toggleRoomEdit(true)" style="width:40px; height:40px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer;">
-                                <i class="fas fa-plus"></i>
+                            <div style="display:flex; gap:10px;">
+                                <div id="btn-delete-room" onclick="App.deleteRoom()" style="display:none; width:40px; height:40px; background:#FEE2E2; color:#DC2626; border-radius:50%; align-items:center; justify-content:center; cursor:pointer;">
+                                    <i class="fas fa-trash"></i>
+                                </div>
+                                <div onclick="App.toggleRoomEdit(true)" style="width:40px; height:40px; background:var(--primary); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.2); cursor:pointer;">
+                                    <i class="fas fa-plus"></i>
+                                </div>
                             </div>
                         </div>
+                        <div id="room-used-buttons" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
                     </div>
-                    
-                    <div id="room-used-buttons" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+
+                    <div id="room-edit-mode" style="display:none; padding:15px; background:#F1F5F9; border-top:1px solid var(--border);">
+                        <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Nouvelle Pièce:</label>
+                        <select id="room-select-standard" class="app-input" onchange="App.onRoomSelectChange()">
+                            <option value="">-- Choisir --</option>
+                            <option value="Cuisine">Cuisine</option>
+                            <option value="Salon">Salon</option>
+                            <option value="SDB">SDB</option>
+                            <option value="Chambre">Chambre</option>
+                            <option value="Entrée">Entrée</option>
+                            <option value="Couloir">Couloir</option>
+                            <option value="WC">WC</option>
+                            <option value="Extérieur">Extérieur</option>
+                            <option value="Cave">Cave</option>
+                            <option value="Garage">Garage</option>
+                            <option value="Autre">Autre (Personnalisé)</option>
+                        </select>
+                        <input type="text" id="input-room-name" class="app-input" style="display:none; margin-top:10px;" placeholder="Nom de la pièce...">
+                        <label style="font-size:0.7rem; font-weight:700; margin-top:10px; display:block;">Dimensions</label>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+                            <input type="number" id="room-dim-l" class="app-input" placeholder="L (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
+                            <input type="number" id="room-dim-w" class="app-input" placeholder="l (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
+                            <input type="number" id="room-dim-h" class="app-input" placeholder="H (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
+                        </div>
+                        <div style="display:flex; gap:10px; margin-bottom:10px;">
+                            <div style="flex:1; background:white; border:1px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
+                                <div style="font-size:0.65rem; color:#64748B; font-weight:700; text-transform:uppercase;">Sol (m²)</div>
+                                <div id="room-calc-sol" style="font-weight:800; color:var(--primary);">0</div>
+                            </div>
+                            <div style="flex:1; background:white; border:1px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
+                                <div style="font-size:0.65rem; color:#64748B; font-weight:700; text-transform:uppercase;">Murs (m²)</div>
+                                <div id="room-calc-murs" style="font-weight:800; color:var(--accent);">0</div>
+                            </div>
+                        </div>
+                        <label style="font-size:0.7rem; font-weight:700; margin-top:5px; display:block;">Détails (Option)</label>
+                        <input type="text" id="input-room-details" class="app-input" style="margin-bottom:0;" placeholder="Es. Mur Nord, 1er Etage...">
+                        <button class="btn-primary" style="margin-top:15px; height:45px;" onclick="App.confirmRoom()">CONFIRMER</button>
+                    </div>
                 </div>
 
-                <div id="room-edit-mode" style="display:none; padding:15px; background:#F1F5F9; border-top:1px solid var(--border);">
-                    <label style="font-size:0.8rem; font-weight:700; color:var(--text-sub);">Nouvelle Pièce:</label>
-                    
-                    <select id="room-select-standard" class="app-input" onchange="App.onRoomSelectChange()">
-                        <option value="">-- Choisir --</option>
-                        <option value="Cuisine">Cuisine</option>
-                        <option value="Salon">Salon</option>
-                        <option value="SDB">SDB</option>
-                        <option value="Chambre">Chambre</option>
-                        <option value="Entrée">Entrée</option>
-                        <option value="Couloir">Couloir</option>
-                        <option value="WC">WC</option>
-                        <option value="Extérieur">Extérieur</option>
-                        <option value="Cave">Cave</option>
-                        <option value="Garage">Garage</option>
-                        <option value="Autre">Autre (Personnalisé)</option>
-                    </select>
-
-                    <input type="text" id="input-room-name" class="app-input" style="display:none; margin-top:10px;" placeholder="Nom de la pièce...">
-                    
-                    <label style="font-size:0.7rem; font-weight:700; margin-top:10px; display:block;">Dimensions</label>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
-                        <input type="number" id="room-dim-l" class="app-input" placeholder="L (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
-                        <input type="number" id="room-dim-w" class="app-input" placeholder="l (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
-                        <input type="number" id="room-dim-h" class="app-input" placeholder="H (m)" step="0.01" oninput="App.calcRoomArea()" style="margin:0;">
-                    </div>
-                    
-                    <div style="display:flex; gap:10px; margin-bottom:10px;">
-                        <div style="flex:1; background:white; border:1px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
-                            <div style="font-size:0.65rem; color:#64748B; font-weight:700; text-transform:uppercase;">Sol (m²)</div>
-                            <div id="room-calc-sol" style="font-weight:800; color:var(--primary);">0</div>
-                        </div>
-                        <div style="flex:1; background:white; border:1px solid var(--border); border-radius:8px; padding:8px; text-align:center;">
-                            <div style="font-size:0.65rem; color:#64748B; font-weight:700; text-transform:uppercase;">Murs (m²)</div>
-                            <div id="room-calc-murs" style="font-weight:800; color:var(--accent);">0</div>
-                        </div>
-                    </div>
-                    
-                    <label style="font-size:0.7rem; font-weight:700; margin-top:5px; display:block;">Détails (Option)</label>
-                    <input type="text" id="input-room-details" class="app-input" style="margin-bottom:0;" placeholder="Es. Mur Nord, 1er Etage...">
-                    
-                    <button class="btn-primary" style="margin-top:15px; height:45px;" onclick="App.confirmRoom()">CONFIRMER</button>
+                <div id="lib-breadcrumb" style="display:none; font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
+                    <span id="lib-bc-cat"></span> <i class="fas fa-chevron-right" style="font-size:0.7em;"></i> <span id="lib-bc-sub" style="color:var(--primary);"></span>
                 </div>
-            </div>
-
-            <div id="lib-breadcrumb" style="display:none; font-size:0.8rem; font-weight:700; color:var(--text-sub); margin-bottom:10px;">
-                <span id="lib-bc-cat"></span> <i class="fas fa-chevron-right" style="font-size:0.7em;"></i> <span id="lib-bc-sub" style="color:var(--primary);"></span>
-            </div>
-            
-            <div style="margin-bottom:10px;">
-                 <select id="lib-category-select" class="app-input" onchange="App.renderLibraryItems()" style="font-weight:700; color:var(--primary); height:40px;">
+                
+                <select id="lib-category-select" class="app-input" onchange="App.renderLibraryItems()" style="font-weight:700; color:var(--primary); height:40px; margin-bottom:0;">
                     <option value="">-- Toutes Familles --</option>
                 </select>
-            </div>
 
+            </div>
             <div id="lib-container"></div>
         </div>
     </div>
