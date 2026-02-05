@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.9 - PRO CALC</title>
+    <title>QOTIA CLOUD V7.10 - FULL VISIBILITY</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -76,12 +76,12 @@
         
         .e-card { background: white; margin: 0 0 10px 0; padding: 15px; border-radius: 12px; border: 1px solid var(--border); border-left: 3px solid var(--primary); box-shadow: var(--shadow-card); }
         .e-card-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-        .e-desc { font-weight: 700; color: var(--text-main); font-size: 0.95rem; width: 70%; line-height: 1.4; }
+        .e-desc { font-weight: 700; color: var(--text-main); font-size: 0.95rem; width: 65%; line-height: 1.4; }
         .e-loc-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; color: #64748B; background: #F1F5F9; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
-        .e-stats { display: flex; gap: 10px; border-top: 1px solid #F1F5F9; padding-top: 10px; }
+        .e-stats { display: flex; gap: 10px; border-top: 1px solid #F1F5F9; padding-top: 8px; margin-top: 8px; }
         .stat-box { flex: 1; text-align: center; }
         .stat-lbl { font-size: 0.65rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; margin-bottom: 2px; }
-        .stat-val { font-size: 0.9rem; font-weight: 700; color: var(--primary); }
+        .stat-val { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
         .stat-val.time { color: var(--time); }
         
         .floating-fab { position: fixed; bottom: 110px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: var(--primary); color: white; font-size: 1.6rem; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 100; cursor: pointer; transition: transform 0.1s; }
@@ -226,6 +226,7 @@
             <div style="padding:10px 20px 0 20px; display:flex; justify-content:space-between; align-items:center;">
                 <button class="header-back-container" onclick="App.backToHub()"><i class="fas fa-chevron-left"></i> Retour</button>
                 <div style="font-weight:900; color:var(--primary);">ÉDITEUR</div>
+                <button onclick="App.generateGlobalPDF('devis', Store.data.activeDevisId)" style="border:none; background:none; color:#DC2626; font-size:1.3rem; cursor:pointer;"><i class="fas fa-file-pdf"></i></button>
             </div>
             <div style="padding: 10px 20px;">
                 <div class="client-badge" id="ed-client-name">-</div>
@@ -793,6 +794,8 @@
                 const l = document.getElementById('editor-list-container'); l.innerHTML=''; 
                 if(d.items.length === 0) { l.innerHTML = '<div style="text-align:center; padding:40px; color:#94A3B8;">Vide</div>'; return; }
 
+                const rate = Store.data.settings.hourlyRate || 45;
+
                 if (App.state.viewMode === 'pieces') {
                     const grouped = {};
                     d.items.forEach(i => { const p = i.piece || "Zone Générale"; if(!grouped[p]) grouped[p]=[]; grouped[p].push(i); });
@@ -800,7 +803,16 @@
                         let html = `<div class="piece-section"><div class="piece-header"><div class="piece-title"><i class="fas fa-door-open"></i> ${piece}</div><span style="font-size:0.8rem; font-weight:700;">${items.length}</span></div>`;
                         items.forEach(i => {
                             let rowP = i.qty * i.price;
-                            html += `<div class="e-card" onclick="App.editDevisItem(${i.id})"><div class="e-card-row"><div class="e-desc">${i.desc}</div><div style="font-weight:800; color:var(--primary);">${Math.round(rowP)}€</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Qté</div><div class="stat-val">${i.qty}</div></div><div class="stat-box"><div class="stat-lbl">Prix U.</div><div class="stat-val">${i.price.toFixed(2)}€</div></div><div class="stat-box"><div class="stat-lbl">Temps</div><div class="stat-val time">${i.time||0}h</div></div></div></div>`;
+                            let laborCostTotal = (i.time || 0) * rate * i.qty;
+                            let matCostTotal = (i.material_cost || 0) * i.qty;
+                            
+                            html += `<div class="e-card" onclick="App.editDevisItem(${i.id})"><div class="e-card-row"><div class="e-desc">${i.desc}</div><div style="font-weight:800; color:var(--primary);">${Math.round(rowP)}€</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Qté</div><div class="stat-val">${i.qty}</div></div><div class="stat-box"><div class="stat-lbl">Prix U.</div><div class="stat-val">${i.price.toFixed(2)}€</div></div><div class="stat-box"><div class="stat-lbl">Temps</div><div class="stat-val time">${i.time||0}h</div></div></div>
+                            <div class="e-stats" style="border-top:1px dashed #e2e8f0; margin-top:5px;">
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--time)">M.O. (€)</div><div class="stat-val" style="color:var(--time); font-size:0.8rem;">${Math.round(laborCostTotal)}€</div></div>
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--material)">Mat. (€)</div><div class="stat-val" style="color:var(--material); font-size:0.8rem;">${Math.round(matCostTotal)}€</div></div>
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--rubble)">Gravats</div><div class="stat-val" style="color:var(--rubble); font-size:0.8rem;">${(i.gravats*i.qty).toFixed(2)}</div></div>
+                            </div>
+                            </div>`;
                         });
                         l.innerHTML += html + `</div>`;
                     }
@@ -808,12 +820,22 @@
                     const aggregated = {};
                     d.items.forEach(i => {
                         const key = i.desc + "_" + i.price;
-                        if (!aggregated[key]) aggregated[key] = { desc: i.desc, price: i.price, totalQty: 0, totalTime: 0, pieces: new Set() };
-                        aggregated[key].totalQty += i.qty; aggregated[key].totalTime += (i.qty * (i.time || 0)); aggregated[key].pieces.add(i.piece || "Général");
+                        if (!aggregated[key]) aggregated[key] = { desc: i.desc, price: i.price, totalQty: 0, totalTime: 0, pieces: new Set(), totalLaborCost: 0, totalMatCost: 0 };
+                        aggregated[key].totalQty += i.qty; 
+                        aggregated[key].totalTime += (i.qty * (i.time || 0)); 
+                        aggregated[key].pieces.add(i.piece || "Général");
+                        
+                        aggregated[key].totalLaborCost += ((i.time || 0) * rate * i.qty);
+                        aggregated[key].totalMatCost += ((i.material_cost || 0) * i.qty);
                     });
                     for (const key in aggregated) {
                         const agg = aggregated[key]; const totalP = agg.totalQty * agg.price; const locs = Array.from(agg.pieces).join(", ");
-                        l.innerHTML += `<div class="e-card" style="border-left-color:var(--accent);"><div class="e-card-row"><div class="e-desc">${agg.desc}<br><span class="e-loc-tag">${locs}</span></div><div style="font-weight:800;">${Math.round(totalP)}€</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Tot Qté</div><div class="stat-val">${agg.totalQty}</div></div><div class="stat-box"><div class="stat-lbl">Tot Time</div><div class="stat-val time">${agg.totalTime.toFixed(1)}h</div></div></div></div>`;
+                        l.innerHTML += `<div class="e-card" style="border-left-color:var(--accent);"><div class="e-card-row"><div class="e-desc">${agg.desc}<br><span class="e-loc-tag">${locs}</span></div><div style="font-weight:800;">${Math.round(totalP)}€</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Tot Qté</div><div class="stat-val">${agg.totalQty}</div></div><div class="stat-box"><div class="stat-lbl">Tot Time</div><div class="stat-val time">${agg.totalTime.toFixed(1)}h</div></div></div>
+                        <div class="e-stats" style="border-top:1px dashed #e2e8f0; margin-top:5px;">
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--time)">Tot M.O.</div><div class="stat-val" style="color:var(--time); font-size:0.8rem;">${Math.round(agg.totalLaborCost)}€</div></div>
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--material)">Tot Mat.</div><div class="stat-val" style="color:var(--material); font-size:0.8rem;">${Math.round(agg.totalMatCost)}€</div></div>
+                        </div>
+                        </div>`;
                     }
                 }
             },
