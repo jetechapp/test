@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.14 - UI UPDATE</title>
+    <title>QOTIA CLOUD V7.15 - PRECISION UI</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -189,7 +189,7 @@
             <div class="section-separator" style="border:none; margin-top:0;"><div class="section-title">Aujourd'hui</div><button class="action-create-btn" onclick="App.openAgenda()">+ RDV</button></div>
             <div id="home-today-list"></div>
             <div style="margin-top:25px; background: #FEF2F2; padding:15px; border-radius:12px; border:1px solid #FECACA; display:flex; justify-content:space-between; align-items:center;" onclick="App.nav('factures-global')">
-                <div><div style="font-size:0.75rem; color:#991B1B; font-weight:700; text-transform:uppercase;">À Encaisser</div><div class="kpi-val" id="home-unpaid" style="color:#B91C1C; font-size:1.3rem; font-weight:800;">0 €</div></div>
+                <div><div style="font-size:0.75rem; color:#991B1B; font-weight:700; text-transform:uppercase;">À Encaisser</div><div class="kpi-val" id="home-unpaid" style="color:#B91C1C; font-size:1.3rem; font-weight:800;">0,00 €</div></div>
                 <i class="fas fa-chevron-right" style="color:#B91C1C"></i>
             </div>
         </div>
@@ -237,7 +237,7 @@
                 <div class="client-badge" id="ed-client-name">-</div>
                 <div class="project-title" id="ed-quote-name">-</div>
                 <div class="kpi-row">
-                    <div class="kpi-box"><div class="kpi-label">Total €</div><div class="kpi-val" id="ed-total-price" style="color:var(--primary);">0 €</div></div>
+                    <div class="kpi-box"><div class="kpi-label">Total €</div><div class="kpi-val" id="ed-total-price" style="color:var(--primary);">0,00 €</div></div>
                     <div class="kpi-box"><div class="kpi-label">Temps (H)</div><div class="kpi-val" id="ed-total-time" style="color:var(--time);">0h</div></div>
                     <div class="kpi-box"><div class="kpi-label">Gravats</div><div class="kpi-val" id="ed-total-rubble" style="color:var(--rubble);">0</div></div>
                 </div>
@@ -336,7 +336,12 @@
     </div>
 
     <div id="modal-library" class="full-modal">
-        <div class="modal-header"><h3>Bibliothèque</h3><button class="header-back-container" onclick="App.closeModal('modal-library')">×</button></div>
+        <div class="modal-header">
+            <h3>Bibliothèque</h3>
+            <button onclick="App.closeModal('modal-library')" style="background:#fee2e2; color:#ef4444; border:none; padding:8px 16px; border-radius:30px; font-weight:700; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                <i class="fas fa-times"></i> FERMER
+            </button>
+        </div>
         <div class="modal-body" style="padding-top: 0;">
             
             <div style="position:sticky; top:0; z-index:50; background:#F8FAFC; padding-top:20px; padding-bottom:10px; border-bottom:1px solid #E2E8F0; margin-bottom:15px;">
@@ -457,7 +462,7 @@
                  </div>
                  
                  <div style="text-align:center; font-size:0.85rem; color:#475569; font-weight:600;" id="edit-item-split-display">
-                     Manodopera: 0€ + Materiale: 0€
+                     Manodopera: 0,00€ + Materiale: 0,00€
                  </div>
             </div>
 
@@ -466,7 +471,7 @@
             
             <div style="background:#ecfccb; padding:15px; border-radius:12px; margin-bottom:20px; text-align:center; border:2px solid #84cc16;">
                 <div style="font-size:0.7rem; color:#365314; font-weight:700; text-transform:uppercase;">(P.U. x Qté) = TOTALE RIGA</div>
-                <div id="edit-item-total-row" style="font-size:1.8rem; font-weight:900; color:#365314;">0.00 €</div>
+                <div id="edit-item-total-row" style="font-size:1.8rem; font-weight:900; color:#365314;">0,00 €</div>
             </div>
             
             <label style="font-weight:700; display:block; margin-bottom:8px; color:var(--rubble);">Gravats U. (m3)</label>
@@ -481,7 +486,7 @@
 
     <div id="modal-projet" class="full-modal"><div class="modal-header"><h3>Nouveau Chantier</h3><button class="header-back-container" onclick="App.closeModal('modal-projet')">×</button></div><div class="modal-body"><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="prj-cli" class="app-input" style="flex:1; margin:0;"></select><button onclick="App.openClientModal()" style="width:55px; border-radius:12px; border:2px solid var(--border); background:white; font-size:1.2rem;">+</button></div><input type="text" id="prj-nom" class="app-input" placeholder="Nom Chantier"><input type="text" id="prj-addr" class="app-input" placeholder="Lieu"></div><div class="modal-footer"><button class="btn-primary" onclick="App.createProject()">CRÉER</button></div></div>
     <div id="modal-agenda" class="full-modal"><div class="modal-header"><h3>Nouveau RDV</h3><button class="header-back-container" onclick="App.closeModal('modal-agenda')">×</button></div><div class="modal-body"><select id="agd-chantier" class="app-input"></select><input type="datetime-local" id="agd-date" class="app-input"><button class="btn-primary" onclick="App.saveAgendaEvent()">ENREGISTRER</button><div style="margin-top:30px; font-weight:800;">Prochains Événements</div><div id="agenda-list-view" style="margin-top:10px;"></div></div></div>
-    <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Créer Facture</h3><button class="header-back-container" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label style="font-weight:700;">Depuis Devis:</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="background:#F1F5F9; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem; color:#64748B">Montant Devis</div><div style="font-size:1.4rem; font-weight:900;" id="inv-total-quote">0€</div></div><div style="display:flex; gap:10px; margin-bottom:15px;"><button id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Acompte %</button><button id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; margin-top:20px;"><div>Montant Facture</div><div style="font-size:2rem; font-weight:900; color:var(--primary);" id="inv-preview-amount">0€</div></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
+    <div id="modal-invoice" class="full-modal"><div class="modal-header"><h3>Créer Facture</h3><button class="header-back-container" onclick="App.closeModal('modal-invoice')">×</button></div><div class="modal-body"><label style="font-weight:700;">Depuis Devis:</label><select id="inv-devis-select" class="app-input" onchange="App.onInvoiceDevisChange()"></select><div style="background:#F1F5F9; padding:15px; border-radius:12px; text-align:center; margin-bottom:20px;"><div style="font-size:0.8rem; color:#64748B">Montant Devis</div><div style="font-size:1.4rem; font-weight:900;" id="inv-total-quote">0,00 €</div></div><div style="display:flex; gap:10px; margin-bottom:15px;"><button id="btn-acompte" onclick="App.setInvType('acompte')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Acompte %</button><button id="btn-solde" onclick="App.setInvType('solde')" style="flex:1; height:45px; border-radius:10px; border:1px solid var(--border);">Solde</button></div><input type="number" id="inv-percent" class="app-input" value="30" onchange="App.calcInvPreview()"><div style="text-align:center; margin-top:20px;"><div>Montant Facture</div><div style="font-size:2rem; font-weight:900; color:var(--primary);" id="inv-preview-amount">0,00 €</div></div></div><div class="modal-footer"><button class="btn-primary" onclick="App.generateInvoice()">CRÉER FACTURE</button></div></div>
 
     <script>
         const SUPABASE_URL = 'https://uhuxdsubvvnytuftyztq.supabase.co'; 
@@ -647,12 +652,16 @@
                 c.appendChild(t); setTimeout(()=>t.classList.add('show'),10); setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300)},3000);
             },
 
+            formatMoney(amount) {
+                return (amount || 0).toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €';
+            },
+
             renderHome() {
                 document.getElementById('home-date-display').innerText = new Date().toLocaleDateString('fr-FR');
                 const l = document.getElementById('home-today-list'); l.innerHTML = '';
                 (Store.data.appointments||[]).forEach(a=>{ let div=document.createElement('div'); div.className='card-item'; div.innerHTML=`<div style="font-weight:800;font-size:1.1rem;color:var(--primary);width:60px;">RDV</div><div class="card-info"><div class="card-title">${a.title}</div><div class="card-sub">${a.sub}</div></div>`; l.appendChild(div); });
                 let unpaid = 0; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { if(!f.paid) unpaid += f.amount; })});
-                document.getElementById('home-unpaid').innerText = unpaid.toLocaleString() + ' €';
+                document.getElementById('home-unpaid').innerText = App.formatMoney(unpaid);
             },
             renderClients(q='') {
                 const l = document.getElementById('clients-list'); l.innerHTML = '';
@@ -695,7 +704,7 @@
                         ? `<i class="fas fa-pen-nib" style="color:#16a34a; font-size:1.2rem; padding:10px;"></i>` 
                         : `<i class="fas fa-pen-nib" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.promptSignature(${d.id})"></i>`;
 
-                    ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${(d.total||0).toLocaleString()} €</div></div>${signIcon}<i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-trash" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.deleteDevis(${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; 
+                    ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${App.formatMoney(d.total)}</div></div>${signIcon}<i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-trash" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.deleteDevis(${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; 
                 });
 
                 const lcdc = document.getElementById('hub-docs-list'); lcdc.innerHTML = '';
@@ -707,7 +716,7 @@
 
                 const lf = document.getElementById('hub-factures-list'); lf.innerHTML=''; 
                 c.factures.forEach(f => { 
-                    lf.innerHTML+=`<div class="card-item" style="border-left:${f.paid?'4px solid var(--success)':'4px solid var(--danger)'}"><div class="card-info"><div class="card-title">${f.ref}</div><div class="card-sub">${f.amount}€</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i></div>`; 
+                    lf.innerHTML+=`<div class="card-item" style="border-left:${f.paid?'4px solid var(--success)':'4px solid var(--danger)'}"><div class="card-info"><div class="card-title">${f.ref}</div><div class="card-sub">${App.formatMoney(f.amount)}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i></div>`; 
                 });
                 this.nav('hub');
             },
@@ -881,7 +890,7 @@
                     totG += i.qty * (i.gravats || 0); // CALCOLO GRAVATS
                 });
                 d.total = totP; d.totalTime = totT; d.totalGravats = totG; Store.save();
-                document.getElementById('ed-total-price').innerText = Math.round(totP).toLocaleString() + ' €';
+                document.getElementById('ed-total-price').innerText = App.formatMoney(totP);
                 document.getElementById('ed-total-time').innerText = totT.toFixed(1) + ' h';
                 document.getElementById('ed-total-rubble').innerText = totG.toFixed(2) + ' m³';
             },
@@ -903,10 +912,10 @@
                             let laborCostTotal = (i.time || 0) * rate * i.qty;
                             let matCostTotal = (i.material_cost || 0) * i.qty;
                             
-                            html += `<div class="e-card" onclick="App.editDevisItem(${i.id})"><div class="e-card-row"><div class="e-desc">${i.desc}</div><div style="font-weight:800; color:var(--primary);">${Math.round(rowP)}€</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Qté</div><div class="stat-val">${i.qty}</div></div><div class="stat-box"><div class="stat-lbl">Prix U.</div><div class="stat-val">${i.price.toFixed(2)}€</div></div><div class="stat-box"><div class="stat-lbl">Temps</div><div class="stat-val time">${i.time||0}h</div></div></div>
+                            html += `<div class="e-card" onclick="App.editDevisItem(${i.id})"><div class="e-card-row"><div class="e-desc">${i.desc}</div><div style="font-weight:800; color:var(--primary);">${App.formatMoney(rowP)}</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Qté</div><div class="stat-val">${i.qty}</div></div><div class="stat-box"><div class="stat-lbl">Prix U.</div><div class="stat-val">${App.formatMoney(i.price)}</div></div><div class="stat-box"><div class="stat-lbl">Temps</div><div class="stat-val time">${i.time||0}h</div></div></div>
                             <div class="e-stats" style="border-top:1px dashed #e2e8f0; margin-top:5px;">
-                                <div class="stat-box"><div class="stat-lbl" style="color:var(--time)">M.O. (€)</div><div class="stat-val" style="color:var(--time); font-size:0.8rem;">${Math.round(laborCostTotal)}€</div></div>
-                                <div class="stat-box"><div class="stat-lbl" style="color:var(--material)">Mat. (€)</div><div class="stat-val" style="color:var(--material); font-size:0.8rem;">${Math.round(matCostTotal)}€</div></div>
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--time)">M.O. (€)</div><div class="stat-val" style="color:var(--time); font-size:0.8rem;">${App.formatMoney(laborCostTotal)}</div></div>
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--material)">Mat. (€)</div><div class="stat-val" style="color:var(--material); font-size:0.8rem;">${App.formatMoney(matCostTotal)}</div></div>
                                 <div class="stat-box"><div class="stat-lbl" style="color:var(--rubble)">Gravats</div><div class="stat-val" style="color:var(--rubble); font-size:0.8rem;">${(i.gravats*i.qty).toFixed(2)}</div></div>
                             </div>
                             </div>`;
@@ -927,10 +936,10 @@
                     });
                     for (const key in aggregated) {
                         const agg = aggregated[key]; const totalP = agg.totalQty * agg.price; const locs = Array.from(agg.pieces).join(", ");
-                        l.innerHTML += `<div class="e-card" style="border-left-color:var(--accent);"><div class="e-card-row"><div class="e-desc">${agg.desc}<br><span class="e-loc-tag">${locs}</span></div><div style="font-weight:800;">${Math.round(totalP)}€</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Tot Qté</div><div class="stat-val">${agg.totalQty}</div></div><div class="stat-box"><div class="stat-lbl">Tot Time</div><div class="stat-val time">${agg.totalTime.toFixed(1)}h</div></div></div>
+                        l.innerHTML += `<div class="e-card" style="border-left-color:var(--accent);"><div class="e-card-row"><div class="e-desc">${agg.desc}<br><span class="e-loc-tag">${locs}</span></div><div style="font-weight:800;">${App.formatMoney(totalP)}</div></div><div class="e-stats"><div class="stat-box"><div class="stat-lbl">Tot Qté</div><div class="stat-val">${agg.totalQty}</div></div><div class="stat-box"><div class="stat-lbl">Tot Time</div><div class="stat-val time">${agg.totalTime.toFixed(1)}h</div></div></div>
                         <div class="e-stats" style="border-top:1px dashed #e2e8f0; margin-top:5px;">
-                                <div class="stat-box"><div class="stat-lbl" style="color:var(--time)">Tot M.O.</div><div class="stat-val" style="color:var(--time); font-size:0.8rem;">${Math.round(agg.totalLaborCost)}€</div></div>
-                                <div class="stat-box"><div class="stat-lbl" style="color:var(--material)">Tot Mat.</div><div class="stat-val" style="color:var(--material); font-size:0.8rem;">${Math.round(agg.totalMatCost)}€</div></div>
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--time)">Tot M.O.</div><div class="stat-val" style="color:var(--time); font-size:0.8rem;">${App.formatMoney(agg.totalLaborCost)}</div></div>
+                                <div class="stat-box"><div class="stat-lbl" style="color:var(--material)">Tot Mat.</div><div class="stat-val" style="color:var(--material); font-size:0.8rem;">${App.formatMoney(agg.totalMatCost)}</div></div>
                         </div>
                         </div>`;
                     }
@@ -1215,7 +1224,7 @@
                         <div class="card-info">
                             <div class="card-title" style="font-size:0.95rem;">${it.desc}</div>
                             <div class="card-sub" style="color:var(--primary); font-weight:700;">
-                                ${dynamicPrice.toFixed(2)}€ / ${it.unit} 
+                                ${App.formatMoney(dynamicPrice)} / ${it.unit} 
                                 <span style="font-weight:400; color:#64748B; font-size:0.8em; margin-left:5px;">
                                     (T: ${it.labor_time}h | M: ${it.material_cost}€)
                                 </span>
@@ -1316,7 +1325,7 @@
                 
                 // UPDATE BREAKDOWN DISPLAY
                 document.getElementById('edit-item-split-display').innerText = 
-                    `Manodopera: ${laborCost.toFixed(2)}€ + Materiale: ${m.toFixed(2)}€`;
+                    `Manodopera: ${App.formatMoney(laborCost)} + Materiale: ${App.formatMoney(m)}`;
 
                 // UNIT PRICE FORMULA: (Time * Rate) + Material
                 const unitPrice = laborCost + m;
@@ -1324,7 +1333,7 @@
                 
                 // TOTAL ROW CALCULATION
                 const totalRow = unitPrice * qty;
-                document.getElementById('edit-item-total-row').innerText = totalRow.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €';
+                document.getElementById('edit-item-total-row').innerText = App.formatMoney(totalRow);
             },
 
             saveItemChanges() { 
@@ -1390,15 +1399,15 @@
             backToHub() { if(Store.data.activeChantierId) App.openHub(Store.data.activeChantierId); else App.nav('projets'); },
 
             openCreateInvoiceModal() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); if(!c.devisList || c.devisList.length === 0) return alert("Erreur: Vous devez d'abord créer un devis !"); const s = document.getElementById('inv-devis-select'); s.innerHTML=''; c.devisList.forEach(d => { let o = document.createElement('option'); o.value=d.id; o.text=d.name; s.appendChild(o); }); document.getElementById('modal-invoice').classList.add('open'); App.onInvoiceDevisChange(); },
-            onInvoiceDevisChange() { const cid = Store.data.activeChantierId; const c = Store.data.chantiers.find(x=>x.id==cid); const did = document.getElementById('inv-devis-select').value; if(!did) return; const d = c.devisList.find(x=>x.id==did); document.getElementById('inv-total-quote').innerText = d.total.toLocaleString() + ' €'; App.calcInvPreview(); },
+            onInvoiceDevisChange() { const cid = Store.data.activeChantierId; const c = Store.data.chantiers.find(x=>x.id==cid); const did = document.getElementById('inv-devis-select').value; if(!did) return; const d = c.devisList.find(x=>x.id==did); document.getElementById('inv-total-quote').innerText = App.formatMoney(d.total); App.calcInvPreview(); },
             setInvType(t) { App.state.invType = t; document.getElementById('btn-acompte').style.background = t==='acompte'? 'var(--primary)' : 'white'; document.getElementById('btn-acompte').style.color = t==='acompte'? 'white' : '#64748B'; document.getElementById('btn-solde').style.background = t==='solde'? 'var(--primary)' : 'white'; document.getElementById('btn-solde').style.color = t==='solde'? 'white' : '#64748B'; const inp = document.getElementById('inv-percent'); if(t==='solde') { inp.value = 100; inp.disabled = true; } else { inp.value = 30; inp.disabled = false; } App.calcInvPreview(); },
-            calcInvPreview() { const cid = Store.data.activeChantierId; const c = Store.data.chantiers.find(x=>x.id==cid); const did = document.getElementById('inv-devis-select').value; if(!did) return; const d = c.devisList.find(x=>x.id==did); const perc = parseInt(document.getElementById('inv-percent').value) || 0; const amt = d.total * (perc/100); document.getElementById('inv-preview-amount').innerText = amt.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' €'; },
-            generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const amtString = document.getElementById('inv-preview-amount').innerText.replace(' €','').replace(/\s/g,'').replace(/\./g,''); c.factures.push({ id: Date.now(), ref: "FAC-"+Date.now().toString().slice(-4), type: App.state.invType, amount: parseFloat(amtString), paid: false }); Store.save(); App.showToast("Facture émise"); App.closeModal('modal-invoice'); App.openHub(c.id); },
+            calcInvPreview() { const cid = Store.data.activeChantierId; const c = Store.data.chantiers.find(x=>x.id==cid); const did = document.getElementById('inv-devis-select').value; if(!did) return; const d = c.devisList.find(x=>x.id==did); const perc = parseInt(document.getElementById('inv-percent').value) || 0; const amt = d.total * (perc/100); document.getElementById('inv-preview-amount').innerText = App.formatMoney(amt); },
+            generateInvoice() { const c = Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const amtString = document.getElementById('inv-preview-amount').innerText.replace(' €','').replace(/\s/g,'').replace(/\./g,'').replace(',','.'); c.factures.push({ id: Date.now(), ref: "FAC-"+Date.now().toString().slice(-4), type: App.state.invType, amount: parseFloat(amtString), paid: false }); Store.save(); App.showToast("Facture émise"); App.closeModal('modal-invoice'); App.openHub(c.id); },
             openAgenda() { const s=document.getElementById('agd-chantier'); s.innerHTML='<option value="">Sélectionner...</option>'; Store.data.chantiers.forEach(c=>{let o=document.createElement('option'); o.value=c.id; o.text=c.name; s.appendChild(o);}); document.getElementById('modal-agenda').classList.add('open'); let l=document.getElementById('agenda-list-view'); l.innerHTML=''; (Store.data.appointments||[]).forEach(a=>{let d=document.createElement('div'); d.className='card-item'; d.innerText=new Date(a.date).toLocaleString()+' - '+a.title; l.appendChild(d);}); },
             saveAgendaEvent() { const cid=document.getElementById('agd-chantier').value; const date=document.getElementById('agd-date').value; if(cid&&date){const c=Store.data.chantiers.find(x=>x.id==cid); Store.data.appointments.push({id:Date.now(), date:date, title:"Visite", sub:c.name}); Store.save(); App.showToast("RDV Enregistré"); App.closeModal('modal-agenda'); App.renderHome();} },
             renderDocuments(filter) { const l=document.getElementById('documents-list'); l.innerHTML=''; let docs=[]; Store.data.chantiers.forEach(c=>{ const cli=Store.data.clients.find(x=>x.id==c.clientId); const cn=cli?cli.nom:'-'; if(c.devisList) c.devisList.forEach(d=>docs.push({type:'Devis', ref:d.ref, client:cn, cid:c.id, obj:d})); if(c.factures) c.factures.forEach(f=>docs.push({type:'Facture', ref:f.ref, client:cn, cid:c.id, obj:f})); if(c.extraDocs) c.extraDocs.forEach(e=>docs.push({type:'CDC', ref:e.ref, client:cn, cid:c.id, obj:e})); }); if(filter&&filter!=='all') docs=docs.filter(d=>d.type===filter||(filter==='CDC'&&d.type==='Etude')); docs.forEach(d=>{ let div=document.createElement('div'); div.className='card-item'; div.innerHTML=`<div class="card-info"><span class="card-tag">${d.type}</span><div class="card-title">${d.ref}</div><div class="card-sub">${d.client}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); ${d.type==='CDC' ? `App.generateCDCPDF('${d.obj.id}')` : `App.generateGlobalPDF('${d.type.toLowerCase()}', ${d.obj.id})`}"></i>`; div.onclick=()=>{ Store.data.activeChantierId=d.cid; if(d.type==='Devis') App.openEditor(d.obj.id); else if(d.type==='CDC') App.viewCahierTable(d.obj); else App.openHub(d.cid); }; l.appendChild(div); }); },
             viewCahierTable(doc) { document.getElementById('vc-title').innerText = doc.name; const t = document.getElementById('vc-table'); t.innerHTML = '<tr style="background:#f1f5f9; text-align:left;"><th style="padding:10px;">Article</th><th style="padding:10px;">Loc</th><th style="padding:10px;">Ass.</th></tr>'; doc.items.forEach(i => t.innerHTML += `<tr><td style="padding:10px; border-bottom:1px solid #eee;">${i.desc}</td><td style="padding:10px; border-bottom:1px solid #eee;">${i.piece||'-'}</td><td style="padding:10px; border-bottom:1px solid #eee; color:#15803d; font-weight:bold;">${i.assignedTo||'-'}</td></tr>`); document.getElementById('modal-view-cahier').classList.add('open'); },
-            renderGlobalInvoices() { const l = document.getElementById('global-invoice-list'); l.innerHTML = ''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { if(!f.paid) { const cli = Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = 'card-item'; div.innerHTML = `<div class="card-info"><div class="card-title">${cli?cli.nom:'?'}</div><div class="card-sub">Ref: ${f.ref}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i><div style="font-weight:800; color:var(--danger)">${f.amount.toLocaleString()} €</div>`; div.onclick = () => App.openHub(c.id); l.appendChild(div); } }); }); },
+            renderGlobalInvoices() { const l = document.getElementById('global-invoice-list'); l.innerHTML = ''; Store.data.chantiers.forEach(c => { if(c.factures) c.factures.forEach(f => { if(!f.paid) { const cli = Store.data.clients.find(x=>x.id==c.clientId); let div = document.createElement('div'); div.className = 'card-item'; div.innerHTML = `<div class="card-info"><div class="card-title">${cli?cli.nom:'?'}</div><div class="card-sub">Ref: ${f.ref}</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('facture', ${f.id})"></i><div style="font-weight:800; color:var(--danger)">${App.formatMoney(f.amount)}</div>`; div.onclick = () => App.openHub(c.id); l.appendChild(div); } }); }); },
 
             // --- NOUVELLE FONCTION : RAPPORT PAR PIÈCES (PDF) ---
             generateRoomReportPDF() {
@@ -1536,10 +1545,10 @@
                         <tr style="border-bottom:1px solid #eee;">
                             <td style="padding:10px;">${i.desc}</td>
                             <td style="padding:10px; text-align:center;">${i.qty}</td>
-                            <td style="padding:10px; text-align:center; font-size:0.85rem; color:#64748b;">${costLabor > 0 ? costLabor.toFixed(2)+'€' : '-'}</td>
-                            <td style="padding:10px; text-align:center; font-size:0.85rem; color:#64748b;">${costMat > 0 ? costMat.toFixed(2)+'€' : '-'}</td>
-                            <td style="padding:10px; text-align:right;">${i.price.toFixed(2)}€</td>
-                            <td style="padding:10px; text-align:right; font-weight:bold;">${rowT.toFixed(2)}€</td>
+                            <td style="padding:10px; text-align:center; font-size:0.85rem; color:#64748b;">${costLabor > 0 ? App.formatMoney(costLabor) : '-'}</td>
+                            <td style="padding:10px; text-align:center; font-size:0.85rem; color:#64748b;">${costMat > 0 ? App.formatMoney(costMat) : '-'}</td>
+                            <td style="padding:10px; text-align:right;">${App.formatMoney(i.price)}</td>
+                            <td style="padding:10px; text-align:right; font-weight:bold;">${App.formatMoney(rowT)}</td>
                         </tr>`;
                 }).join('');
                 
@@ -1573,7 +1582,7 @@
                             <tbody>${rows}</tbody>
                         </table>
                         <div style="text-align:right; margin-bottom:20px;">
-                            <div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${totalTTC.toLocaleString()} €</div>
+                            <div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${App.formatMoney(totalTTC)}</div>
                             ${extraInfo}
                         </div>
                         ${signatureBlock}
