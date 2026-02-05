@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.18 - ORANGE EDITION</title>
+    <title>QOTIA CLOUD V7.19 - COLOR CARDS</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -29,20 +29,28 @@
             --rubble: #78716c; 
             --material: #7c3aed; 
 
-            /* PALETTE COLORI */
-            --col-chantier: #F59E0B; /* Giallo/Ambra */
-            --col-client: #2563EB;   /* Blu */
-            --col-nav-active: #172554; /* Blu Scuro per Footer */
+            /* PALETTE COLORI AGGIORNATA */
             
-            /* MODIFICA COLORE DEVIS (ARANCIONE) */
-            --col-devis: #EA580C;    /* Arancione Scuro/Vibrante */
-            --bg-devis: #FFF7ED;     /* Arancione Molto Chiaro */
+            /* CHANTIER: GIALLO */
+            --col-chantier: #F59E0B; 
+            --bg-chantier: #FFFBEB;  
             
-            --col-cdc: #0891B2;      /* Ciano/Turchese */
-            --bg-cdc: #ECFEFF;       /* Ciano Chiaro */
+            /* DEVIS: ARANCIONE */
+            --col-devis: #EA580C;    
+            --bg-devis: #FFF7ED;     
             
-            --col-facture: #059669;  /* Verde */
-            --bg-facture: #ECFDF5;   /* Verde Chiaro */
+            /* CLIENT: BLU */
+            --col-client: #2563EB;   
+            
+            /* NAVIGATION */
+            --col-nav-active: #172554; 
+            
+            /* ALTRI DOCUMENTI */
+            --col-cdc: #0891B2;      
+            --bg-cdc: #ECFEFF;       
+            
+            --col-facture: #059669;  
+            --bg-facture: #ECFDF5;   
             
             --h-header: 65px;
             --h-nav: 90px;
@@ -707,7 +715,7 @@
                     }
                 });
             },
-            renderProjets() { const l = document.getElementById('projects-list-full'); l.innerHTML = ''; Store.data.chantiers.forEach(c => { const cli = Store.data.clients.find(x=>x.id==c.clientId); l.innerHTML += `<div class="card-item" onclick="App.openHub(${c.id})"><div class="card-info"><span class="card-tag">${c.ref}</span><div class="card-title">${c.name}</div><div class="card-sub"><i class="fas fa-user"></i> ${cli?cli.nom:'?'}</div></div></div>`; }); },
+            renderProjets() { const l = document.getElementById('projects-list-full'); l.innerHTML = ''; Store.data.chantiers.forEach(c => { const cli = Store.data.clients.find(x=>x.id==c.clientId); l.innerHTML += `<div class="card-item" style="border-left:4px solid var(--col-chantier); background:var(--bg-chantier);" onclick="App.openHub(${c.id})"><div class="card-info"><span class="card-tag">${c.ref}</span><div class="card-title">${c.name}</div><div class="card-sub"><i class="fas fa-user"></i> ${cli?cli.nom:'?'}</div></div></div>`; }); },
             
             renderSettings() {
                 const l = document.getElementById('settings-partners-list'); l.innerHTML = '';
