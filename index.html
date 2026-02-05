@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.10 - FULL VISIBILITY</title>
+    <title>QOTIA CLOUD V7.11 - SIGNATURE EDITION</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -143,6 +143,11 @@
         #modal-client { z-index: 6000 !important; }
         #modal-projet { z-index: 5000; }
         #modal-edit-item { z-index: 7000 !important; }
+        #modal-signature { z-index: 8000 !important; }
+
+        /* CANVAS SIGNATURE */
+        .sig-container { position: relative; width: 100%; height: 300px; border: 2px dashed #CBD5E1; border-radius: 12px; background: #fff; touch-action: none; overflow: hidden; margin-bottom: 15px; }
+        canvas { width: 100%; height: 100%; display: block; }
 
         #toast-container { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); z-index: 9000; pointer-events: none; width: 85%; }
         .toast { background: #1E293B; color: white; padding: 14px; border-radius: 50px; font-weight: 600; font-size: 0.9rem; opacity: 0; transform: translateY(20px); transition: all 0.3s; margin-top: 10px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
@@ -316,6 +321,20 @@
     
     <div id="modal-view-cahier" class="full-modal"><div class="modal-header"><h3 id="vc-title">...</h3><button class="header-back-container" onclick="App.closeModal('modal-view-cahier')">×</button></div><div class="modal-body"><table style="width:100%; border-collapse:collapse;" id="vc-table"></table></div></div>
     
+    <div id="modal-signature" class="full-modal">
+        <div class="modal-header"><h3>Signature</h3><button class="header-back-container" onclick="App.closeModal('modal-signature')">×</button></div>
+        <div class="modal-body" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <p style="text-align:center; color:#64748B; font-size:0.9rem; margin-bottom:10px;">Signez dans la case ci-dessous :</p>
+            <div class="sig-container">
+                <canvas id="sig-canvas"></canvas>
+            </div>
+            <button onclick="App.clearSignature()" style="background:#F1F5F9; border:none; padding:10px 20px; border-radius:20px; font-weight:700; color:var(--text-sub);">Effacer</button>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" onclick="App.saveSignature()">ACCEPTER & SIGNER</button>
+        </div>
+    </div>
+
     <div id="modal-library" class="full-modal">
         <div class="modal-header"><h3>Bibliothèque</h3><button class="header-back-container" onclick="App.closeModal('modal-library')">×</button></div>
         <div class="modal-body">
@@ -598,7 +617,7 @@
         };
 
         const App = {
-            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, isEditing: false, tempLibItem: null },
+            state: { invType:'acompte', tempClientType: 'particulier', viewMode: 'pieces', selectedItems: new Set(), lastPiece: 'Général', libCategory: null, libSubCategory: null, isEditing: false, tempLibItem: null, sigPad: null },
             
             init() { Auth.init(); },
 
@@ -680,7 +699,12 @@
                 
                 const ld = document.getElementById('hub-devis-list'); ld.innerHTML=''; 
                 c.devisList.forEach(d => { 
-                    ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${(d.total||0).toLocaleString()} €</div></div><i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-trash" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.deleteDevis(${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; 
+                    const isSigned = d.signature ? true : false;
+                    const signIcon = isSigned 
+                        ? `<i class="fas fa-pen-nib" style="color:#16a34a; font-size:1.2rem; padding:10px;"></i>` 
+                        : `<i class="fas fa-pen-nib" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.promptSignature(${d.id})"></i>`;
+
+                    ld.innerHTML+=`<div class="card-item"><div class="card-info" onclick="App.openEditor(${d.id})"><div class="card-title">${d.name}</div><div class="card-sub">${(d.total||0).toLocaleString()} €</div></div>${signIcon}<i class="fas fa-file-pdf" style="color:#DC2626; font-size:1.4rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.generateGlobalPDF('devis', ${d.id})"></i><i class="fas fa-trash" style="color:#CBD5E1; font-size:1.2rem; padding:10px; cursor:pointer;" onclick="event.stopPropagation(); App.deleteDevis(${d.id})"></i><i class="fas fa-pen" style="color:#CBD5E1; margin-left:10px;" onclick="App.openEditor(${d.id})"></i></div>`; 
                 });
 
                 const lcdc = document.getElementById('hub-docs-list'); lcdc.innerHTML = '';
@@ -697,7 +721,89 @@
                 this.nav('hub');
             },
             
-            // --- FUNZIONI DI ELIMINAZIONE ---
+            // --- SIGNATURE MODULE ---
+            promptSignature(devisId) {
+                Store.data.activeDevisId = devisId;
+                document.getElementById('modal-signature').classList.add('open');
+                setTimeout(() => App.initCanvas(), 300);
+            },
+
+            initCanvas() {
+                const canvas = document.getElementById('sig-canvas');
+                const ctx = canvas.getContext('2d');
+                // Resize canvas to fit container
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+                
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#000';
+
+                let painting = false;
+
+                function start(e) {
+                    painting = true;
+                    draw(e);
+                }
+
+                function end() {
+                    painting = false;
+                    ctx.beginPath();
+                }
+
+                function draw(e) {
+                    if (!painting) return;
+                    e.preventDefault();
+                    const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                    
+                    const rect = canvas.getBoundingClientRect();
+                    const x = clientX - rect.left;
+                    const y = clientY - rect.top;
+
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                }
+
+                canvas.onmousedown = start;
+                canvas.onmouseup = end;
+                canvas.onmousemove = draw;
+
+                canvas.ontouchstart = start;
+                canvas.ontouchend = end;
+                canvas.ontouchmove = draw;
+                
+                App.state.sigPad = { canvas, ctx };
+            },
+
+            clearSignature() {
+                const { canvas, ctx } = App.state.sigPad;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            },
+
+            saveSignature() {
+                const { canvas } = App.state.sigPad;
+                // Check if empty (optional, skip for simplicity)
+                const dataUrl = canvas.toDataURL("image/png");
+                
+                const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
+                const d = c.devisList.find(x => x.id == Store.data.activeDevisId);
+                
+                d.signature = dataUrl;
+                d.status = "Accepté";
+                d.signDate = new Date().toLocaleDateString('fr-FR');
+                
+                Store.save();
+                App.showToast("Devis signé et accepté !");
+                App.closeModal('modal-signature');
+                App.openHub(c.id);
+            },
+
+            // --- END SIGNATURE ---
+
             deleteDevis(did) {
                 if(!confirm("Eliminare definitivamente questo preventivo?")) return;
                 const c = Store.data.chantiers.find(x => x.id == Store.data.activeChantierId);
@@ -1396,6 +1502,7 @@
                 const cli = Store.data.clients.find(x=>x.id==c.clientId);
                 const rate = Store.data.settings.hourlyRate || 45;
                 let items, title, ref, extraInfo = "";
+                let signatureBlock = "";
                 
                 if (type === 'devis') {
                     const obj = c.devisList.find(x=>x.id==id);
@@ -1403,6 +1510,24 @@
                     if(obj.totalGravats > 0) {
                         extraInfo = `<div style="text-align:right; margin-top:10px; font-size:0.9rem; color:#64748B;">Volume Gravats Estimé: <strong>${obj.totalGravats.toFixed(2)} m³</strong></div>`;
                     }
+                    // SIGNATURE BLOCK
+                    if(obj.signature) {
+                        signatureBlock = `
+                            <div style="margin-top:40px; border:2px solid #16a34a; padding:15px; border-radius:10px; page-break-inside: avoid;">
+                                <div style="font-weight:bold; color:#16a34a; margin-bottom:10px;">BON POUR ACCORD</div>
+                                <div style="font-size:0.8rem; margin-bottom:10px;">Signé électroniquement le ${obj.signDate || ''}</div>
+                                <img src="${obj.signature}" style="max-height:80px; display:block;" />
+                            </div>
+                        `;
+                    } else {
+                        signatureBlock = `
+                            <div style="margin-top:50px; display:flex; justify-content:space-between; page-break-inside: avoid;">
+                                <div style="border-top:1px solid #000; width:40%; padding-top:10px; font-size:0.8rem;">Date et Signature Entreprise</div>
+                                <div style="border-top:1px solid #000; width:40%; padding-top:10px; font-size:0.8rem;">Date et Signature Client (Bon pour accord)</div>
+                            </div>
+                        `;
+                    }
+
                 } else {
                     const obj = c.factures.find(x=>x.id==id);
                     title = "FACTURE"; ref = obj.ref; items = [{desc: `Facture selon avancement (${obj.type})`, qty: 1, unit:'U', price: obj.amount, time:0, material_cost:0}];
@@ -1456,10 +1581,11 @@
                             </thead>
                             <tbody>${rows}</tbody>
                         </table>
-                        <div style="text-align:right; margin-bottom:50px;">
+                        <div style="text-align:right; margin-bottom:20px;">
                             <div style="font-size:1.5rem; font-weight:900; color:#0f172a;">TOTAL A PAYER: ${totalTTC.toLocaleString()} €</div>
                             ${extraInfo}
                         </div>
+                        ${signatureBlock}
                     </div>`;
                 const opt = { margin: 10, filename: `${title}_${ref}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
                 html2pdf().set(opt).from(html).save();
