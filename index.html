@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>QOTIA CLOUD V7.7 - GRAVATS MANAGER</title>
+    <title>QOTIA CLOUD V7.8 - GRAVATS & MATERIAL MANAGER</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,6 +27,7 @@
             --success: #15803d;
             --time: #3B82F6;
             --rubble: #78716c; /* Stone color for Gravats */
+            --material: #7c3aed; /* Purple for Material Cost */
             
             --h-header: 65px;
             --h-nav: 90px;
@@ -434,17 +435,24 @@
                 </div>
             </div>
             
-            <div style="display:flex; gap:15px;">
-                <div style="flex:1">
-                    <label style="font-weight:700; display:block; margin-bottom:8px;">Prix U.</label>
-                    <input type="number" id="edit-item-price" class="app-input">
-                </div>
-                <div style="flex:1">
-                    <label style="font-weight:700; display:block; margin-bottom:8px; color:#3B82F6;">Temps U.</label>
-                    <input type="number" id="edit-item-time" class="app-input" style="border-color:#3B82F6; color:#3B82F6;">
-                </div>
+            <div style="background:#F1F5F9; padding:12px; border-radius:12px; margin-bottom:15px; border:1px dashed var(--border);">
+                 <div style="font-size:0.75rem; font-weight:700; color:var(--text-sub); text-transform:uppercase; margin-bottom:5px;">Composition du Prix</div>
+                 
+                 <div style="display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label style="font-size:0.8rem; font-weight:700; color:#3B82F6;">Temps U. (h)</label>
+                        <input type="number" id="edit-item-time" class="app-input" step="0.1" style="border-color:#3B82F6; color:#3B82F6;" oninput="App.calcEditPrice()">
+                    </div>
+                    <div style="flex:1">
+                        <label style="font-size:0.8rem; font-weight:700; color:var(--material);">Matériel U. (€)</label>
+                        <input type="number" id="edit-item-mat" class="app-input" step="0.01" style="border-color:var(--material); color:var(--material);" oninput="App.calcEditPrice()">
+                    </div>
+                 </div>
             </div>
 
+            <label style="font-weight:700; display:block; margin-bottom:8px;">Prix U. (Calculé)</label>
+            <input type="number" id="edit-item-price" class="app-input" step="0.01" style="font-weight:800;">
+            
             <label style="font-weight:700; display:block; margin-bottom:8px; color:var(--rubble);">Gravats U. (m3)</label>
             <input type="number" id="edit-item-rubble" class="app-input" step="0.01" style="border-color:var(--border); color:var(--rubble); font-weight:700;">
             
@@ -534,7 +542,7 @@
                             desc: item.desc, 
                             unit: item.unit, 
                             labor_time: item.labor_time, 
-                            material_cost: item.material_cost,
+                            material_cost: item.material_cost || 0, // MAPPING MATERIAL COST
                             gravats: item.dechet || 0 // MAPPING DECHET FROM DB
                         };
 
@@ -1122,8 +1130,12 @@
                 document.getElementById('edit-item-qty').value = 1;
                 document.getElementById('edit-item-unit').value = item.unit;
                 document.getElementById('edit-item-price').value = App.calculateItemPrice(item).toFixed(2);
+                
+                // SET FIELDS FOR CALCULATION
                 document.getElementById('edit-item-time').value = item.labor_time || 0;
-                document.getElementById('edit-item-rubble').value = item.gravats || 0; // Load default Gravats
+                document.getElementById('edit-item-mat').value = item.material_cost || 0;
+                
+                document.getElementById('edit-item-rubble').value = item.gravats || 0; 
                 document.getElementById('btn-delete-item').style.display = 'none'; 
 
                 // Gestione Select Stanza
@@ -1145,7 +1157,11 @@
                 const c=Store.data.chantiers.find(x=>x.id==Store.data.activeChantierId); const d=c.devisList.find(x=>x.id==Store.data.activeDevisId); const item=d.items.find(x=>x.id==id);
                 document.getElementById('edit-item-idx').value = id; document.getElementById('edit-item-desc').value = item.desc; document.getElementById('edit-item-qty').value = item.qty; 
                 document.getElementById('edit-item-price').value = item.price.toFixed(2); 
-                document.getElementById('edit-item-unit').value = item.unit || 'U'; document.getElementById('edit-item-time').value = item.time || 0;
+                document.getElementById('edit-item-unit').value = item.unit || 'U'; 
+                
+                document.getElementById('edit-item-time').value = item.time || 0;
+                document.getElementById('edit-item-mat').value = item.material_cost || 0; // LOAD MAT COST
+                
                 document.getElementById('edit-item-rubble').value = item.gravats || 0;
                 
                 const rooms = new Set(d.items.map(i => i.piece).filter(Boolean)); 
@@ -1158,11 +1174,25 @@
                 document.getElementById('modal-edit-item').classList.add('open');
             },
 
+            // CALCULATION LOGIC IN MODAL
+            calcEditPrice() {
+                const t = parseFloat(document.getElementById('edit-item-time').value) || 0;
+                const m = parseFloat(document.getElementById('edit-item-mat').value) || 0;
+                const rate = Store.data.settings.hourlyRate || 45;
+                
+                // FORMULA: (Time * Rate) + Material
+                const final = (t * rate) + m;
+                document.getElementById('edit-item-price').value = final.toFixed(2);
+            },
+
             saveItemChanges() { 
                 const desc = document.getElementById('edit-item-desc').value;
                 const qty = parseFloat(document.getElementById('edit-item-qty').value)||0;
                 const price = parseFloat(document.getElementById('edit-item-price').value)||0;
+                
                 const time = parseFloat(document.getElementById('edit-item-time').value)||0;
+                const material = parseFloat(document.getElementById('edit-item-mat').value)||0;
+                
                 const gravats = parseFloat(document.getElementById('edit-item-rubble').value)||0;
                 const piece = document.getElementById('edit-item-piece').value;
                 
@@ -1173,7 +1203,9 @@
                     // MODIFICA ESISTENTE
                     const id = parseInt(document.getElementById('edit-item-idx').value); 
                     const item = d.items.find(x=>x.id==id); 
-                    item.desc = desc; item.qty = qty; item.price = price; item.time = time; item.piece = piece; item.gravats = gravats;
+                    item.desc = desc; item.qty = qty; item.price = price; 
+                    item.time = time; item.material_cost = material; // SAVE MAT
+                    item.piece = piece; item.gravats = gravats;
                 } else {
                     // NUOVO INSERIMENTO
                     const newItem = { 
@@ -1181,7 +1213,7 @@
                         desc: desc, 
                         unit: document.getElementById('edit-item-unit').value, 
                         time: time, 
-                        material_cost: App.state.tempLibItem ? App.state.tempLibItem.material_cost : 0, 
+                        material_cost: material, // SAVE MAT
                         price: price, 
                         qty: qty, 
                         piece: piece,
